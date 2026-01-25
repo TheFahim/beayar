@@ -1,0 +1,32 @@
+# Laravel specific
+**/vendor/
+**/node_modules/
+**/npm-debug.log
+**/yarn-error.log
+**/public/storage
+**/public/hot
+**/storage/*.key
+**/.env
+**/.env.backup
+**/.phpunit.result.cache
+**/Homestead.json
+**/Homestead.yaml
+**/auth.json
+
+# IDEs
+**/.idea
+**/.vscode
+**/*.sublime-workspace
+**/*.sublime-project
+
+# OS specific
+**/.DS_Store
+**/Thumbs.db
+
+# Testing
+**/tests/Browser/console
+**/tests/Browser/screenshots
+**/tests/Browser/source
+
+# Compiled assets
+**/public/build

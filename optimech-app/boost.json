@@ -1,0 +1,13 @@
+{
+    "agents": [
+        "gemini",
+        "trae"
+    ],
+    "editors": [
+        "gemini",
+        "trae",
+        "vscode"
+    ],
+    "guidelines": [],
+    "herd_mcp": true
+}

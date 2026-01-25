@@ -1,0 +1,3 @@
+<svg {{ $attributes(['class' => 'text-gray-800 dark:text-white']) }} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.444 18H19a1 1 0 001-1v-5a1 1 0 00-1-1H5a1 1 0 00-1 1v5a1 1 0 001 1h2.556M17 11V5a1 1 0 00-1-1H8a1 1 0 00-1 1v6h10zm-10 4h10v4a1 1 0 01-1 1H8a1 1 0 01-1-1v-4z" />
+</svg>

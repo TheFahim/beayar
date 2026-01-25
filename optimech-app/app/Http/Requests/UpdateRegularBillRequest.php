@@ -1,0 +1,139 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\ChallanProduct;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+
+class UpdateRegularBillRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        $bill = $this->route('bill');
+        $billId = $bill ? $bill->id : null;
+
+        return [
+            'bill_type' => ['required', Rule::in(['regular'])],
+            'quotation_id' => ['required', 'integer', 'exists:quotations,id'],
+            'quotation_revision_id' => ['required', 'integer', 'exists:quotation_revisions,id'],
+            'round_up' => ['nullable', 'numeric', 'min:-100', 'max:100'],
+            'invoice_no' => ['required', 'string', Rule::unique('bills', 'invoice_no')->ignore($billId)],
+            'bill_date' => ['required', 'date_format:d/m/Y'],
+            'payment_received_date' => ['nullable', 'date_format:d/m/Y'],
+            'discount' => ['nullable', 'numeric', 'min:0'],
+            'vat' => ['nullable', 'numeric', 'min:0'],
+            'shipping' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.quotation_product_id' => ['required', 'integer', 'exists:quotation_products,id'],
+            'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
+            'items.*.allocations' => ['required', 'array', 'min:1'],
+            'items.*.allocations.*.challan_product_id' => ['required', 'integer', 'exists:challan_products,id'],
+            'items.*.allocations.*.billed_quantity' => ['required', 'numeric', 'min:0.01'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'bill_type.in' => 'Invalid bill type for regular bill.',
+            'invoice_no.unique' => 'Invoice number must be unique.',
+            'bill_date.date_format' => 'Bill date must be in dd/mm/yyyy format.',
+            'payment_received_date.date_format' => 'Payment received date must be in dd/mm/yyyy format.',
+            'items.required' => 'Please select at least one challan.',
+            'items.*.allocations.required' => 'Each item must have at least one allocation.',
+            'items.*.quotation_product_id.exists' => 'Invalid quotation product selected.',
+            'items.*.quantity.min' => 'Item quantity must be at least 0.01.',
+            'items.*.allocations.*.challan_product_id.exists' => 'Challan product not found.',
+            'items.*.allocations.*.billed_quantity.min' => 'Billed quantity must be at least 0.01.',
+        ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $data = $this->validated();
+
+            if (($data['bill_type'] ?? null) !== 'regular') {
+                return;
+            }
+
+            if (empty($data['items']) || ! is_array($data['items'])) {
+                return;
+            }
+
+            $bill = $this->route('bill');
+            $billId = $bill ? $bill->id : null;
+
+            foreach ($data['items'] as $i => $item) {
+                if (empty($item['allocations']) || ! is_array($item['allocations'])) {
+                    $validator->errors()->add("items.$i.allocations", 'Allocations are required for each item');
+
+                    continue;
+                }
+
+                $sumAlloc = 0.0;
+                foreach ($item['allocations'] as $a => $allocation) {
+                    $challanProductId = $allocation['challan_product_id'] ?? null;
+                    $billedQty = (float) ($allocation['billed_quantity'] ?? 0);
+
+                    if (! $challanProductId) {
+                        $validator->errors()->add("items.$i.allocations.$a.challan_product_id", 'Challan product not found');
+
+                        continue;
+                    }
+
+                    if ($billedQty <= 0) {
+                        $validator->errors()->add("items.$i.allocations.$a.billed_quantity", 'Billed quantity must be greater than zero');
+
+                        continue;
+                    }
+
+                    $cp = ChallanProduct::find($challanProductId);
+                    if (! $cp) {
+                        $validator->errors()->add("items.$i.allocations.$a.challan_product_id", 'Challan product not found');
+
+                        continue;
+                    }
+
+                    if ((int) $cp->quotation_product_id !== (int) ($item['quotation_product_id'] ?? 0)) {
+                        $validator->errors()->add("items.$i.allocations.$a.challan_product_id", 'Allocation product does not match item quotation product');
+
+                        continue;
+                    }
+
+                    $billedToDate = DB::table('bill_items')
+                        ->join('bill_challans', 'bill_items.bill_challan_id', '=', 'bill_challans.id')
+                        ->join('bills', 'bill_challans.bill_id', '=', 'bills.id')
+                        ->where('bill_items.challan_product_id', $challanProductId)
+                        ->where('bills.bill_type', 'regular')
+                        ->where('bills.status', '!=', 'cancelled')
+                        ->when($billId, function ($query) use ($billId) {
+                            $query->where('bills.id', '!=', $billId);
+                        })
+                        ->sum('bill_items.quantity');
+
+                    // $remaining = max(0, (float) ($cp->quantity ?? 0) - (float) $billedToDate);
+                    // if ($billedQty > $remaining) {
+                    //     $validator->errors()->add("items.$i.allocations.$a.billed_quantity", "Billed quantity exceeds remaining (remaining: $remaining)");
+                    //     continue;
+                    // }
+
+                    $sumAlloc += $billedQty;
+                }
+
+                $itemQty = (float) ($item['quantity'] ?? 0);
+                if (abs($sumAlloc - $itemQty) > 1e-6) {
+                    $validator->errors()->add("items.$i.quantity", 'Item quantity must equal sum of allocation quantities');
+                }
+            }
+        });
+    }
+}
