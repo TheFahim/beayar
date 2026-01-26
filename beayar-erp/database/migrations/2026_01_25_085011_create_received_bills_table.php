@@ -8,19 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('bill_challans', function (Blueprint $table) {
+        Schema::create('received_bills', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bill_id')->constrained('bills')->cascadeOnDelete();
-            $table->foreignId('challan_id')->constrained('challans')->cascadeOnDelete();
+            $table->decimal('amount', 15, 2);
+            $table->date('received_date');
+            $table->string('details')->nullable();
             $table->timestamps();
-            
-            $table->index('bill_id');
-            $table->index('challan_id');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('bill_challans');
+        Schema::dropIfExists('received_bills');
     }
 };

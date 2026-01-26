@@ -11,21 +11,34 @@ return new class extends Migration
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('quotation_id')->nullable()->constrained('quotations');
-            $table->string('bill_no')->unique();
-            $table->date('date');
-            $table->date('due_date')->nullable();
-            $table->string('bill_type')->default('regular'); // advance, regular, running, final
-            $table->decimal('subtotal', 15, 2)->default(0);
-            $table->decimal('tax', 15, 2)->default(0);
-            $table->decimal('discount', 15, 2)->default(0);
-            $table->decimal('total', 15, 2)->default(0);
-            $table->decimal('paid', 15, 2)->default(0);
-            $table->decimal('due', 15, 2)->default(0);
-            $table->string('status')->default('unpaid'); // unpaid, partial, paid
+            $table->foreignId('quotation_id')->constrained('quotations')->restrictOnDelete();
+            $table->foreignId('quotation_revision_id')->nullable()->constrained('quotation_revisions')->nullOnDelete();
+
+            // Hierarchy for Running Bills
+            $table->foreignId('parent_bill_id')->nullable()->constrained('bills')->nullOnDelete();
+
+            $table->enum('bill_type', ['advance', 'regular', 'running'])->default('regular');
+            $table->string('invoice_no')->unique();
+            $table->date('bill_date');
+            $table->date('payment_received_date')->nullable();
+
+            // Financials
+            $table->decimal('total_amount', 15, 2)->default(0); // Gross
+            $table->decimal('bill_percentage', 5, 2)->default(0); // For partial billing
+            $table->decimal('bill_amount', 15, 2)->default(0); // Net bill
+            $table->double('due')->default(0);
+            $table->double('shipping')->default(0);
+            $table->decimal('discount', 15, 2)->default(0.00);
+
+            $table->enum('status', ['draft', 'issued', 'paid', 'cancelled'])->default('issued');
+            $table->text('notes')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
+
+            // Indexes
+            $table->index('quotation_id');
+            $table->index('quotation_revision_id');
         });
     }
 

@@ -10,8 +10,9 @@ return new class extends Migration
     {
         Schema::create('quotation_products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('quotation_id')->constrained('quotations')->cascadeOnDelete();
+            $table->foreignId('quotation_revision_id')->constrained('quotation_revisions')->cascadeOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('products'); // Can be custom item
+            $table->string('reference_no')->nullable(); // Optional product code
             $table->string('product_name'); // Store name in case product changes
             $table->text('description')->nullable();
             $table->decimal('quantity', 10, 2);

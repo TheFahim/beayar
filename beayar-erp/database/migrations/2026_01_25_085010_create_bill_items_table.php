@@ -10,13 +10,19 @@ return new class extends Migration
     {
         Schema::create('bill_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bill_id')->constrained('bills')->cascadeOnDelete();
-            $table->foreignId('product_id')->nullable()->constrained('products');
-            $table->string('product_name');
-            $table->decimal('quantity', 10, 2);
-            $table->decimal('unit_price', 15, 2);
-            $table->decimal('total', 15, 2);
+            $table->foreignId('bill_challan_id')->constrained('bill_challans')->cascadeOnDelete();
+            $table->foreignId('quotation_product_id')->constrained('quotation_products');
+            $table->foreignId('challan_product_id')->constrained('challan_products');
+            
+            $table->integer('quantity')->default(0);
+            $table->integer('remaining_quantity')->default(0);
+            $table->decimal('unit_price', 15, 2)->default(0.00);
+            $table->decimal('bill_price', 15, 2)->default(0.00); // Calculated total for this item
+            
             $table->timestamps();
+            
+            $table->index('bill_challan_id');
+            $table->index('quotation_product_id');
         });
     }
 

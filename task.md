@@ -35,11 +35,14 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 - [x] Create `quotation_statuses` and `expense_categories` tables
 
 ### Workflow Tables
-- [x] Create `quotations` table (base info)
-- [x] Create `quotation_revisions` table (versioning, pricing)
-- [x] Create `quotation_products` table (line items)
+- [x] Create `quotations` table (base info, po_no, ship_to)
+- [x] Create `quotation_revisions` table (versioning, pricing, tax, terms)
+- [x] Create `quotation_products` table (line items, linked to revision)
 - [x] Create `challans` and `challan_products` tables
-- [x] Create `bills`, `bill_challans`, and `bill_items` tables
+- [x] Create `bills` table (Optimech structure: advance/regular/running types)
+- [x] Create `bill_challans` table (link bills to challans)
+- [x] Create `bill_items` table (granular line items linked to challan products)
+- [x] Create `received_bills` table (payment tracking)
 
 ### Financials & System
 - [x] Create `payments` table (enhanced tracking)

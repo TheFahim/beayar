@@ -122,15 +122,18 @@
 #### Group 2: Core Business Tables
 8.  **Customers:** Add `customer_company_id` (Client Scoped).
 9.  **Products:** Global catalog per company (`user_company_id`).
-10. **Quotations:** `customer_id`, `user_id`, `user_company_id`, `status_id`.
-10. **QuotationRevisions:** Versioning system from Optimech.
-11. **QuotationProducts:** Line items.
+10. **Quotations:** `customer_id`, `user_id`, `user_company_id`, `status_id`, `po_no`, `ship_to`.
+11. **QuotationRevisions:** `quotation_id`, `revision_no`, `currency`, `subtotal`, `total`, `terms`.
+12. **QuotationProducts:** Line items (linked to `quotation_revisions`).
 
 #### Group 3: Finance & Billing
-12. **Challans:** Delivery tracking.
-13. **Bills:** `bill_type` (advance, regular, running, final), `company_id`.
-14. **Payments:** Enhanced tracking from Wesum (`company_id`).
-15. **Expenses:** Categories and tracking (`company_id`).
+13. **Challans:** Delivery tracking.
+14. **Bills:** `bill_type` (advance, regular, running), `parent_bill_id`, `invoice_no`, `user_company_id`.
+15. **BillChallans:** Link Bills to Challans (Many-to-Many).
+16. **BillItems:** Line items linked to `challan_products` for granular tracking.
+17. **ReceivedBills:** Track partial payments against bills.
+18. **Payments:** Enhanced tracking from Wesum (`company_id`).
+19. **Expenses:** Categories and tracking (`company_id`).
 16. **SaleTargets:** Per user/month (`company_id`).
 
 #### Group 4: System

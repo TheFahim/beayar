@@ -14,14 +14,13 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('user_id')->constrained('users'); // Creator
             $table->foreignId('status_id')->constrained('quotation_statuses');
+            
+            // Core Quotation Info
             $table->string('reference_no')->unique(); // QT-2024-001
-            $table->date('date');
-            $table->date('valid_until')->nullable();
-            $table->text('notes')->nullable();
-            $table->decimal('subtotal', 15, 2)->default(0);
-            $table->decimal('tax', 15, 2)->default(0);
-            $table->decimal('discount', 15, 2)->default(0);
-            $table->decimal('total', 15, 2)->default(0);
+            $table->string('po_no')->nullable();
+            $table->date('po_date')->nullable();
+            $table->text('ship_to')->nullable();
+            
             $table->timestamps();
             $table->softDeletes();
         });
