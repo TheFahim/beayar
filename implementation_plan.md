@@ -81,6 +81,29 @@
 - **Usage Rules:** One coupon per customer, tracked usage
 - **Eligibility:** Based on customer expenditure history
 
+### 2.4 Super Admin Architecture (New)
+> **Goal:** Centralized platform management for the "Beayar" owners.
+
+#### Admin Roles:
+1.  **Super Admin:** Full access to system settings, payments, and tenant data.
+2.  **Support:** Read-only access to tenant data for troubleshooting.
+
+#### Admin Capabilities:
+-   **Tenant Management:** View all User Companies, login as tenant (impersonate), suspend accounts.
+-   **Platform Billing:** Separate `platform_invoices` and `platform_payments` tables to track subscription revenue.
+-   **Global Coupons:** Create system-wide coupons applicable to `platform_invoices`.
+-   **Revenue Dashboard:** View total MRR/ARR from Platform Billing data.
+
+### 2.5 Payment Gateway Architecture
+> **Provider:** Stripe / Paddle (TBD)
+
+#### Flow:
+1.  **Plan Selection:** User selects Plan in frontend.
+2.  **Checkout:** Redirected to Payment Provider.
+3.  **Webhook:** Provider notifies `webhook-endpoint`.
+4.  **Fulfillment:** System creates/renews `Subscription` record and logs `PlatformPayment`.
+5.  **Coupons:** `coupon_usage` is now linked to `platform_invoices` (not tenant bills).
+
 ---
 
 ## 3. Pre-Requisites Checklist

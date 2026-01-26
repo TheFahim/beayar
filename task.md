@@ -19,6 +19,13 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 
 ## Phase 2: Database Migrations (Week 1, Days 3-5)
 
+### Super Admin & Platform (New)
+- [ ] Create `admins` table (Platform super admins)
+- [ ] Create `system_settings` table (Global configs, payment keys)
+- [ ] Create `platform_invoices` table (Separate from tenant bills)
+- [ ] Create `platform_payments` table (Separate from tenant payments)
+- [ ] Create `feature_flags` table (Global feature management)
+
 ### Multi-Tenancy & Subscriptions (Critical)
 - [x] Create `users` table (add `current_user_company_id`, `current_scope`)
 - [x] Create `user_companies` table (add `owner_id`, `parent_company_id`)
@@ -52,7 +59,7 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 
 ### Coupon System (New Feature)
 - [x] Create `coupons` table (types: unique, campaign)
-- [x] Create `coupon_usage` table (track customer usage)
+- [x] Create `coupon_usage` table (track customer usage, linked to platform_invoices)
 - [x] Create `coupon_limits` table (min/max expenditure limits)
 - [x] Create `coupon_customers` table (link unique coupons to specific customers)
 - [x] Create and run all Seeders (Plans, Roles, Statuses, Coupon Types)
@@ -81,6 +88,11 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 
 ## Phase 4: Service Layer & Logic (Week 3)
 
+### Super Admin Services
+- [ ] Create `AdminAuthService` (Separate guard for admins)
+- [ ] Create `PaymentGatewayService` (Stripe/Paddle integration)
+- [ ] Create `PlatformSubscriptionService` (Manage tenant plans/status)
+
 ### Subscription Services
 - [ ] Create `PricingCalculatorService` (Dynamic Custom Plan logic)
 - [ ] Create `SubscriptionManager` (Handle upgrades/downgrades/usage)
@@ -100,7 +112,14 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 
 ### Infrastructure
 - [ ] Setup API Routes (v1) with Middleware Groups
+- [ ] Setup Admin API Routes (`/api/admin`)
 - [ ] Create FormRequest Validation classes for all inputs
+
+### Admin Controllers
+- [ ] `AdminAuthController`
+- [ ] `TenantManagementController` (View/Suspend tenants)
+- [ ] `PlatformRevenueController`
+- [ ] `GlobalCouponController` (Manage campaign coupons)
 
 ### Feature Controllers
 - [ ] `SubscriptionController` (Plans, Pricing, Purchase)
@@ -113,6 +132,12 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ---
 
 ## Phase 6: Frontend Implementation (Week 5)
+
+### Super Admin UI
+- [ ] Create Admin Dashboard (Revenue, Tenant Growth)
+- [ ] Create Tenant Management View (List, Details, Suspend)
+- [ ] Create Plan Management View (Edit Plan features/prices)
+- [ ] Create Coupon Management View (Global Campaigns)
 
 ### Core UI
 - [ ] Setup Main Layout with Sidebar & Company Switcher

@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('coupon_usage', function (Blueprint $table) {
             $table->id();
             $table->foreignId('coupon_id')->constrained('coupons')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('bill_id')->nullable()->constrained('bills');
-            $table->decimal('discount_applied', 15, 2);
+            $table->foreignId('user_id')->constrained('users'); // Tenant User redeeming the coupon
+            $table->unsignedBigInteger('platform_invoice_id')->nullable(); // Linked to Admin Billing (Soft link to avoid circular dependency before migration run)
+            $table->decimal('discount_applied', 10, 2);
             $table->timestamp('used_at');
             $table->timestamps();
         });
