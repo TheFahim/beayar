@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('user_company_id')->nullable()->constrained('user_companies')->cascadeOnDelete();
             $table->foreignId('campaign_id')->nullable()->constrained('coupon_campaigns')->cascadeOnDelete();
             $table->string('code')->unique();
             $table->string('type'); // unique, campaign

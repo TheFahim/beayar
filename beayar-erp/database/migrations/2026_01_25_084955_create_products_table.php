@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
             $table->string('name');
             $table->string('sku')->nullable();
             $table->text('description')->nullable();

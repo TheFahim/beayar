@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('customer_companies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_company_id')->constrained('customer_companies')->cascadeOnDelete();
+            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
-            $table->string('type')->default('individual'); // individual, company
+            $table->string('bin_no')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('customer_companies');
     }
 };

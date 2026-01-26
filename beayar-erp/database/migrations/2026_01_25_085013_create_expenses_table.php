@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('expense_categories');
             $table->foreignId('user_id')->constrained('users'); // Who spent
             $table->date('date');

@@ -20,16 +20,17 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ## Phase 2: Database Migrations (Week 1, Days 3-5)
 
 ### Multi-Tenancy & Subscriptions (Critical)
-- [x] Create `users` table (add `current_company_id`, `current_scope`)
-- [x] Create `companies` table (add `owner_id`, `parent_company_id`)
+- [x] Create `users` table (add `current_user_company_id`, `current_scope`)
+- [x] Create `user_companies` table (add `owner_id`, `parent_company_id`)
+- [x] Create `customer_companies` table (belongs to `user_companies`)
 - [x] Create `plans` table (Free, Pro, Pro Plus, Custom configs)
 - [x] Create `modules` table (available add-ons)
 - [x] Create `subscriptions` table (link User -> Plan, custom limits JSON)
 - [x] Create `subscription_usage` table (track monthly usage)
 
 ### Core Business Entities
-- [x] Create `customers` table (add `company_id`)
-- [x] Create `products` table (global catalog per company)
+- [x] Create `customers` table (add `customer_company_id`)
+- [x] Create `products` table (global catalog per user_company)
 - [x] Create `brand_origins` and `specifications` tables
 - [x] Create `quotation_statuses` and `expense_categories` tables
 

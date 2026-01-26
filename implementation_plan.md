@@ -36,19 +36,19 @@
 ## 2. Architecture Overview
 
 ### 2.1 Multi-Tenancy Architecture
-> **Strategy:** Single Database with `tenant_id` column on all tenant-scoped tables.
+> **Strategy:** Single Database with `user_company_id` column on all tenant-scoped tables.
 
 #### User Hierarchy Rules:
 | Level | Entity | Description |
 |-------|--------|-------------|
-| 1 | **User** | Individual account holder, can operate in Personal or Company scope |
-| 2 | **Company** | Primary business entity owned by a User |
-| 3 | **Sub-Company** | Branch/Division under a Company (counts against subscription limit) |
+| 1 | **User** | Individual account holder, belongs to a User Company |
+| 2 | **User Company** | Primary business entity owned by a User (The Tenant) |
+| 3 | **Customer Company** | Company belonging to a User's Customer (under User Company) |
 
 #### Data Scoping:
 - **Personal Scope:** User sees only their individual data.
-- **Company Scope:** User sees all data belonging to the active company + its sub-companies.
-- **Scope Toggle:** Stored in session, allows switching between Personal/Company views.
+- **Company Scope:** User sees all data belonging to the active `user_company`.
+- **Scope Toggle:** Stored in session, allows switching between `user_companies`.
 
 ### 2.2 Subscription & Billing Model
 > **Business Requirement:** 4-tier subscription system with resource limits.
@@ -111,17 +111,18 @@
 ### Week 1, Days 3-5
 
 #### Group 1: Foundation & Multi-Tenancy
-1.  **Users:** Add `current_company_id`, `current_scope`.
-2.  **Companies:** `owner_id`, `parent_company_id`, `bin_no`.
-3.  **Plans:** `name`, `limits` (JSON), `base_price`, `billing_cycle`.
-4.  **Modules:** `slug`, `price`.
-5.  **Subscriptions:** `user_id`, `plan_id`, `custom_limits` (JSON), `status`, `dates`.
-6.  **SubscriptionUsage:** `subscription_id`, `metric`, `used`, `limit`.
+1.  **Users:** Add `current_user_company_id`, `current_scope`.
+2.  **UserCompanies:** `owner_id`, `parent_company_id`, `bin_no`.
+3.  **CustomerCompanies:** `user_company_id`, `name`, `address`.
+4.  **Plans:** `name`, `limits` (JSON), `base_price`, `billing_cycle`.
+5.  **Modules:** `slug`, `price`.
+6.  **Subscriptions:** `user_id`, `plan_id`, `custom_limits` (JSON), `status`, `dates`.
+7.  **SubscriptionUsage:** `subscription_id`, `metric`, `used`, `limit`.
 
 #### Group 2: Core Business Tables
-7.  **Customers:** Add `company_id` (Tenant Scoped).
-8.  **Products:** Global catalog per company (`company_id`).
-9.  **Quotations:** `customer_id`, `user_id`, `company_id`, `status_id`.
+8.  **Customers:** Add `customer_company_id` (Client Scoped).
+9.  **Products:** Global catalog per company (`user_company_id`).
+10. **Quotations:** `customer_id`, `user_id`, `user_company_id`, `status_id`.
 10. **QuotationRevisions:** Versioning system from Optimech.
 11. **QuotationProducts:** Line items.
 

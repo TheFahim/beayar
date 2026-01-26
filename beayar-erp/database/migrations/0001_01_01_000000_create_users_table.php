@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->unsignedBigInteger('current_company_id')->nullable()->index();
+            $table->unsignedBigInteger('current_user_company_id')->nullable()->index();
             $table->string('current_scope')->default('personal');
             $table->timestamps();
             $table->softDeletes();
