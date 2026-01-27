@@ -20,11 +20,11 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ## Phase 2: Database Migrations (Week 1, Days 3-5)
 
 ### Super Admin & Platform (New)
-- [ ] Create `admins` table (Platform super admins)
-- [ ] Create `system_settings` table (Global configs, payment keys)
-- [ ] Create `platform_invoices` table (Separate from tenant bills)
-- [ ] Create `platform_payments` table (Separate from tenant payments)
-- [ ] Create `feature_flags` table (Global feature management)
+- [x] Create `admins` table (Platform super admins)
+- [x] Create `system_settings` table (Global configs, payment keys)
+- [x] Create `platform_invoices` table (Separate from tenant bills)
+- [x] Create `platform_payments` table (Separate from tenant payments)
+- [x] Create `feature_flags` table (Global feature management)
 
 ### Multi-Tenancy & Subscriptions (Critical)
 - [x] Create `users` table (add `current_user_company_id`, `current_scope`)
@@ -68,20 +68,29 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 
 ## Phase 3: Eloquent Models & Scoping (Week 2)
 
+### Super Admin Models (New)
+- [x] Create `Admin` model (Authenticatable)
+- [x] Create `SystemSetting` model (Key-value store)
+- [x] Create `PlatformInvoice` and `PlatformPayment` models
+- [x] Create `FeatureFlag` model
+
 ### Base & Security
-- [ ] Create `BelongsToCompany` trait (Global Scope for `company_id`)
-- [ ] Create `BaseModel` extending Eloquent
-- [ ] Implement `User` model with Multi-Tenancy helper methods
+- [x] Create `BelongsToCompany` trait (Global Scope for `company_id`)
+- [x] Create `BaseModel` extending Eloquent
+- [x] Implement `User` model with Multi-Tenancy helper methods
 
 ### Subscription Logic
-- [ ] Create `Plan`, `Module`, `Subscription` models
-- [ ] Add `hasFeature()` and `checkLimit()` methods to User/Subscription models
-- [ ] Create `SubscriptionUsage` model with auto-reset logic
+- [x] Create `Plan`, `Module`, `Subscription` models
+- [x] Add `hasFeature()` and `checkLimit()` methods to User/Subscription models
+- [x] Create `SubscriptionUsage` model with auto-reset logic
 
 ### Core Business Models
-- [ ] Create `Company`, `Customer`, `Product` models
-- [ ] Create `Quotation`, `QuotationRevision` models (configure relationships)
-- [ ] Create `Bill`, `Payment`, `Expense` models
+- [x] Create `UserCompany`, `CustomerCompany`, `Customer` models
+- [x] Create `Product`, `BrandOrigin`, `Specification` models
+- [x] Create `Quotation`, `QuotationRevision`, `QuotationProduct` models
+- [x] Create `Challan`, `ChallanProduct` models
+- [x] Create `Bill`, `BillChallan`, `BillItem`, `ReceivedBill` models
+- [x] Create `Payment`, `Expense`, `SaleTarget` models
 - [ ] Add Model Factories for all major entities (for testing)
 
 ---

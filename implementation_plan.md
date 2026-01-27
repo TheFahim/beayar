@@ -176,15 +176,21 @@
 ## Phase 3: Eloquent Models
 ### Week 2
 
-1.  **Base Model:**
+1.  **Super Admin Models (New):**
+    *   `Admin`: Authenticatable for admin panel.
+    *   `PlatformInvoice`, `PlatformPayment`: Admin-side billing.
+    *   `SystemSetting`: Global configurations.
+2.  **Base Model:**
     *   Create `App\Models\BaseModel`.
     *   Implement `BelongsToCompany` trait (Global Scope).
-2.  **Subscription Models:**
+3.  **Subscription Models:**
     *   `Plan`, `Module`, `Subscription`, `SubscriptionUsage`.
     *   Implement logic to check limits (`canCreate('quotation')`).
-3.  **Core Models:**
-    *   Implement relationships (e.g., Company has many Customers).
+4.  **Core Models:**
+    *   Implement relationships (e.g., UserCompany has many CustomerCompanies).
     *   Add `boot` methods for auto-generating IDs (e.g., "QT-2024-001").
+    *   **Billing Hierarchy:** `Bill` -> `BillChallan` -> `BillItem`.
+    *   **Quotation Hierarchy:** `Quotation` -> `QuotationRevision` -> `QuotationProduct`.
 
 ---
 

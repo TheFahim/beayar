@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class CustomerCompany extends Model
+{
+    use BelongsToCompany;
+
+    protected $guarded = ['id'];
+
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+}
