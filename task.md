@@ -133,6 +133,7 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ### Feature Controllers
 - [x] `SubscriptionController`: Plan listing and purchasing logic.
 - [x] `CompanyController`: Management of customer sub-companies.
+- [ ] `ImageController`: Image library management.
 - [x] `QuotationController` (Full CRUD, Revision management, PDF generation)
 - [x] `BillController` (Invoicing and linking with Challans)
 - [x] `FinanceController` (Tenant-level dashboard stats)

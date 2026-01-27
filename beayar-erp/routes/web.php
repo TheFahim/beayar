@@ -43,6 +43,9 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::get('/subscription', function () {
         return view('tenant.subscription.index');
     })->name('tenant.subscription.index');
+
+    Route::get('/images', [\App\Http\Controllers\ImageController::class, 'index'])->name('tenant.images.index');
+    Route::post('/images', [\App\Http\Controllers\ImageController::class, 'store'])->name('tenant.images.store');
 });
 
 // Admin Routes

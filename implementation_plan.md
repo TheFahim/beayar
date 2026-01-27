@@ -145,9 +145,10 @@
 #### Group 2: Core Business Tables
 8.  **Customers:** Add `customer_company_id` (Client Scoped).
 9.  **Products:** Global catalog per company (`user_company_id`).
-10. **Quotations:** `customer_id`, `user_id`, `user_company_id`, `status_id`, `po_no`, `ship_to`.
-11. **QuotationRevisions:** `quotation_id`, `revision_no`, `currency`, `subtotal`, `total`, `terms`.
-12. **QuotationProducts:** Line items (linked to `quotation_revisions`).
+10. **Images:** Product image library (`user_company_id`, `path`, `size`).
+11. **Quotations:** `customer_id`, `user_id`, `user_company_id`, `status_id`, `po_no`, `ship_to`.
+12. **QuotationRevisions:** `quotation_id`, `revision_no`, `currency`, `subtotal`, `total`, `terms`.
+13. **QuotationProducts:** Line items (linked to `quotation_revisions`).
 
 #### Group 3: Finance & Billing
 13. **Challans:** Delivery tracking.
@@ -238,6 +239,7 @@
 3.  **Tenant Controllers:**
     *   `SubscriptionController`: Plan listing and purchasing logic.
     *   `CompanyController`: Management of customer sub-companies.
+    *   `ImageController`: Image library management (upload, list, search).
     *   `QuotationController`: Full CRUD, Revision management, PDF generation.
     *   `BillController`: Invoicing and linking with Challans.
     *   `FinanceController`: Tenant-level dashboard stats (Expenses, Payments).

@@ -27,6 +27,7 @@ The core structure for the SaaS model:
 Unified tables from both legacy systems:
 - **`customers`**: Scoped to `customer_company_id`.
 - **`products`**: Global catalog per `user_company`.
+- **`images`**: Product image library scoped to `user_company`.
 - **`quotations`**: The central sales document.
 - **`quotation_revisions`**: Version control for quotations (pricing, terms).
 - **`quotation_products`**: Line items for revisions.
