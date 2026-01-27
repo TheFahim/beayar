@@ -177,9 +177,9 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ## Phase 8: Testing, Verification & Launch (Week 7)
 
 ### Automated Testing
-- [ ] Write Unit Tests for `SubscriptionService` (Limits, Renewals)
-- [ ] Write Unit Tests for `QuotationService` (Calculations, Revisions)
-- [ ] Write Feature Tests for Multi-Tenancy (Data Isolation)
+- [x] Write Unit Tests for `SubscriptionService` (Limits, Renewals)
+- [x] Write Unit Tests for `QuotationService` (Calculations, Revisions)
+- [x] Write Feature Tests for Multi-Tenancy (Data Isolation)
 - [ ] Write Feature Tests for Critical Workflows (Quote -> Bill -> Payment)
 
 ### Manual Verification & Docs
