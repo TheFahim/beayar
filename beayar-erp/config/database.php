@@ -62,24 +62,32 @@ return [
             ]) : [],
         ],
 
-        'source_mysql' => [
+        'wesum_db' => [
             'driver' => 'mysql',
-            'url' => env('DB_SOURCE_URL'),
-            'host' => env('DB_SOURCE_HOST', '127.0.0.1'),
-            'port' => env('DB_SOURCE_PORT', '3306'),
-            'database' => env('DB_SOURCE_DATABASE', 'forge'),
-            'username' => env('DB_SOURCE_USERNAME', 'forge'),
-            'password' => env('DB_SOURCE_PASSWORD', ''),
-            'unix_socket' => env('DB_SOURCE_SOCKET', ''),
-            'charset' => env('DB_SOURCE_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_SOURCE_COLLATION', 'utf8mb4_unicode_ci'),
+            'host' => env('DB_WESUM_HOST', '127.0.0.1'),
+            'port' => env('DB_WESUM_PORT', '3306'),
+            'database' => env('DB_WESUM_DATABASE', 'wesum_temp'),
+            'username' => env('DB_WESUM_USERNAME', 'root'),
+            'password' => env('DB_WESUM_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
+            'strict' => false,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+        ],
+
+        'optimech_db' => [
+            'driver' => 'mysql',
+            'host' => env('DB_OPTIMECH_HOST', '127.0.0.1'),
+            'port' => env('DB_OPTIMECH_PORT', '3306'),
+            'database' => env('DB_OPTIMECH_DATABASE', 'optimech_temp'),
+            'username' => env('DB_OPTIMECH_USERNAME', 'root'),
+            'password' => env('DB_OPTIMECH_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
         ],
 
         'mariadb' => [

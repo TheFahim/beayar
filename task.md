@@ -163,13 +163,31 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ## Phase 7: Migration & Testing (Week 6-7)
 
 ### Data Migration
-- [ ] Write script to migrate Wesum users/data to new schema
-- [ ] Write script to migrate Optimech users/data to new schema
-- [ ] Verify data integrity (Foreign keys, Totals)
+- [x] **Preparation:** Create temp DBs and import `.sql` dumps
+- [x] **Config:** Add `wesum_db` and `optimech_db` to `config/database.php`
+- [x] **Script:** Create `migrate:users` command (Handle duplicates, Create Companies)
+- [x] **Script:** Create `migrate:products` command (Scope by Company)
+- [x] **Script:** Create `migrate:quotations` command (Handle Revisions logic)
+- [x] **Script:** Create `migrate:bills` command (Link to Quotations)
+- [x] **Verify:** Run data integrity checks (Counts, Totals)
 
-### Verification
-- [ ] Write Unit Tests for Pricing Calculator
-- [ ] Write Feature Tests for Tenant Isolation (Security)
-- [ ] Write Feature Tests for Subscription Limits
-- [ ] Manual End-to-End Testing of all workflows
+
+---
+
+## Phase 8: Testing, Verification & Launch (Week 7)
+
+### Automated Testing
+- [ ] Write Unit Tests for `SubscriptionService` (Limits, Renewals)
+- [ ] Write Unit Tests for `QuotationService` (Calculations, Revisions)
+- [ ] Write Feature Tests for Multi-Tenancy (Data Isolation)
+- [ ] Write Feature Tests for Critical Workflows (Quote -> Bill -> Payment)
+
+### Manual Verification & Docs
+- [ ] Perform UAT (User Acceptance Testing) on UI/UX
+- [ ] Verify Super Admin Impersonation
 - [ ] Generate API Documentation (Swagger/Postman)
+- [ ] Run Code Quality Tools (Pint/CS Fixer)
+
+### Deployment Prep
+- [ ] Configure Production Optimizations (Cache)
+- [ ] Setup Queue Workers

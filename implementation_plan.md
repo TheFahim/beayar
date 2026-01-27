@@ -271,26 +271,48 @@
 ## Phase 7: Data Migration Scripts
 ### Week 6
 
-1.  **Wesum Migration:**
-    *   Map simple quotations to `Quotations` + `Revision R1`.
-    *   Assign to default "Free" plan or "Custom" based on usage.
-2.  **Optimech Migration:**
-    *   Map complex revisions directly.
-    *   Migrate company hierarchy.
+1.  **Preparation (Infrastructure):**
+    *   Create temporary local databases: `wesum_temp` and `optimech_temp`.
+    *   Import SQL dumps from `/database-backup/` into temporary databases.
+    *   Configure `config/database.php` with `wesum_db` and `optimech_db` connections.
+
+2.  **Migration Commands (Artisan):**
+    *   `migrate:users`: Merge users from both systems, handling duplicate emails (append tag).
+    *   `migrate:products`: Import product catalogs, scoped by `user_company_id`.
+    *   **Wesum Logic:** Map simple quotations to `Quotations` + `Revision R1`.
+    *   **Optimech Logic:** Map complex revisions directly to `QuotationRevisions`.
+
 3.  **Verification:**
-    *   Check total revenue matches source.
-    *   Check customer counts match.
+    *   **Data Integrity:** Check foreign key relationships (Customer -> Company).
+    *   **Financials:** Verify total revenue matches legacy records.
+    *   **Counts:** Verify user and quotation counts match source data.
 
 ---
 
-## Phase 8: Testing & Verification
-### Week 7
+## Phase 8: Testing, Verification & Launch (Week 7)
 
+### Automated Testing (PHPUnit)
 1.  **Unit Tests:**
-    *   Test dynamic pricing calculator.
-    *   Test subscription limit enforcement.
+    *   Test `SubscriptionService`: Limit checks, usage tracking, renewals.
+    *   Test `QuotationService`: Totals calculation, tax logic, revision versioning.
 2.  **Feature Tests:**
-    *   Full quotation-to-bill flow.
-    *   Tenant isolation (User A cannot see User B's data).
-3.  **Security Audit:**
-    *   Verify API endpoints enforce `company_id` checks.
+    *   **Multi-Tenancy:** Verify User A cannot access User B's resources.
+    *   **Authentication:** Test Login, Registration, Password Reset.
+    *   **Workflows:** Full cycle test: Create Customer -> Create Quote -> Convert to Bill -> Record Payment.
+
+### Manual Verification
+1.  **User Acceptance Testing (UAT):**
+    *   Verify UI responsiveness on mobile/desktop.
+    *   Verify "Impersonation" mode for Super Admins.
+    *   Verify PDF generation layout for Quotations and Bills.
+
+### Documentation & Cleanup
+1.  **API Documentation:**
+    *   Generate Swagger/OpenAPI documentation for frontend consumption.
+2.  **Code Quality:**
+    *   Run `pint` (Laravel Pint) for code style consistency.
+
+### Deployment Preparation
+1.  **Optimization:**
+    *   Configure `route:cache`, `config:cache`, `view:cache`.
+    *   Set up Queue Workers for background jobs (emails, PDF generation).
