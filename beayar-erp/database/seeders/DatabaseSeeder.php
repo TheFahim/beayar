@@ -12,7 +12,8 @@ class DatabaseSeeder extends Seeder
             PlansSeeder::class,
             ModuleSeeder::class,
             QuotationStatusSeeder::class,
-            // RolesAndPermissionsSeeder::class,
+            RolesAndPermissionsSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
 }

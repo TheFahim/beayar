@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -7,9 +8,8 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/register', function () {
     return view('auth.register');
@@ -23,7 +23,7 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // Tenant Routes (Protected by auth in real app)
-Route::group(['middleware' => ['web']], function () {
+Route::group(['middleware' => ['web', 'auth']], function () {
     Route::get('/dashboard', function () {
         return view('tenant.dashboard');
     })->name('tenant.dashboard');
@@ -46,7 +46,7 @@ Route::group(['middleware' => ['web']], function () {
 });
 
 // Admin Routes
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['web', 'auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');

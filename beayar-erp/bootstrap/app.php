@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant.scope' => \App\Http\Middleware\TenantScope::class,
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
             'subscription.check' => \App\Http\Middleware\CheckSubscriptionLimits::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

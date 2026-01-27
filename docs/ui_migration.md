@@ -55,8 +55,20 @@ Or a single sidebar with conditional logic based on the user's scope.
 - Ensure `alpinejs` is installed/imported.
 - Ensure `flowbite` or other UI libraries used in `optimech-app` are present.
 
-## Next Steps
-1.  Copy assets and configure build tools.
-2.  Migrate UI components.
-3.  Implement Layouts.
-4.  Update Dashboard views.
+## Troubleshooting & Fixes
+
+### Login Method Not Allowed (POST)
+**Issue:**
+Users encountered a `The POST method is not supported for route login` error when attempting to sign in.
+
+**Cause:**
+The `login.blade.php` form was submitting a POST request to `{{ route('login') }}`, but `routes/web.php` only defined a GET route for `/login`.
+
+**Resolution:**
+1.  Created `App\Http\Controllers\AuthController` to handle authentication logic.
+2.  Updated `routes/web.php` to include:
+    ```php
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    ```
+3.  The `AuthController@login` method now validates credentials, authenticates the user, and redirects to the appropriate dashboard (`admin.dashboard` or `tenant.dashboard`) based on the user's role.
