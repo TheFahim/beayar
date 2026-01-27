@@ -107,9 +107,9 @@
 ---
 
 ## 3. Pre-Requisites Checklist
-- [ ] PHP 8.2+, Composer 2.x, Node.js 18+
-- [ ] MySQL 8.0+
-- [ ] Source databases backed up (`/database-backup/wesum_backup.sql`, `/database-backup/optimech_backup.sql`)
+- [x] PHP 8.2+, Composer 2.x, Node.js 18+
+- [x] MySQL 8.0+
+- [x] Source databases backed up (`/database-backup/wesum_backup.sql`, `/database-backup/optimech_backup.sql`)
 
 ---
 
@@ -197,23 +197,27 @@
 ## Phase 4: Service Layer
 ### Week 3
 
-1.  **SubscriptionService:**
-    *   `calculatePrice(array $features)`: Dynamic pricing logic.
-    *   `checkLimit(User $user, string $metric)`: Boolean check.
-    *   `recordUsage(User $user, string $metric)`: Increment counters.
-2.  **QuotationService:**
-    *   Handle revision creation/cloning.
-    *   Calculate totals/taxes.
-3.  **BillingService:**
-    *   Handle "Advance" vs "Running" bill generation.
-    *   Calculate "Due" based on partial payments.
-4.  **Middleware:**
+1.  **Super Admin & Platform Services:**
+    *   **`PlatformBillingService`**: Generates `PlatformInvoice` for subscriptions, handles `PlatformPayment` recording.
+    *   **`AdminService`**: Admin authentication and tenant management (impersonation, suspension).
+    *   **`SystemSettingService`**: Global configuration management.
+
+2.  **Subscription Engine:**
+    *   **`SubscriptionService`**: Core logic for `checkLimit()`, `recordUsage()`, and feature gating.
+    *   **`PlanManagerService`**: Handles upgrades/downgrades, calls `PlatformBillingService` to generate invoices.
+
+3.  **Tenant Business Logic:**
+    *   **`QuotationService`**: Manages `Quotation` lifecycle, `Revision` cloning, and `QuotationProduct` syncing.
+    *   **`TenantBillingService`**: Implements Optimech's logic for "Advance" vs "Running" bills, manages `BillChallan` links.
+    *   **`FinancialService`**: Aggregates `Expense` and `Payment` data for tenant dashboards.
+
+4.  **Coupon System:**
+    *   **`CouponService`**: Validates coupons and applies discounts to `PlatformInvoice` (not tenant bills).
+
+5.  **Middleware:**
     *   `TenantScope`: Apply company context to requests.
     *   `CheckSubscription`: Block actions if limits exceeded.
-5.  **CouponService:**
-    *   `validateCoupon(string $code, Customer $customer)`: Check validity and eligibility.
-    *   `applyCoupon(Coupon $coupon, float $amount)`: Calculate discount.
-    *   `redeemCoupon(Coupon $coupon, Customer $customer)`: Process redemption and track usage.
+    *   `AdminAuth`: Protect admin routes.
 
 ---
 

@@ -98,45 +98,45 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 ## Phase 4: Service Layer & Logic (Week 3)
 
 ### Super Admin Services
-- [ ] Create `AdminAuthService` (Separate guard for admins)
-- [ ] Create `PaymentGatewayService` (Stripe/Paddle integration)
-- [ ] Create `PlatformSubscriptionService` (Manage tenant plans/status)
+- [x] Create `AdminService` (Auth, Tenant Impersonation)
+- [x] Create `PlatformBillingService` (Invoicing, Payment Recording)
+- [x] Create `SystemSettingService` (Global Configs)
 
-### Subscription Services
-- [ ] Create `PricingCalculatorService` (Dynamic Custom Plan logic)
-- [ ] Create `SubscriptionManager` (Handle upgrades/downgrades/usage)
-- [ ] Create `CheckSubscriptionLimits` Middleware
-- [ ] Create `TenantScope` Middleware (Enforce data isolation)
+### Subscription Engine
+- [x] Create `SubscriptionService` (Limits, Usage Tracking)
+- [x] Create `PlanManagerService` (Upgrades, Downgrades, Renewals)
+- [x] Create `CheckSubscriptionLimits` Middleware
 
-### Business Logic Services
-- [ ] Create `QuotationService` (Handle revision cloning, status updates)
-- [ ] Create `BillingService` (Calculate dues, handle partial payments)
-- [ ] Create `FinancialDashboardService` (Aggregate data for charts)
-- [ ] Create `TargetTrackingService` (Update sale targets on payment)
-- [ ] Create `CouponService` (Validate, apply, track coupon usage)
+### Tenant Business Logic
+- [x] Create `QuotationService` (Revisions, Calculations)
+- [x] Create `TenantBillingService` (Advance/Running Bills, Challan Linking)
+- [x] Create `FinancialService` (Tenant Dashboard Aggregation)
+- [x] Create `CouponService` (Platform Discounts)
+- [x] Create `TenantScope` Middleware
+- [x] Create `AdminAuth` Middleware
 
 ---
 
 ## Phase 5: API & Controllers (Week 4)
 
 ### Infrastructure
-- [ ] Setup API Routes (v1) with Middleware Groups
-- [ ] Setup Admin API Routes (`/api/admin`)
-- [ ] Create FormRequest Validation classes for all inputs
+- [x] Setup API Routes (v1) with Middleware Groups
+- [x] Setup Admin API Routes (`/api/admin`)
+- [x] Create FormRequest Validation classes for all inputs
 
 ### Admin Controllers
-- [ ] `AdminAuthController`
-- [ ] `TenantManagementController` (View/Suspend tenants)
-- [ ] `PlatformRevenueController`
-- [ ] `GlobalCouponController` (Manage campaign coupons)
+- [x] `AdminAuthController`
+- [x] `TenantManagementController` (View/Suspend tenants)
+- [x] `PlatformRevenueController`
+- [x] `GlobalCouponController` (Manage campaign coupons)
 
 ### Feature Controllers
-- [ ] `SubscriptionController` (Plans, Pricing, Purchase)
-- [ ] `CompanyController` (Manage sub-companies)
-- [ ] `QuotationController` (CRUD, Revisions, PDF generation)
-- [ ] `BillController` (Invoicing, Status management)
-- [ ] `FinanceController` (Expenses, Payments, Reports)
-- [ ] `CouponController` (Coupon management, validation, redemption)
+- [x] `SubscriptionController` (Plans, Pricing, Purchase)
+- [x] `CompanyController` (Manage sub-companies)
+- [x] `QuotationController` (CRUD, Revisions, PDF generation)
+- [x] `BillController` (Invoicing, Status management)
+- [x] `FinanceController` (Expenses, Payments, Reports)
+- [x] `CouponController` (Coupon management, validation, redemption)
 
 ---
 
