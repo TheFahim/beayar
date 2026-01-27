@@ -125,38 +125,38 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 - [x] Create FormRequest Validation classes for all inputs
 
 ### Admin Controllers
-- [x] `AdminAuthController`
-- [x] `TenantManagementController` (View/Suspend tenants)
-- [x] `PlatformRevenueController`
-- [x] `GlobalCouponController` (Manage campaign coupons)
+- [x] `AdminAuthController`: Admin login/logout.
+- [x] `TenantManagementController`: Tenant listing, suspension, and impersonation.
+- [x] `PlatformRevenueController`: Platform-wide financial analytics.
+- [x] `GlobalCouponController`: Management of global marketing campaigns.
 
 ### Feature Controllers
-- [x] `SubscriptionController` (Plans, Pricing, Purchase)
-- [x] `CompanyController` (Manage sub-companies)
-- [x] `QuotationController` (CRUD, Revisions, PDF generation)
-- [x] `BillController` (Invoicing, Status management)
-- [x] `FinanceController` (Expenses, Payments, Reports)
-- [x] `CouponController` (Coupon management, validation, redemption)
+- [x] `SubscriptionController`: Plan listing and purchasing logic.
+- [x] `CompanyController`: Management of customer sub-companies.
+- [x] `QuotationController` (Full CRUD, Revision management, PDF generation)
+- [x] `BillController` (Invoicing and linking with Challans)
+- [x] `FinanceController` (Tenant-level dashboard stats)
+- [x] `CouponController` (Coupon validation and redemption)
 
 ---
 
 ## Phase 6: Frontend Implementation (Week 5)
 
 ### Super Admin UI
-- [ ] Create Admin Dashboard (Revenue, Tenant Growth)
-- [ ] Create Tenant Management View (List, Details, Suspend)
-- [ ] Create Plan Management View (Edit Plan features/prices)
-- [ ] Create Coupon Management View (Global Campaigns)
+- [x] Create Admin Dashboard (Revenue, Tenant Growth)
+- [x] Create Tenant Management View (List, Details, Suspend)
+- [x] Create Plan Management View (Edit Plan features/prices)
+- [x] Create Coupon Management View (Global Campaigns)
 
 ### Core UI
-- [ ] Setup Main Layout with Sidebar & Company Switcher
-- [ ] Create "Build Your Plan" Subscription Page (Interactive sliders)
-- [ ] Create Dashboard (Widgets for limits, revenue, targets)
+- [x] Setup Main Layout with Sidebar & Company Switcher
+- [x] Create "Build Your Plan" Subscription Page (Interactive sliders)
+- [x] Create Dashboard (Widgets for limits, revenue, targets)
 
 ### Business UI
-- [ ] Create Quotation Builder (Multi-step, Product selection)
-- [ ] Create Billing Management View (Status indicators, Payment modal)
-- [ ] Create Report Views (Charts, DataTables)
+- [x] Create Quotation Builder (Multi-step, Product selection)
+- [x] Create Billing Management View (Status indicators, Payment modal)
+- [x] Create Report Views (Charts, DataTables)
 
 ---
 

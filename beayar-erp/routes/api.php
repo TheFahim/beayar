@@ -48,7 +48,7 @@ Route::prefix('admin')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.scope'])->group(function () {
-    
+
     // Subscriptions
     Route::get('subscription/plans', [SubscriptionController::class, 'plans']);
     Route::get('subscription/current', [SubscriptionController::class, 'current']);

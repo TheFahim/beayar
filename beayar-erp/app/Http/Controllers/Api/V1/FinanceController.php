@@ -18,20 +18,19 @@ class FinanceController extends Controller
 
     public function dashboard(Request $request): JsonResponse
     {
-        // $stats = $this->financialService->getDashboardStats($request->user());
-        // return response()->json($stats);
-        return response()->json(['message' => 'Finance dashboard stats']);
+        $stats = $this->financialService->getDashboardStats($request->user()->currentCompany);
+        return response()->json($stats);
     }
 
-    public function expenses(): JsonResponse
+    public function expenses(Request $request): JsonResponse
     {
-        // List expenses
-        return response()->json(['message' => 'Expenses list']);
+        $expenses = $request->user()->currentCompany->expenses()->latest()->paginate(20);
+        return response()->json($expenses);
     }
 
-    public function payments(): JsonResponse
+    public function payments(Request $request): JsonResponse
     {
-        // List payments
-        return response()->json(['message' => 'Payments list']);
+        $payments = $request->user()->currentCompany->payments()->latest()->paginate(20);
+        return response()->json($payments);
     }
 }

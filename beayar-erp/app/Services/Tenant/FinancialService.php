@@ -9,9 +9,10 @@ class FinancialService
     public function getDashboardStats(UserCompany $company)
     {
         return [
-            'total_revenue' => $company->bills()->sum('total_amount'), // Need to add relationship to UserCompany
-            'outstanding_dues' => $company->bills()->sum('due'),
-            // Add expenses logic
+            'total_revenue' => $company->payments()->sum('amount'),
+            'total_expenses' => $company->expenses()->sum('amount'),
+            'outstanding_dues' => $company->bills()->where('status', '!=', 'paid')->sum('due'),
+            'recent_transactions' => $company->payments()->latest()->limit(5)->get(),
         ];
     }
 }

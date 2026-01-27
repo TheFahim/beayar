@@ -225,27 +225,46 @@
 ### Week 4
 
 1.  **API Structure:**
-    *   Prefix: `/api/v1`
-    *   Middleware group: `['auth:sanctum', 'tenant.scope']`
-2.  **Controllers:**
-    *   `SubscriptionController`: Manage plans, upgrade/downgrade.
-    *   `QuotationController`: CRUD + Revisions.
-    *   `BillController`: Generation and status updates.
-    *   `DashboardController`: Aggregated analytics.
-    *   `CouponController`: Coupon management, validation, redemption.
+    *   **Admin API:** Prefix `/api/admin`, Middleware `['auth:sanctum', 'admin.auth']`.
+    *   **Tenant API:** Prefix `/api/v1`, Middleware `['auth:sanctum', 'tenant.scope']`.
+    *   **Validation:** Dedicated `FormRequest` classes for all write operations.
+
+2.  **Admin Controllers:**
+    *   `AdminAuthController`: Admin login/logout.
+    *   `TenantManagementController`: Tenant listing, suspension, and impersonation.
+    *   `PlatformRevenueController`: Platform-wide financial analytics.
+    *   `GlobalCouponController`: Management of global marketing campaigns.
+
+3.  **Tenant Controllers:**
+    *   `SubscriptionController`: Plan listing and purchasing logic.
+    *   `CompanyController`: Management of customer sub-companies.
+    *   `QuotationController`: Full CRUD, Revision management, PDF generation.
+    *   `BillController`: Invoicing and linking with Challans.
+    *   `FinanceController`: Tenant-level dashboard stats (Expenses, Payments).
+    *   `CouponController`: Coupon validation and redemption.
 
 ---
 
-## Phase 6: Frontend Merge
+## Phase 6: Frontend Implementation
 ### Week 5
 
-1.  **Layouts:**
-    *   Main Layout with Sidebar (Company Switcher in header).
-    *   Subscription Banner (if near limit/expired).
-2.  **Pages:**
-    *   **Dashboard:** Widgets for Revenue, Pending Quotes, Targets.
-    *   **Quotation Builder:** Multi-step form (Create -> Add Items -> Review).
-    *   **Subscription Manager:** "Build Your Plan" interactive UI.
+1.  **Super Admin UI:**
+    *   **Dashboard:** Platform-wide metrics (MRR, Tenant Growth).
+    *   **Tenant Management:** List view, Details view, Suspension controls, Impersonation button.
+    *   **Plan Management:** UI to edit plan features and pricing.
+    *   **Global Coupons:** Interface for creating marketing campaigns.
+
+2.  **Core Tenant UI:**
+    *   **Authentication:** Login, Register, Password Reset.
+    *   **Layouts:** App Shell with Sidebar navigation and Company Switcher.
+    *   **Subscription:** "Build Your Plan" interactive UI for upgrades/downgrades.
+    *   **Dashboard:** Tenant-specific widgets (Revenue, Quota usage, Targets).
+
+3.  **Business Logic UI:**
+    *   **Quotation Builder:** Multi-step wizard (Customer -> Items -> Review -> Send).
+    *   **Billing Manager:** Invoice list, Status tracking, Payment recording modal.
+    *   **Finance & Reports:** Charts for expenses vs. income, detailed data tables.
+    *   **Settings:** Company profile, Sub-company management, User roles.
 
 ---
 

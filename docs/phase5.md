@@ -13,26 +13,21 @@ This phase exposed the business logic via a RESTful API, secured with Laravel Sa
 ## Controllers
 
 ### 1. Admin API (`App\Http\Controllers\Admin`)
-- **`AdminAuthController`**: Login, Logout, Me.
-- **`TenantManagementController`**:
-    - List all tenants.
-    - Suspend tenants.
-    - **Impersonate**: Returns a token to act as the tenant owner.
-- **`PlatformRevenueController`**: Analytics on platform earnings.
-- **`GlobalCouponController`**: Manage system-wide marketing campaigns.
+- **`AdminAuthController`**: Admin login/logout.
+- **`TenantManagementController`**: Tenant listing, suspension, and impersonation.
+- **`PlatformRevenueController`**: Platform-wide financial analytics.
+- **`GlobalCouponController`**: Management of global marketing campaigns.
 
 ### 2. Tenant API (`App\Http\Controllers\Api\V1`)
-- **`SubscriptionController`**:
-    - List Plans.
-    - Purchase/Upgrade Subscription.
-- **`CompanyController`**: Manage customer sub-companies.
+- **`SubscriptionController`**: Plan listing and purchasing logic.
+- **`CompanyController`**: Management of customer sub-companies.
 - **`QuotationController`**:
-    - CRUD for Quotations.
-    - `POST /{id}/revisions`: Create a new version of a quote.
-    - `GET /{id}/pdf`: (Placeholder) Generate PDF.
-- **`BillController`**: Manage invoices and billing status.
-- **`FinanceController`**: Dashboard analytics (Expenses vs Income).
-- **`CouponController`**: Validate coupons during checkout.
+    - Full CRUD for Quotations.
+    - Revision management (`POST /{id}/revisions`).
+    - PDF generation (`GET /{id}/pdf`).
+- **`BillController`**: Invoicing and linking with Challans.
+- **`FinanceController`**: Tenant-level dashboard stats (Expenses, Payments).
+- **`CouponController`**: Coupon validation and redemption.
 
 ## API Structure
 - **Versioning**: V1 namespace used for future-proofing.

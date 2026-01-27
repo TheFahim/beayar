@@ -59,7 +59,13 @@ class QuotationController extends Controller
         $revision = $this->quotationService->createRevision($quotation, $data);
         return response()->json($revision, 201);
     }
-    
+
+    public function destroy(Quotation $quotation): JsonResponse
+    {
+        $quotation->delete();
+        return response()->json(['message' => 'Quotation deleted successfully']);
+    }
+
     public function pdf(Quotation $quotation)
     {
         // PDF generation logic (using dompdf or similar)

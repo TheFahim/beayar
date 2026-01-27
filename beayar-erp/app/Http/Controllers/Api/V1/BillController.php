@@ -25,17 +25,28 @@ class BillController extends Controller
 
     public function store(BillCreateRequest $request): JsonResponse
     {
-        // We need to map request data to what service expects
-        // Service expects User, type, and challan models/ids
-        
-        // This is a simplified call, actual service method signature might need adjustment or strict matching
-        // Let's assume we implement a method in service to handle raw data or we fetch challans here
-        
-        // For now, pseudo-implementation as Service might need specific objects
-        // $bill = $this->billingService->createBill($request->user(), ...);
-        
-        // Placeholder response
-        return response()->json(['message' => 'Bill creation logic to be connected to Service'], 201);
+        // Check if user has permission or if subscription limits allow billing creation (optional)
+
+        $bill = Bill::create(array_merge(
+            $request->validated(),
+            [
+                'user_company_id' => $request->user()->current_user_company_id,
+                'invoice_no' => 'INV-' . strtoupper(uniqid()),
+                'status' => 'draft'
+            ]
+        ));
+
+        // Link Challans if provided
+        if ($request->has('challan_ids')) {
+            $bill->challans()->attach($request->challan_ids);
+
+            // Recalculate bill totals based on challans (simplified logic)
+            // In a real scenario, we'd iterate challan items and sum them up
+            // $total = $bill->challans->sum('total_amount');
+            // $bill->update(['total_amount' => $total, 'due' => $total]);
+        }
+
+        return response()->json($bill->load('challans'), 201);
     }
 
     public function show(Bill $bill): JsonResponse
