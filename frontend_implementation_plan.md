@@ -73,7 +73,7 @@ Based on the analysis of the existing codebases and the requirement for an effic
     *   Migrate Authentication Views:
         *   [x] Login (`auth/login.blade.php`).
         *   [x] Register (`auth/register.blade.php`).
-        *   Password Reset flows.
+        *   [x] Password Reset flows.
     *   Implement Dashboard Layouts:
         *   [x] `components/dashboard/common/sidebar.blade.php` (Dynamic: Admin vs Tenant).
         *   [x] `components/dashboard/common/navbar.blade.php`.

@@ -58,7 +58,7 @@ This document outlines the detailed tasks required to execute the [Frontend Impl
 #### 2.3 Auth Views
 - [x] **Login Page:** `resources/views/auth/login.blade.php`.
 - [x] **Register Page:** `resources/views/auth/register.blade.php`.
-- [ ] **Forgot Password:** UI for password reset.
+- [x] **Forgot Password:** UI for password reset.
 
 ---
 
