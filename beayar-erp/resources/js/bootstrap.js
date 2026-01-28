@@ -11,7 +11,7 @@ window.Alpine = Alpine;
 
 
 // import './quotations/quotation';
-// import './imageUpload';
+import './imageUpload';
 import 'flowbite';
 // import './simpleDatatables';
 import './sunEditor';
@@ -20,7 +20,7 @@ import './buttonAlerts';
 // import './datepicker';
 // import './charts/expenseChart'
 // import './adminDashboard';
-// import './imageLibrary';
+import './imageLibrary';
 // import './quotationsPage';
 // import './sidebarDropdown';
 

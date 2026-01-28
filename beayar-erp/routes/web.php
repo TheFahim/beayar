@@ -47,7 +47,10 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     })->name('tenant.subscription.index');
 
     Route::get('/images', [\App\Http\Controllers\ImageController::class, 'index'])->name('tenant.images.index');
+    Route::get('/images/search', [\App\Http\Controllers\ImageController::class, 'search'])->name('tenant.images.search');
     Route::post('/images', [\App\Http\Controllers\ImageController::class, 'store'])->name('tenant.images.store');
+    Route::put('/images/{id}', [\App\Http\Controllers\ImageController::class, 'update'])->name('tenant.images.update');
+    Route::delete('/images/{id}', [\App\Http\Controllers\ImageController::class, 'destroy'])->name('tenant.images.destroy');
 });
 
 // Admin Routes

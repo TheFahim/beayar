@@ -21,6 +21,10 @@ This phase exposed the business logic via a RESTful API, secured with Laravel Sa
 ### 2. Tenant API (`App\Http\Controllers\Api\V1`)
 - **`SubscriptionController`**: Plan listing and purchasing logic.
 - **`CompanyController`**: Management of customer sub-companies.
+- **`ImageController`**: 
+    - Image library management (upload, list, search).
+    - Multi-tenant directory isolation.
+    - Image compression (GD Library) and optimization.
 - **`QuotationController`**:
     - Full CRUD for Quotations.
     - Revision management (`POST /{id}/revisions`).

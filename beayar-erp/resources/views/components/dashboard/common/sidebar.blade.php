@@ -69,6 +69,13 @@
             </li>
 
              <li>
+                <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
+                    <x-ui.svg.image class="h-5 w-5" />
+                    <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
+                </x-dashboard.common.sidebar-link>
+            </li>
+
+             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.subscription.index') }}">
                      <x-ui.svg.home class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Subscription</span>
@@ -82,6 +89,12 @@
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                     <x-ui.svg.dashboard class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
+                </x-dashboard.common.sidebar-link>
+            </li>
+             <li>
+                <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
+                    <x-ui.svg.image class="h-5 w-5" />
+                    <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
                 </x-dashboard.common.sidebar-link>
             </li>
              <li>

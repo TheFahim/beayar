@@ -108,7 +108,7 @@ This document outlines the detailed tasks required to execute the [Frontend Impl
     - [ ] List View (Datatable).
     - [ ] Create/Edit Modal or Page.
 - [ ] **Product Catalog:**
-    - [ ] Grid View with Images.
+    - [x] Grid View with Images (Image Library implemented).
     - [ ] Create/Edit Form (File Upload for images).
 
 #### 4.3 Quotation System (Complex)

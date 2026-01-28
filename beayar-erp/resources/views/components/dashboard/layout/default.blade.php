@@ -15,7 +15,7 @@
 
 </head>
 
-<body class="dark:bg-gray-700 dark:divide-gray-600" x-data="{ sidebarOpen: true }">
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-700 dark:text-gray-100 dark:divide-gray-600 transition-colors duration-200" x-data="{ sidebarOpen: true }">
     <main>
         <div>
             <x-dashboard.common.sidebar />

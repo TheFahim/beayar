@@ -7,6 +7,7 @@ document.addEventListener('alpine:init', () => {
         loading: false,
         uploading: false,
         compressing: false,
+        updating: false,
         page: 1,
         hasMore: true,
         searchQuery: '',
@@ -15,9 +16,12 @@ document.addEventListener('alpine:init', () => {
 
         // --- MODAL & PREVIEW ---
         showUploadModal: false,
+        showEditModal: false,
         showPreviewModal: false,
         previewImage: '',
         imageName: '',
+        editImageId: null,
+        editImageName: '',
 
         // --- CONFIGURATION ---
         maxFileSize: 50 * 1024 * 1024, // 50MB max raw size before compression
@@ -225,7 +229,7 @@ document.addEventListener('alpine:init', () => {
                 formData.append('name', this.imageName);
                 formData.append('image', compressedFile, compressedFile.name);
 
-                const response = await fetch('/dashboard/images', {
+                const response = await fetch('/images', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': this.csrfToken,
@@ -368,6 +372,114 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        // --- IMAGE EDITING ---
+        editImage(id, name) {
+            this.editImageId = id;
+            this.editImageName = name;
+            this.showEditModal = true;
+            
+            // Clear the file input in the edit modal
+            const editComponent = document.querySelector('div[data-id="edit-image-upload"]');
+            if (editComponent && editComponent.__x) {
+                editComponent.__x.$data.files = [];
+                editComponent.__x.$data.updateNativeInput();
+            }
+        },
+
+        async updateImage() {
+            if (!this.editImageName.trim()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Information',
+                    text: 'Please provide a name.',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+                return;
+            }
+
+            this.updating = true;
+
+            // Check if there is a file to upload
+            const fileInput = document.getElementById('edit-image-upload');
+            const file = fileInput ? fileInput.files?.[0] : null;
+
+            try {
+                let response;
+
+                if (file) {
+                    // Handle file upload with FormData
+                    this.validateFile(file);
+
+                    Swal.fire({
+                        title: 'Processing Image...',
+                        text: 'Compressing and uploading new image...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => Swal.showLoading()
+                    });
+
+                    const compressedFile = await this.compressImage(file);
+                    
+                    const formData = new FormData();
+                    formData.append('_method', 'PUT'); // Spoof PUT method
+                    formData.append('name', this.editImageName);
+                    formData.append('image', compressedFile, compressedFile.name);
+
+                    response = await fetch(`/images/${this.editImageId}`, {
+                        method: 'POST', // Use POST for file uploads with method spoofing
+                        headers: {
+                            'X-CSRF-TOKEN': this.csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                } else {
+                    // Handle simple name update
+                    response = await fetch(`/images/${this.editImageId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': this.csrfToken,
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: this.editImageName
+                        })
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    this.showEditModal = false;
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                    throw new Error(data.message || 'Update failed.');
+                }
+            } catch (error) {
+                console.error('Update error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: error.message || 'An unexpected error occurred.',
+                    showConfirmButton: true
+                });
+            } finally {
+                this.updating = false;
+            }
+        },
+
         // --- IMAGE DELETION ---
         async deleteImage(imageId) {
             const result = await Swal.fire({
@@ -382,7 +494,7 @@ document.addEventListener('alpine:init', () => {
 
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch(`/dashboard/images/${imageId}`, {
+                    const response = await fetch(`/images/${imageId}`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': this.csrfToken,
@@ -429,7 +541,7 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 
-    // Reusable Image Library Modal component (migrated from create view)
+    // Reusable Image Library Modal component
     Alpine.data('imageLibraryModal', () => ({
         open: false,
         query: '',
@@ -480,7 +592,8 @@ document.addEventListener('alpine:init', () => {
         async fetchImages() {
             this.loading = true;
             try {
-                const url = new URL('/dashboard/images/search', window.location.origin);
+                // Use the search endpoint which returns JSON
+                const url = new URL('/images/search', window.location.origin);
                 url.searchParams.set('query', this.query || '');
                 url.searchParams.set('page', this.page);
 

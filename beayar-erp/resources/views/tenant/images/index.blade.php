@@ -1,28 +1,28 @@
-<x-dashboard.layout.default title="Product Images">
+<x-dashboard.layout.default title="Image Library">
     <x-dashboard.ui.bread-crumb>
         <li class="inline-flex items-center">
             <a href="{{ route('tenant.images.index') }}"
                 class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                <x-ui.svg.book class="h-3 w-3 me-2" />
+                <x-ui.svg.image class="h-3 w-3 me-2" />
                 Image Library
             </a>
         </li>
     </x-dashboard.ui.bread-crumb>
 
-    <div x-data="imageLibrary" x-init="init()" class="space-y-6">
+    <div x-data="imageLibrary" class="space-y-6">
         <!-- Header with Search and Upload Button -->
         <x-ui.card heading="Image Library" class="mx-auto">
             <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6">
                 <!-- Search Bar -->
-                <div class="relative w-full lg:w-96">
+                <div class="relative w-full lg:w-96 group">
                     <input
                         type="text"
                         x-model="searchQuery"
                         @input.debounce.500ms="searchImages()"
                         placeholder="Search images by name..."
-                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        class="w-full pl-10 pr-4 py-2 rounded-xl border-2 border-indigo-100 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 shadow-sm group-hover:shadow-md"
                     >
-                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
@@ -30,7 +30,7 @@
                 <!-- Add Image Button -->
                 <button
                     @click="showUploadModal = true"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -40,7 +40,7 @@
             </div>
 
             <!-- Image Grid -->
-            <div id="image-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            <div id="image-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 p-4 items-start">
                 @include('tenant.images.partials.image-grid', ['images' => $images])
             </div>
 
@@ -99,54 +99,35 @@
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Upload Images</h3>
                             </div>
 
-                            <!-- Drop Zone -->
-                            <div
-                                class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md transition-colors"
-                                :class="{'border-blue-500 bg-blue-50 dark:bg-blue-900/20': uploading}"
-                                @dragover.prevent="uploading = true"
-                                @dragleave.prevent="uploading = false"
-                                @drop.prevent="handleDrop($event)"
-                            >
-                                <div class="space-y-1 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="flex text-sm text-gray-600 dark:text-gray-400">
-                                        <label for="file-upload" class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                            <span>Upload a file</span>
-                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*" @change="handleFiles($event.target.files)">
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                        PNG, JPG, GIF up to 10MB
-                                    </p>
-                                </div>
+                            <!-- Image Name Input -->
+                            <div class="mb-4">
+                                <label for="image-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Image Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="image-name"
+                                    x-model="imageName"
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                    placeholder="Enter image name..."
+                                >
                             </div>
 
-                            <!-- Selected Files List -->
-                            <div class="mt-4 space-y-2 max-h-48 overflow-y-auto" x-show="selectedFiles.length > 0">
-                                <template x-for="(file, index) in selectedFiles" :key="index">
-                                    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-md">
-                                        <div class="flex items-center space-x-2 truncate">
-                                            <span class="text-sm text-gray-700 dark:text-gray-300 truncate" x-text="file.name"></span>
-                                            <span class="text-xs text-gray-500 dark:text-gray-400" x-text="formatSize(file.size)"></span>
-                                        </div>
-                                        <button type="button" @click="removeFile(index)" class="text-red-500 hover:text-red-700">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </template>
-                            </div>
+                            <!-- Image Upload Component -->
+                            <x-ui.form.image-upload
+                                title="Product Images"
+                                name="image"
+                                id="image-upload"
+                                :required="true"
+                            />
                         </div>
 
-                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
                             <button
                                 type="submit"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-                                :disabled="uploading || selectedFiles.length === 0"
+                                :disabled="uploading"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span x-show="!uploading">Upload</span>
                                 <span x-show="uploading" class="flex items-center">
@@ -154,13 +135,13 @@
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Processing...
+                                    Uploading...
                                 </span>
                             </button>
                             <button
                                 type="button"
-                                @click="showUploadModal = false; selectedFiles = []"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                @click="showUploadModal = false"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-600 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                             >
                                 Cancel
                             </button>
@@ -170,33 +151,117 @@
             </div>
         </div>
 
-        <!-- Preview Modal -->
-        <div x-show="showPreviewModal" x-cloak
-            class="fixed inset-0 z-[60] overflow-y-auto"
-            @keydown.escape.window="showPreviewModal = false">
+        <!-- Edit Modal -->
+        <div x-show="showEditModal" x-cloak
+            class="fixed inset-0 z-50 overflow-y-auto"
+            @keydown.escape.window="showEditModal = false">
             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-                <div x-show="showPreviewModal"
+                <!-- Background overlay -->
+                <div x-show="showEditModal"
                     x-transition:enter="ease-out duration-300"
                     x-transition:enter-start="opacity-0"
                     x-transition:enter-end="opacity-100"
                     x-transition:leave="ease-in duration-200"
                     x-transition:leave-start="opacity-100"
                     x-transition:leave-end="opacity-0"
-                    @click="showPreviewModal = false"
-                    class="fixed inset-0 transition-opacity bg-black bg-opacity-90">
+                    @click="showEditModal = false"
+                    class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75">
                 </div>
 
-                <div x-show="showPreviewModal"
+                <!-- Modal panel -->
+                <div x-show="showEditModal"
                     x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
                     x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="inline-block align-bottom rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle max-w-5xl w-full">
-                    <img :src="previewImage" class="w-full h-auto max-h-[90vh] object-contain rounded-lg">
-                    <button @click="showPreviewModal = false" class="absolute top-4 right-4 text-white hover:text-gray-300">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+
+                    <form @submit.prevent="updateImage()">
+                        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="mb-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Edit Image</h3>
+                            </div>
+
+                            <!-- Image Name Input -->
+                            <div class="mb-4">
+                                <label for="edit-image-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Image Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="edit-image-name"
+                                    x-model="editImageName"
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                    placeholder="Enter image name..."
+                                >
+                            </div>
+
+                            <!-- Image Upload Component (Optional Replacement) -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Replace Image (Optional)
+                                </label>
+                                <x-ui.form.image-upload
+                                    title="Replace Image"
+                                    name="image"
+                                    id="edit-image-upload"
+                                    :required="false"
+                                />
+                                <p class="text-xs text-gray-500 mt-1">Leave empty to keep current image. Uploading a new image will delete the old one.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                            <button
+                                type="submit"
+                                :disabled="updating"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <span x-show="!updating">Update</span>
+                                <span x-show="updating" class="flex items-center">
+                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Updating...
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                @click="showEditModal = false"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-600 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Preview Modal -->
+        <div x-show="showPreviewModal" x-cloak
+            class="fixed inset-0 z-50 overflow-y-auto"
+            @keydown.escape.window="showPreviewModal = false">
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <!-- Background overlay -->
+                <div x-show="showPreviewModal"
+                    @click="showPreviewModal = false"
+                    class="fixed inset-0 transition-opacity bg-black bg-opacity-75">
+                </div>
+
+                <!-- Modal panel -->
+                <div x-show="showPreviewModal"
+                    class="relative max-w-4xl mx-auto">
+                    <img :src="previewImage" class="max-w-full max-h-[80vh] rounded-lg">
+                    <button
+                        @click="showPreviewModal = false"
+                        class="absolute top-2 right-2 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-75"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
@@ -204,4 +269,5 @@
             </div>
         </div>
     </div>
+
 </x-dashboard.layout.default>
