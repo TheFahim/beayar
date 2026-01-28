@@ -13,6 +13,15 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
-        'specifications' => 'array',
     ];
+
+    public function specifications()
+    {
+        return $this->hasMany(Specification::class);
+    }
+
+    public function image()
+    {
+        return $this->belongsTo(Image::class);
+    }
 }

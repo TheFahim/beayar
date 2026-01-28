@@ -51,6 +51,9 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::post('/images', [\App\Http\Controllers\ImageController::class, 'store'])->name('tenant.images.store');
     Route::put('/images/{id}', [\App\Http\Controllers\ImageController::class, 'update'])->name('tenant.images.update');
     Route::delete('/images/{id}', [\App\Http\Controllers\ImageController::class, 'destroy'])->name('tenant.images.destroy');
+
+    // Products Routes
+    Route::resource('products', \App\Http\Controllers\ProductController::class)->names('tenant.products');
 });
 
 // Admin Routes
