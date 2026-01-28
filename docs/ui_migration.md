@@ -1,74 +1,42 @@
-# UI Migration Documentation
+# Frontend UI Migration Documentation
 
 ## Overview
-This document outlines the plan to migrate the UI structure and components from `optimech-app` to `beayar-erp`. The goal is to adopt the modern, component-based UI architecture using Blade components and Tailwind CSS.
+This document details the migration of UI components and assets from `optimech-app` to `beayar-erp` as part of Phase 1 of the Frontend Implementation Plan.
 
-## Source Structure (`optimech-app`)
-The source project uses a structured component architecture:
-- `resources/views/components/dashboard/layout`: Main layout files.
-- `resources/views/components/dashboard/common`: Common elements (Sidebar, Navbar, Footer).
-- `resources/views/components/ui`: Reusable UI elements (Buttons, Inputs, Cards, SVGs).
-- `resources/css/app.css`: Tailwind CSS configuration.
-- `resources/js/app.js`: JavaScript assets including Alpine.js.
+## Completed Tasks
 
-## Target Structure (`beayar-erp`)
-We will replicate this structure in `beayar-erp`, replacing the existing `layouts` directory approach with the component-based approach where appropriate, or integrating them.
+### 1. Component Migration
+The following Blade components have been migrated to `resources/views/components/ui`:
 
-### Directory Mapping
+**Form Elements:**
+- `form/input.blade.php`: Standard text input with label and error handling.
+- `form/textarea.blade.php`: Textarea component.
+- `form/simple-select.blade.php`: Basic select dropdown.
+- `form/searchable-select.blade.php`: Alpine.js powered searchable dropdown.
+- `form/multi-dropdown.blade.php`: Multi-select dropdown with checkboxes.
+- `form/image-upload.blade.php`: File upload with drag-and-drop support.
+- `form/draggable-area.blade.php`: Container for draggable elements.
 
-| Source (`optimech-app`) | Target (`beayar-erp`) | Description |
-| ----------------------- | --------------------- | ----------- |
-| `components/dashboard/layout/` | `components/dashboard/layout/` | Main application layouts. |
-| `components/dashboard/common/` | `components/dashboard/common/` | Sidebar, Navbar, etc. |
-| `components/ui/` | `components/ui/` | Atomic UI components. |
-| `css/app.css` | `css/app.css` | Tailwind styles. |
-| `js/app.js` | `js/app.js` | Main JS entry point. |
+**General UI:**
+- `card.blade.php`: Standard card container with optional heading.
+- `button.blade.php`: Newly created button component with variants (primary, secondary, danger, success, warning).
 
-## Migration Plan
+**Icons (SVG):**
+- All SVG icons from `optimech-app` have been migrated to `resources/views/components/ui/svg`.
 
-### 1. Asset Migration
-- Copy `resources/css/app.css` to `beayar-erp`.
-- Copy `resources/js/app.js` and related modules to `beayar-erp`.
-- Ensure `tailwind.config.js` and `vite.config.js` are updated to support the new structure.
+### 2. CSS & Assets
+- **Tailwind CSS:** Configuration verified.
+- **App CSS:** `resources/css/app.css` updated to include:
+    - Base layer typography styles.
+    - Dark mode support for DataTables.
+    - Print media queries.
+    - Animation keyframes (fadeIn).
+- **Public Assets:** Images and assets copied from `optimech-app/public/assets` to `beayar-erp/public/assets`.
 
-### 2. Component Migration
-- Create `resources/views/components` directory structure.
-- Copy `dashboard/layout`, `dashboard/common`, and `ui` components.
-- Refactor `sidebar.blade.php` to include `beayar-erp` specific routes (Admin vs Tenant).
+### 3. Verification
+- **Build Status:** `npm run build` executes successfully.
 
-### 3. Layout Update
-- Replace existing `layouts/admin.blade.php` and `layouts/tenant.blade.php` content with usage of `<x-dashboard.layout.default>` or similar, or fully adopt the new layout component.
-
-### 4. View Updates
-- Update `admin/dashboard.blade.php` and `tenant/dashboard.blade.php` to extend the new layout.
-- Update Authentication views (`auth/login.blade.php`, etc.) to use the new UI components.
-
-## Implementation Details
-
-### Sidebar Logic
-The sidebar in `optimech-app` is static or role-based. In `beayar-erp`, we have separate contexts for Admin and Tenant. We will likely need:
-- `<x-dashboard.common.admin-sidebar>`
-- `<x-dashboard.common.tenant-sidebar>`
-Or a single sidebar with conditional logic based on the user's scope.
-
-### Dependencies
-- Ensure `alpinejs` is installed/imported.
-- Ensure `flowbite` or other UI libraries used in `optimech-app` are present.
-
-## Troubleshooting & Fixes
-
-### Login Method Not Allowed (POST)
-**Issue:**
-Users encountered a `The POST method is not supported for route login` error when attempting to sign in.
-
-**Cause:**
-The `login.blade.php` form was submitting a POST request to `{{ route('login') }}`, but `routes/web.php` only defined a GET route for `/login`.
-
-**Resolution:**
-1.  Created `App\Http\Controllers\AuthController` to handle authentication logic.
-2.  Updated `routes/web.php` to include:
-    ```php
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-    ```
-3.  The `AuthController@login` method now validates credentials, authenticates the user, and redirects to the appropriate dashboard (`admin.dashboard` or `tenant.dashboard`) based on the user's role.
+## Next Steps (Phase 2)
+- Implement Authentication layouts (`guest` and `app`).
+- Migrate Login/Register views.
+- Set up the main Sidebar and Navbar components.
