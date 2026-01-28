@@ -65,19 +65,19 @@ Based on the analysis of the existing codebases and the requirement for an effic
 *   **Success Criteria:** `npm run dev` runs without errors; UI components match the design of the legacy app.
 
 ### Phase 2: Authentication & Navigation Structure
-**Week 2**
+**Week 2** (Status: In Progress)
 
 *   **Weekly Objectives:** Implement secure login flows and the main application shells for different user scopes.
 *   **Key Tasks:**
-    *   Design and implement `layouts/app.blade.php` and `layouts/guest.blade.php`.
+    *   [x] Design and implement `layouts/app.blade.php` and `layouts/guest.blade.php`.
     *   Migrate Authentication Views:
-        *   Login (`auth/login.blade.php`).
-        *   Register (`auth/register.blade.php`).
+        *   [x] Login (`auth/login.blade.php`).
+        *   [x] Register (`auth/register.blade.php`).
         *   Password Reset flows.
     *   Implement Dashboard Layouts:
-        *   `components/dashboard/common/sidebar.blade.php` (Dynamic: Admin vs Tenant).
-        *   `components/dashboard/common/navbar.blade.php`.
-    *   Connect Auth forms to `AuthController` (ensure CSRF protection).
+        *   [x] `components/dashboard/common/sidebar.blade.php` (Dynamic: Admin vs Tenant).
+        *   [x] `components/dashboard/common/navbar.blade.php`.
+    *   [x] Connect Auth forms to `AuthController` (ensure CSRF protection).
 *   **Dependencies:** Phase 1; Backend Auth Routes.
 *   **Deliverables:** Functional Login/Logout; Access to empty Dashboard shells for Admin and Tenant.
 *   **Success Criteria:** User can log in and be redirected to the correct dashboard layout based on their role.

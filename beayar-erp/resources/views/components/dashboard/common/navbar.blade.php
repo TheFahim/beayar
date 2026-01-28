@@ -19,6 +19,34 @@
                 </a>
             </div>
             <div class="flex items-center">
+                {{-- Company Switcher for Tenants --}}
+                @role('tenant')
+                    @if(Auth::user()->ownedCompanies->count() > 1)
+                        <div class="mr-4 hidden md:block">
+                            <button id="dropdownCompanyButton" data-dropdown-toggle="dropdownCompany" class="text-gray-900 dark:text-white bg-white hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700" type="button">
+                                {{ Auth::user()->currentCompany->name ?? 'Select Company' }} 
+                                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                </svg>
+                            </button>
+                            <!-- Dropdown menu -->
+                            <div id="dropdownCompany" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownCompanyButton">
+                                    @foreach(Auth::user()->ownedCompanies as $company)
+                                        <li>
+                                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ $company->name }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @elseif(Auth::user()->currentCompany)
+                         <div class="mr-4 hidden md:block text-sm font-medium text-gray-900 dark:text-white">
+                            {{ Auth::user()->currentCompany->name }}
+                        </div>
+                    @endif
+                @endrole
+
                 <div>
                     <button id="theme-toggle" type="button"
                         class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">

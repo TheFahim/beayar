@@ -40,24 +40,24 @@ This document outlines the detailed tasks required to execute the [Frontend Impl
 ### Week 2
 
 #### 2.1 Backend Requirements (Auth)
-- [ ] **Auth Controller:** Ensure `App\Http\Controllers\AuthController` handles:
+- [x] **Auth Controller:** Ensure `App\Http\Controllers\AuthController` handles:
     - Login (View + Post).
     - Logout.
     - Redirection logic (Admin -> `/admin/dashboard`, User -> `/dashboard`).
 
 #### 2.2 Layout Implementation
-- [ ] **Guest Layout:** Create `components/layouts/guest.blade.php` (for Login/Register).
-- [ ] **App Layout:** Create `components/layouts/app.blade.php` (Sidebar + Topbar + Content).
-- [ ] **Sidebar Component:**
-    - [ ] Implement `x-dashboard.common.sidebar`.
-    - [ ] Add logic to toggle links based on `Auth::user()->hasRole('admin')`.
-- [ ] **Navbar Component:**
-    - [ ] Implement `x-dashboard.common.navbar`.
-    - [ ] Add User Profile dropdown and Company Switcher (for Tenants).
+- [x] **Guest Layout:** Create `components/layouts/guest.blade.php` (for Login/Register).
+- [x] **App Layout:** Create `components/layouts/app.blade.php` (Sidebar + Topbar + Content).
+- [x] **Sidebar Component:**
+    - [x] Implement `x-dashboard.common.sidebar`.
+    - [x] Add logic to toggle links based on `Auth::user()->hasRole('admin')`.
+- [x] **Navbar Component:**
+    - [x] Implement `x-dashboard.common.navbar`.
+    - [x] Add User Profile dropdown and Company Switcher (for Tenants).
 
 #### 2.3 Auth Views
-- [ ] **Login Page:** `resources/views/auth/login.blade.php`.
-- [ ] **Register Page:** `resources/views/auth/register.blade.php`.
+- [x] **Login Page:** `resources/views/auth/login.blade.php`.
+- [x] **Register Page:** `resources/views/auth/register.blade.php`.
 - [ ] **Forgot Password:** UI for password reset.
 
 ---
