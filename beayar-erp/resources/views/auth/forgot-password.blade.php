@@ -3,60 +3,45 @@
         Forgot Password - Beayar ERP
     </x-slot>
 
-    <section>
-        <div class="flex items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-
-            <!-- Company Information Section -->
-            <div class="hidden lg:flex lg:w-1/2 flex-col justify-center px-8">
-                <div class="max-w-lg">
-                    <div class="flex items-center justify-center">
-                        <div class="text-center">
-                            <h1 class="text-3xl font-sans drop-shadow-md font-bold text-white text-left pl-10 leading-tight">
-                                Beayar ERP<br>Management System
-                            </h1>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Forgot Password Form Section -->
-            <div class="w-full lg:w-1/2 flex flex-col items-center justify-center">
-                <div class="w-full bg-white rounded-lg shadow-lg dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                            Forgot your password?
-                        </h1>
-                        <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                            No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
-                        </p>
-                        
-                        <hr class="border-t border-gray-500 w-full">
-
-                        @if (session('status'))
-                            <div class="text-sm font-medium text-green-600 dark:text-green-400">
-                                {{ session('status') }}
-                            </div>
-                        @endif
-
-                        <form class="space-y-4 md:space-y-6" action="{{ route('password.email') }}" method="POST">
-                            @csrf
-                            <div>
-                                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Email</label>
-                                <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required value="{{ old('email') }}">
-                                @error('email')
-                                    <span class="text-red-500 text-sm"> {{$message}} <span>
-                                @enderror
-                            </div>
-
-                            <button type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Email Password Reset Link</button>
-                            
-                            <p class="text-sm font-light text-gray-500 dark:text-gray-400 text-center">
-                                <a href="{{ route('login') }}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Back to Login</a>
-                            </p>
-                        </form>
-                    </div>
-                </div>
-            </div>
+    <div class="space-y-6">
+        <div class="text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Forgot password?</h2>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                No worries, we'll send you reset instructions.
+            </p>
         </div>
-    </section>
+
+        @if (session('status'))
+            <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+                <span class="font-medium">Success!</span> {{ session('status') }}
+            </div>
+        @endif
+
+        <form class="space-y-6" action="{{ route('password.email') }}" method="POST">
+            @csrf
+            <div>
+                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                    </div>
+                    <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200" placeholder="name@company.com" required value="{{ old('email') }}">
+                </div>
+                @error('email')
+                    <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                Reset password
+            </button>
+            
+            <div class="text-center">
+                <a href="{{ route('login') }}" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to log in
+                </a>
+            </div>
+        </form>
+    </div>
 </x-layouts.guest>
