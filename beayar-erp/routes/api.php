@@ -74,6 +74,9 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.scope'])->group(functio
     Route::apiResource('coupons', CouponController::class);
     Route::post('coupons/validate', [CouponController::class, 'validateCoupon']);
 
+    // Products (Internal API)
+    Route::get('products/{product}', [\App\Http\Controllers\Api\V1\ProductController::class, 'show']);
+
 });
 
 Route::get('/user', function (Request $request) {

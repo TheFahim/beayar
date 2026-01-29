@@ -34,10 +34,6 @@ Route::group(['middleware' => ['web', 'auth']], function () {
         return view('tenant.dashboard');
     })->name('tenant.dashboard');
 
-    Route::get('/quotations', function () {
-        return view('tenant.quotations.create');
-    })->name('tenant.quotations.create');
-
     Route::get('/billing', function () {
         return view('tenant.billing.index');
     })->name('tenant.billing.index');
@@ -57,7 +53,13 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::delete('/images/{id}', [\App\Http\Controllers\ImageController::class, 'destroy'])->name('tenant.images.destroy');
 
     // Products Routes
-    Route::resource('products', \App\Http\Controllers\ProductController::class)->names('tenant.products');
+    Route::resource('products', \App\Http\Controllers\Tenant\ProductController::class)->names('tenant.products');
+
+    // Customer Routes
+    Route::resource('customers', \App\Http\Controllers\Tenant\CustomerController::class)->names('tenant.customers');
+
+    // Quotation Routes
+    Route::resource('quotations', \App\Http\Controllers\Tenant\QuotationController::class)->names('tenant.quotations');
 });
 
 // Admin Routes
