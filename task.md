@@ -148,6 +148,7 @@ Merge Optimech and Wesum Laravel applications into a unified ERP system with **M
 - [x] Create Tenant Management View (List, Details, Suspend)
 - [x] Create Plan Management View (Edit Plan features/prices)
 - [x] Create Coupon Management View (Global Campaigns)
+- [x] Create System Settings View (Global Configs)
 
 ### Core UI
 - [x] Setup Main Layout with Sidebar & Company Switcher

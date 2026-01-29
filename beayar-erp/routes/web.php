@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\TenantController as AdminTenantController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -57,20 +61,17 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 });
 
 // Admin Routes
-Route::prefix('admin')->middleware(['web', 'auth', 'role:admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+Route::prefix('admin')->middleware(['web', 'auth', 'role:admin'])->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/tenants', function () {
-        return view('admin.tenants.index');
-    })->name('admin.tenants.index');
+    Route::get('/tenants', [AdminTenantController::class, 'index'])->name('tenants.index');
+    Route::post('/tenants/{company}/suspend', [AdminTenantController::class, 'suspend'])->name('tenants.suspend');
+    Route::post('/tenants/{company}/impersonate', [AdminTenantController::class, 'impersonate'])->name('tenants.impersonate');
 
-    Route::get('/plans', function () {
-        return view('admin.plans.index');
-    })->name('admin.plans.index');
+    Route::get('/plans', [AdminPlanController::class, 'index'])->name('plans.index');
+    Route::put('/plans/{plan}', [AdminPlanController::class, 'update'])->name('plans.update');
 
-    Route::get('/coupons', function () {
-        return view('admin.coupons.index');
-    })->name('admin.coupons.index');
+    Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
+    Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
+    Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
 });

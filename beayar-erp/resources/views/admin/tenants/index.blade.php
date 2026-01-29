@@ -11,19 +11,57 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Placeholder Row -->
+                @forelse($tenants as $tenant)
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Acme Corp
+                        {{ $tenant->name }}
                     </th>
-                    <td class="px-6 py-4">John Doe</td>
-                    <td class="px-6 py-4">Pro Plan</td>
-                    <td class="px-6 py-4">Active</td>
                     <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                        {{ $tenant->owner->name ?? 'N/A' }}
+                        <div class="text-xs text-gray-400">{{ $tenant->owner->email ?? '' }}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ $tenant->owner->subscription->plan->name ?? 'Free' }}
+                    </td>
+                    <td class="px-6 py-4">
+                        @if($tenant->status === 'active')
+                            <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Active</span>
+                        @elseif($tenant->status === 'suspended')
+                            <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Suspended</span>
+                        @else
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{{ ucfirst($tenant->status) }}</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 flex space-x-2">
+                        <!-- Impersonate -->
+                        <form action="{{ route('admin.tenants.impersonate', $tenant) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                Login as
+                            </button>
+                        </form>
+
+                        <span class="text-gray-300">|</span>
+
+                        <!-- Suspend/Activate -->
+                        <form action="{{ route('admin.tenants.suspend', $tenant) }}" method="POST" onsubmit="return confirm('Are you sure?')">
+                            @csrf
+                            <input type="hidden" name="status" value="{{ $tenant->status === 'suspended' ? 'active' : 'suspended' }}">
+                            <button type="submit" class="font-medium {{ $tenant->status === 'suspended' ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500' }} hover:underline">
+                                {{ $tenant->status === 'suspended' ? 'Activate' : 'Suspend' }}
+                            </button>
+                        </form>
                     </td>
                 </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">No tenants found.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
+        <div class="p-4">
+            {{ $tenants->links() }}
+        </div>
     </div>
 </x-dashboard.layout.default>

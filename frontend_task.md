@@ -68,25 +68,25 @@ This document outlines the detailed tasks required to execute the [Frontend Impl
 ### Week 3
 
 #### 3.1 Backend Requirements (Admin)
-- [ ] **Create Web Controllers:**
+- [x] **Create Web Controllers:**
     - `Admin\DashboardController`: Return stats view.
     - `Admin\TenantController`: Return list view + handle actions.
     - `Admin\PlanController`: Return CRUD views.
     - `Admin\CouponController`: Return global coupon views.
 
 #### 3.2 Dashboard & Tenants
-- [ ] **Admin Dashboard:**
-    - [ ] Stats Cards (Total Tenants, MRR).
-    - [ ] Recent Activity Table.
-- [ ] **Tenant Management:**
-    - [ ] **Index View:** Data table listing all companies.
-    - [ ] **Actions:** "Login as Tenant" button (Impersonation), "Suspend" toggle.
+- [x] **Admin Dashboard:**
+    - [x] Stats Cards (Total Tenants, MRR).
+    - [x] Recent Activity Table.
+- [x] **Tenant Management:**
+    - [x] **Index View:** Data table listing all companies.
+    - [x] **Actions:** "Login as Tenant" button (Impersonation), "Suspend" toggle.
 
 #### 3.3 Subscriptions & Marketing
-- [ ] **Plans UI:** Grid view of available plans with "Edit" modals.
-- [ ] **Global Coupons:**
-    - [ ] Create/Edit Form with validation.
-    - [ ] List view.
+- [x] **Plans UI:** Grid view of available plans with "Edit" modals.
+- [x] **Global Coupons:**
+    - [x] Create/Edit Form with validation.
+    - [x] List view.
 
 ---
 

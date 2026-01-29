@@ -22,8 +22,9 @@ class AdminService
 
     public function impersonateTenant(User $user)
     {
+        $adminId = Auth::guard('admin')->id() ?? Auth::id();
         Auth::login($user);
-        session()->put('impersonated_by_admin_id', Auth::guard('admin')->id());
+        session()->put('impersonated_by_admin_id', $adminId);
     }
 
     public function stopImpersonation()
