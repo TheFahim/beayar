@@ -4,21 +4,22 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\CustomerCompany;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Customer::query();
+        $query = Customer::with(['customerCompany'])->withCount('quotations');
 
         if ($request->has('search')) {
             $search = $request->search;
             $query->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('customer_no', 'like', "%{$search}%");
         }
 
         $customers = $query->latest()->paginate(10);
@@ -28,26 +29,50 @@ class CustomerController extends Controller
 
     public function create()
     {
-        return view('tenant.customers.create');
+        // Generate a customer number
+        $count = Customer::where('user_company_id', auth()->user()->current_user_company_id)->count();
+        $customerNo = 'CUS-' . str_pad($count + 1, 5, '0', STR_PAD_LEFT);
+        
+        return view('tenant.customers.create', compact('customerNo'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'tax_number' => 'nullable|string|max:50',
+            'customer_company_id' => 'required|exists:customer_companies,id',
+            'customer_name' => 'required|string|max:255', // Maps to 'name'
+            'customer_no' => 'required|string|max:255', // We'll verify uniqueness manually or rely on generated
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:255',
+            'attention' => 'nullable|string|max:255',
+            'designation' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
         ]);
 
-        // BelongsToCompany trait should handle user_company_id automatically if using create() on model? 
-        // No, usually it's a global scope or we manually set it. 
-        // Looking at ProductController, it manually sets 'user_company_id'.
-        
-        $validated['user_company_id'] = auth()->user()->current_user_company_id;
+        // Map customer_name to name
+        $data = [
+            'user_company_id' => auth()->user()->current_user_company_id,
+            'customer_company_id' => $validated['customer_company_id'],
+            'name' => $validated['customer_name'],
+            'customer_no' => $validated['customer_no'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'attention' => $validated['attention'],
+            'designation' => $validated['designation'],
+            'department' => $validated['department'],
+        ];
 
-        Customer::create($validated);
+        // Ensure uniqueness of customer_no within tenant? Or globally?
+        // Optimech has global unique.
+        if (Customer::where('customer_no', $data['customer_no'])->exists()) {
+             // Regenerate or fail?
+             // Let's just append random string if exists
+             $data['customer_no'] .= '-' . Str::random(4);
+        }
+
+        Customer::create($data);
 
         return redirect()->route('tenant.customers.index')
             ->with('success', 'Customer created successfully.');
@@ -58,7 +83,11 @@ class CustomerController extends Controller
         if ($customer->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
         }
-        return view('tenant.customers.edit', compact('customer'));
+        
+        $customer->load('quotations');
+        $hasQuotation = $customer->quotations()->count() > 0;
+
+        return view('tenant.customers.edit', compact('customer', 'hasQuotation'));
     }
 
     public function update(Request $request, Customer $customer)
@@ -68,14 +97,30 @@ class CustomerController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'tax_number' => 'nullable|string|max:50',
+            'customer_company_id' => 'required|exists:customer_companies,id',
+            'customer_name' => 'required|string|max:255',
+            'customer_no' => 'required|string|max:255', // Should exclude current
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:255',
+            'attention' => 'nullable|string|max:255',
+            'designation' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
         ]);
 
-        $customer->update($validated);
+         $data = [
+            'customer_company_id' => $validated['customer_company_id'],
+            'name' => $validated['customer_name'],
+            // 'customer_no' => $validated['customer_no'], // Usually don't update customer_no
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'attention' => $validated['attention'],
+            'designation' => $validated['designation'],
+            'department' => $validated['department'],
+        ];
+
+        $customer->update($data);
 
         return redirect()->route('tenant.customers.index')
             ->with('success', 'Customer updated successfully.');
@@ -87,6 +132,10 @@ class CustomerController extends Controller
             abort(403);
         }
 
+        if ($customer->quotations()->count() > 0) {
+            return back()->with('error', 'Cannot delete customer with existing quotations.');
+        }
+
         $customer->delete();
 
         if (request()->ajax()) {
@@ -95,5 +144,17 @@ class CustomerController extends Controller
 
         return redirect()->route('tenant.customers.index')
             ->with('success', 'Customer deleted successfully.');
+    }
+    
+    // API for searching customer companies (to replace Optimech's companies.search)
+    public function searchCompanies(Request $request)
+    {
+        $search = $request->get('query');
+        $companies = CustomerCompany::where('user_company_id', auth()->user()->current_user_company_id)
+            ->where('name', 'like', "%{$search}%")
+            ->limit(10)
+            ->get(['id', 'name']);
+            
+        return response()->json($companies);
     }
 }

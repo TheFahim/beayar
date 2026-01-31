@@ -56,7 +56,9 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::resource('products', \App\Http\Controllers\Tenant\ProductController::class)->names('tenant.products');
 
     // Customer Routes
+    Route::get('/companies/search', [\App\Http\Controllers\Tenant\CustomerController::class, 'searchCompanies'])->name('companies.search');
     Route::resource('customers', \App\Http\Controllers\Tenant\CustomerController::class)->names('tenant.customers');
+    Route::resource('companies', \App\Http\Controllers\Api\V1\CompanyController::class)->names('companies'); // For modal creation
 
     // Quotation Routes
     Route::resource('quotations', \App\Http\Controllers\Tenant\QuotationController::class)->names('tenant.quotations');

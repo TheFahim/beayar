@@ -16,4 +16,9 @@ class Customer extends Model
     {
         return $this->belongsTo(CustomerCompany::class);
     }
+
+    public function quotations()
+    {
+        return $this->hasMany(Quotation::class);
+    }
 }

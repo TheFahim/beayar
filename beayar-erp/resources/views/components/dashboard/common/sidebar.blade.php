@@ -48,6 +48,13 @@
             </li>
 
             <li>
+                <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
+                    <x-ui.svg.customer class="h-5 w-5" />
+                    <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
+                </x-dashboard.common.sidebar-link>
+            </li>
+
+            <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.create') }}">
                     <x-ui.svg.qutation class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Quotations</span>
@@ -96,6 +103,12 @@
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                     <x-ui.svg.dashboard class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
+                </x-dashboard.common.sidebar-link>
+            </li>
+             <li>
+                <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
+                    <x-ui.svg.customer class="h-5 w-5" />
+                    <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
                 </x-dashboard.common.sidebar-link>
             </li>
              <li>
