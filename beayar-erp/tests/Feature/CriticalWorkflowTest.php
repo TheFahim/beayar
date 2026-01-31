@@ -52,6 +52,7 @@ class CriticalWorkflowTest extends TestCase
         ]);
         
         $this->customer = Customer::create([
+            'user_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'John Client',
             'email' => 'john@client.com'

@@ -46,8 +46,7 @@ class ProductController extends Controller
             'products.*.name' => 'required|string|max:255',
             'products.*.image_id' => 'nullable|exists:images,id',
             'products.*.specifications' => 'nullable|array',
-            'products.*.specifications.*.name' => 'required|string',
-            'products.*.specifications.*.value' => 'required|string',
+            'products.*.specifications.*.description' => 'required|string',
         ]);
 
         DB::beginTransaction();
@@ -64,7 +63,9 @@ class ProductController extends Controller
 
                 if (isset($prodData['specifications'])) {
                     foreach ($prodData['specifications'] as $spec) {
-                        $product->specifications()->create($spec);
+                    $product->specifications()->create([
+                        'description' => $spec['description'],
+                    ]);
                     }
                 }
 
@@ -128,8 +129,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'image_id' => 'nullable|exists:images,id',
             'specifications' => 'nullable|array',
-            'specifications.*.name' => 'required|string',
-            'specifications.*.value' => 'required|string',
+            'specifications.*.description' => 'required|string',
         ]);
 
         DB::beginTransaction();
@@ -144,7 +144,9 @@ class ProductController extends Controller
             
             if (isset($validated['specifications'])) {
                 foreach ($validated['specifications'] as $spec) {
-                    $product->specifications()->create($spec);
+                    $product->specifications()->create([
+                        'description' => $spec['description']
+                    ]);
                 }
             }
 

@@ -47,6 +47,7 @@ class QuotationServiceTest extends TestCase
         ]);
 
         $this->customer = Customer::create([
+            'user_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'Test Customer',
             'email' => 'customer@test.com'

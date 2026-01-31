@@ -507,8 +507,8 @@
                     this.products.forEach((product, pIndex) => {
                         if (!product.specifications) return;
 
-                        // Check for duplicate descriptions within this product
-                        const descriptions = new Set();
+                        // Check for duplicate names within this product
+                        const names = new Set();
 
                         product.specifications.forEach((spec, sIndex) => {
                             const textareaId = `text-area-${pIndex}-${sIndex}`;
@@ -518,23 +518,13 @@
                                 window.sunEditorUtils.saveEditorContent(textareaId);
                             }
 
-                            // Check if empty
+                            // Check if value is empty
                             if (window.sunEditorUtils && window.sunEditorUtils.isEditorEmpty) {
                                 if (window.sunEditorUtils.isEditorEmpty(textareaId)) {
                                     isValid = false;
                                     if (!firstErrorId) firstErrorId = textareaId;
                                 }
                             }
-
-                            // Check for duplicates (strip HTML tags for comparison)
-                            const content = spec.description || '';
-                            const cleanContent = content.replace(/<[^>]*>/g, '').trim();
-                            if (descriptions.has(cleanContent) && cleanContent.length > 0) {
-                                isValid = false;
-                                if (!firstErrorId) firstErrorId = textareaId;
-                                alert(`Duplicate specification found in Product #${pIndex + 1}: "${cleanContent}"`);
-                            }
-                            descriptions.add(cleanContent);
                         });
                     });
 

@@ -92,9 +92,10 @@
                                     @if($product->specifications->count() > 0)
                                         <div class="space-y-2 pr-2">
                                             @foreach($product->specifications as $spec)
-                                                <div class="flex items-start gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-100 dark:border-gray-600">
-                                                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">{{ $spec->name }}:</span>
-                                                    <span class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ $spec->value }}</span>
+                                                <div class="p-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-100 dark:border-gray-600">
+                                                    <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed prose dark:prose-invert max-w-none">
+                                                        {!! $spec->description !!}
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>

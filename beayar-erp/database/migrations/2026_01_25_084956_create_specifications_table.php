@@ -10,9 +10,8 @@ return new class extends Migration
     {
         Schema::create('specifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->string('name');
-            $table->string('value');
+            $table->foreignIdFor(\App\Models\Product::class)->constrained()->cascadeOnDelete();
+            $table->text('description');
             $table->timestamps();
         });
     }

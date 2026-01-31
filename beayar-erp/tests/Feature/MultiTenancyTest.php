@@ -44,6 +44,7 @@ class MultiTenancyTest extends TestCase
             'name' => 'Customer Company A'
         ]);
         $customerA = \App\Models\Customer::create([
+            'user_company_id' => $companyA->id,
             'customer_company_id' => $customerCompanyA->id,
             'name' => 'Customer A'
         ]);
@@ -53,6 +54,7 @@ class MultiTenancyTest extends TestCase
             'name' => 'Customer Company B'
         ]);
         $customerB = \App\Models\Customer::create([
+            'user_company_id' => $companyB->id,
             'customer_company_id' => $customerCompanyB->id,
             'name' => 'Customer B'
         ]);
