@@ -261,6 +261,28 @@ class QuotationController extends Controller
     }
 
     /**
+     * Update the status of the specified quotation.
+     */
+    public function updateStatus(Request $request, Quotation $quotation)
+    {
+        $this->authorizeQuotation($quotation);
+
+        $validated = $request->validate([
+            'status' => 'required|string|in:in_progress,active,completed,cancelled',
+        ]);
+
+        $quotation->update([
+            'status' => $validated['status']
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated successfully!',
+            'status' => $quotation->status
+        ]);
+    }
+
+    /**
      * Remove the specified quotation from storage.
      */
     public function destroy(Quotation $quotation)
@@ -325,6 +347,151 @@ class QuotationController extends Controller
 
             return redirect()->route('tenant.quotations.edit', $quotation->id)
                 ->with('error', 'Failed to delete revision: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Lock a revision (when challan is created).
+     */
+    public function lockRevision(QuotationRevision $revision)
+    {
+        $revision->quotation->update(['status' => 'completed']);
+
+        return true;
+    }
+
+    // =========================================================================
+    // API Endpoints
+    // =========================================================================
+
+    /**
+     * Search products for AJAX requests.
+     */
+    public function searchProduct(Request $request)
+    {
+        $query = $request->input('q');
+        $perPage = (int) ($request->input('per_page') ?? 20);
+
+        $products = Product::where('user_company_id', auth()->user()->current_user_company_id)
+            ->where('name', 'like', "%{$query}%")
+            ->select('id', 'name', 'image_id')
+            ->paginate($perPage);
+
+        return response()->json([
+            'data' => $products->items(),
+            'current_page' => $products->currentPage(),
+            'last_page' => $products->lastPage(),
+            'per_page' => $products->perPage(),
+            'total' => $products->total(),
+        ]);
+    }
+
+    /**
+     * Get specifications for a specific product.
+     */
+    public function getProductSpecifications(Request $request, $productId)
+    {
+        $userCompanyId = auth()->user()->current_user_company_id;
+        $product = Product::where('user_company_id', $userCompanyId)->find($productId);
+
+        if (! $product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        $specifications = $product->specifications()
+            ->select('id', 'description')
+            ->orderBy('description')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'specifications' => $specifications,
+        ]);
+    }
+
+    /**
+     * Get current exchange rate for a specific currency to BDT.
+     */
+    public function getExchangeRate(Request $request)
+    {
+        return response()->json($this->exchangeRateService->getRates());
+    }
+
+    /**
+     * API: Get next quotation number based on customer_no.
+     */
+    public function getNextQuotationNo(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+        ]);
+
+        $customer = Customer::where('user_company_id', auth()->user()->current_user_company_id)
+            ->findOrFail($request->customer_id);
+            
+        $quotationNo = $this->quotationService->generateNextQuotationNo($customer);
+
+        return response()->json(['quotation_no' => $quotationNo]);
+    }
+
+    // =========================================================================
+    // Product Creation (AJAX)
+    // =========================================================================
+
+    /**
+     * Create a new product with specification from quotation form.
+     */
+    public function createProduct(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'image_id' => 'nullable|exists:images,id',
+            'specifications.0.description' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $product = Product::create([
+                'user_company_id' => auth()->user()->current_user_company_id,
+                'name' => $validated['name'],
+                'image_id' => $validated['image_id'] ?? null,
+            ]);
+
+            $specifications = [];
+            if (! empty($validated['specifications'][0]['description'])) {
+                $specification = $product->specifications()->create([
+                    'description' => $validated['specifications'][0]['description'],
+                ]);
+
+                $specifications[] = [
+                    'id' => $specification->id,
+                    'description' => $specification->description,
+                ];
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product created successfully!',
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'image_id' => $product->image_id,
+                    'specifications' => $specifications,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create product: '.$e->getMessage(),
+                'errors' => [],
+            ], 422);
         }
     }
 

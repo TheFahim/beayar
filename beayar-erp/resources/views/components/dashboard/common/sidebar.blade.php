@@ -55,7 +55,7 @@
             </li>
 
             <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.create') }}">
+                <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.index') }}">
                     <x-ui.svg.qutation class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Quotations</span>
                 </x-dashboard.common.sidebar-link>

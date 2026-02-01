@@ -1,4 +1,8 @@
 import './bootstrap';
 import './reusableDatepicker';
 import './buttonAlerts';
-// import './quotations/quotationCreate';
+import './quotationsPage';
+import './quotations/quotation';
+import './imageLibrary';
+
+Alpine.start();

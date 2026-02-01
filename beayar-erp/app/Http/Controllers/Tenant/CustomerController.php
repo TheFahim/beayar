@@ -170,4 +170,28 @@ class CustomerController extends Controller
 
         return response()->json($companies);
     }
+
+    // API for searching customers
+    public function searchCustomers(Request $request)
+    {
+        $query = Customer::where('user_company_id', auth()->user()->current_user_company_id)
+            ->with('customerCompany:id,name');
+
+        if ($request->has('query') && $request->get('query')) {
+            $search = $request->get('query');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('customer_no', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('customerCompany', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $customers = $query->orderBy('name')->limit(20)->get();
+
+        return response()->json($customers);
+    }
 }

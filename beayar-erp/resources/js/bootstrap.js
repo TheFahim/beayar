@@ -29,4 +29,4 @@ import './imageLibrary';
 // import './advanceBills';
 
 // Start Alpine after components have registered
-Alpine.start();
+// Alpine.start();

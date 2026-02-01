@@ -56,6 +56,10 @@ const QuotationHelpers = {
         return `${symbol} ${formatted}`;
     },
 
+    format2(value) {
+        return this.parseFloat(value).toFixed(2);
+    },
+
     getCurrentDate() {
         const today = new Date();
         const year = today.getFullYear();

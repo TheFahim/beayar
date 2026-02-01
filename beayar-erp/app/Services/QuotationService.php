@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Customer;
 use App\Models\Quotation;
 use App\Models\QuotationProduct;
 use App\Models\QuotationRevision;
@@ -361,5 +362,65 @@ class QuotationService
         $num++;
         
         return 'R' . str_pad($num, 2, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Generate next quotation number for a customer.
+     */
+    public function generateNextQuotationNo(Customer $customer): string
+    {
+        $customerNo = $customer->customer_no;
+
+        // Beayar: filter by company
+        $latestQuotation = Quotation::where('user_company_id', Auth::user()->current_user_company_id)
+            ->where('customer_id', $customer->id)
+            ->where('quotation_no', 'LIKE', $customerNo.'-%')
+            ->orderBy('quotation_no', 'desc')
+            ->first();
+
+        $nextNumber = 1;
+
+        if ($latestQuotation) {
+            $parts = explode('-', $latestQuotation->quotation_no);
+            $lastNumber = end($parts);
+
+            if (is_numeric($lastNumber)) {
+                $nextNumber = (int) $lastNumber + 1;
+            }
+        }
+
+        $sequence = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+        return $customerNo.'-'.$sequence;
+    }
+
+    /**
+     * Check if a revision can be activated.
+     */
+    public function canActivateRevision(QuotationRevision $revision): bool
+    {
+        $quotation = $revision->quotation;
+
+        if ($quotation->bills()->exists()) {
+            return false;
+        }
+
+        // Check if any revision has a challan
+        $hasChallan = $quotation->revisions()
+            ->whereHas('challan')
+            ->exists();
+
+        return ! $hasChallan;
+    }
+
+    /**
+     * Activate a specific revision.
+     */
+    public function activateRevision(QuotationRevision $revision): void
+    {
+        $quotation = $revision->quotation;
+
+        $this->deactivateAllRevisions($quotation);
+        $revision->update(['is_active' => true]);
     }
 }

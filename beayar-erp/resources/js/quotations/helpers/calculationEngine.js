@@ -114,7 +114,7 @@ const CalculationEngine = {
         const baseAmount = isViaForeign
             ? this.getMarginBaseAmountViaForeign(row)
             : this.getMarginBaseAmountNormal(row);
-        // console.log(baseAmount);
+        console.log(baseAmount);
 
         return this.calculateAmount(percentage, baseAmount);
     },
