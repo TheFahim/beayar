@@ -40,8 +40,42 @@ class Quotation extends Model
         return $this->hasMany(QuotationRevision::class);
     }
 
+    public function bills(): HasMany
+    {
+        return $this->hasMany(Bill::class);
+    }
+
     public function activeRevision()
     {
         return $this->hasOne(QuotationRevision::class)->where('is_active', true);
+    }
+
+    public function getActiveRevision()
+    {
+        return $this->activeRevision;
+    }
+
+    public function hasBills(): bool
+    {
+        return $this->bills()->exists();
+    }
+
+    public function hasChallan(): bool
+    {
+        $activeRevision = $this->getActiveRevision();
+        return $activeRevision ? $activeRevision->hasChallan() : false;
+    }
+
+    public function isEditable(): bool
+    {
+        return !$this->hasBills();
+    }
+
+    public function isDeletable(): bool
+    {
+        if ($this->hasBills()) {
+            return false;
+        }
+        return !$this->hasChallan();
     }
 }

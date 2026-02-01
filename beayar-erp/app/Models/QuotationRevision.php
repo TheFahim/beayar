@@ -13,10 +13,12 @@ class QuotationRevision extends Model
     protected $casts = [
         'date' => 'date',
         'valid_until' => 'date',
+        'validity' => 'date',
         'subtotal' => 'decimal:2',
         'total' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'vat_amount' => 'decimal:2',
+        'shipping' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 
@@ -33,5 +35,15 @@ class QuotationRevision extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function challan()
+    {
+        return $this->hasOne(Challan::class);
+    }
+
+    public function hasChallan(): bool
+    {
+        return $this->challan()->exists();
     }
 }

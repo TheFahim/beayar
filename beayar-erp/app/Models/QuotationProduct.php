@@ -24,4 +24,14 @@ class QuotationProduct extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function brandOrigin(): BelongsTo
+    {
+        return $this->belongsTo(BrandOrigin::class);
+    }
+
+    public function specification(): BelongsTo
+    {
+        return $this->belongsTo(Specification::class);
+    }
 }
