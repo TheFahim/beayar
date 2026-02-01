@@ -21,4 +21,9 @@ class Customer extends Model
     {
         return $this->hasMany(Quotation::class);
     }
+
+    public function getIsDeletableAttribute()
+    {
+        return $this->quotations()->doesntExist();
+    }
 }

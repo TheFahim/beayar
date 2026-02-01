@@ -133,8 +133,7 @@
                                     </label>
                                     <div x-data="companySearchableSelect({
                                         value: '{{ old('customer_company_id', $customer->customer_company_id) }}',
-                                        endpoint: '{{ route('companies.search') }}',
-                                        initialName: '{{ $customer->customerCompany->name ?? '' }}'
+                                        endpoint: '{{ route('companies.search') }}'
                                     })" x-init="init" class="relative"
                                         @click.away="open = false">
 
@@ -199,38 +198,99 @@
                                                     <template x-for="(option, index) in filteredOptions"
                                                         :key="option.id">
                                                         <li
-                                                            @click="selectOption(option)"
-                                                            class="px-4 py-3 hover:bg-green-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-150 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                                                            <div class="font-medium text-gray-900 dark:text-white"
-                                                                x-text="option.name"></div>
-                                                            <div class="text-xs text-gray-500 mt-0.5"
-                                                                x-text="option.email"></div>
+                                                            class="px-4 py-3 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-200 group">
+                                                            <div class="flex items-center justify-between">
+                                                                <div @click="selectOption(option)" class="flex-1">
+                                                                    <div class="font-medium text-gray-900 dark:text-white"
+                                                                        x-text="option.company_code ? `${option.name} (${option.company_code})` : option.name">
+                                                                    </div>
+                                                                    <div class="text-xs text-gray-500 dark:text-gray-400"
+                                                                        x-text="option.address"
+                                                                        x-show="option.address">
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                                    <!-- Edit Button -->
+                                                                    <button type="button"
+                                                                        @click="editCompany(option)"
+                                                                        class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors duration-200"
+                                                                        title="Edit company">
+                                                                        <svg class="w-4 h-4" fill="none"
+                                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                stroke-width="2"
+                                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                                            </path>
+                                                                        </svg>
+                                                                    </button>
+                                                                    <!-- Delete Button -->
+                                                                    <button type="button"
+                                                                        @click="deleteCompany(option)"
+                                                                        class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200"
+                                                                        title="Delete company">
+                                                                        <svg class="w-4 h-4" fill="none"
+                                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                stroke-width="2"
+                                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                                            </path>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </li>
+                                                    </template>
+
+                                                    {{-- Spacer to make room for fixed button when there are more than 3 items --}}
+                                                    <template x-if="filteredOptions.length > 3">
+                                                        <li class="h-14"></li>
                                                     </template>
                                                 </ul>
                                             </div>
+
+                                            {{-- Fixed Create Company Button - appears after 3 records --}}
+                                            <div x-show="!loading && filteredOptions.length > 3"
+                                                class="absolute bottom-0 left-0 right-0 border-t-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
+                                                <button type="button" @click="openModal"
+                                                    class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                    </svg>
+                                                    Add new company
+                                                </button>
+                                            </div>
+
+                                            {{-- Regular Create Company Button - shows when 3 or fewer items --}}
+                                            <div x-show="!loading && filteredOptions.length <= 3 && filteredOptions.length > 0"
+                                                class="border-t-2 border-gray-200 dark:border-gray-600">
+                                                <button type="button" @click="openModal"
+                                                    class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                    </svg>
+                                                    Add new company
+                                                </button>
+                                            </div>
                                         </div>
+
                                     </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button type="button" x-show="selectedValue"
-                                        @click="$dispatch('edit-company-modal', { id: selectedValue })"
-                                        class="mb-0.5 p-3.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors shadow-sm border border-blue-200"
-                                        title="Edit Company">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                    <button type="button" @click="$dispatch('open-company-modal')"
-                                        class="mb-0.5 p-3.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors shadow-sm border border-green-200"
-                                        title="Add New Company">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 4v16m8-8H4"></path>
-                                        </svg>
-                                    </button>
+                                    @error('customer_company_id')
+                                        <p class="text-xs text-red-500 font-semibold mt-1 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -252,21 +312,17 @@
         </x-ui.card>
     </div>
 
-    {{-- Company Create/Edit Modal (Alpine.js) --}}
-    <div x-data="companyModal"
-        x-show="showModal"
-        @open-company-modal.window="openModal()"
-        @edit-company-modal.window="fetchCompany($event.detail.id)"
-        @keydown.escape.window="closeModal()"
-        class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900"></div>
-            </div>
+    {{-- Company Modal --}}
+    <div x-data="companyModal" @open-company-modal.window="openModal()"
+        @edit-company-modal.window="openEditModal($event.detail)" x-show="showModal" x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showModal" x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
@@ -276,164 +332,206 @@
                 x-transition:leave="ease-in duration-200"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-
-                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div
-                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title"
-                                x-text="isEdit ? 'Edit Company' : 'Add New Company'">
-                            </h3>
-                            <div class="mt-4 space-y-4">
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Code</label>
-                                    <input type="text" x-model="companyForm.company_code"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                                        placeholder="CMP-001">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                                    <input type="text" x-model="companyForm.name"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                                        placeholder="Company Name">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                                    <input type="email" x-model="companyForm.email"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                                        placeholder="company@example.com">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
-                                    <input type="text" x-model="companyForm.phone"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                                        placeholder="+1 234 567 890">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">BIN No</label>
-                                    <input type="text" x-model="companyForm.bin_no"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                                        placeholder="BIN Number">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
-                                    <textarea x-model="companyForm.address" rows="2"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                                        placeholder="Full address"></textarea>
-                                </div>
+                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <form @submit.prevent="submitCompany">
+                    <div
+                        class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 px-6 pt-6 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg" x-show="!isEditing">
+                                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg" x-show="isEditing">
+                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white" id="modal-title">
+                                    <span x-show="!isEditing">Add New Company</span>
+                                    <span x-show="isEditing">Edit Company</span>
+                                </h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    <span x-show="!isEditing">Create a new company record</span>
+                                    <span x-show="isEditing">Update company information</span>
+                                </p>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" @click="submitCompany" :disabled="loading"
-                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
-                        <span x-show="!loading" x-text="isEdit ? 'Update Company' : 'Save Company'"></span>
-                        <span x-show="loading" class="flex items-center">
-                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            <span x-text="isEdit ? 'Updating...' : 'Saving...'"></span>
-                        </span>
-                    </button>
-                    <button type="button" @click="closeModal()"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
-                        Cancel
-                    </button>
-                </div>
+
+                    <div class="px-6 py-4 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Company Code <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" x-model="companyForm.company_code" required
+                                @input="companyForm.company_code = $event.target.value.replace(/[^A-Za-z]/g, '').toUpperCase()"
+                                @keydown="if($event.key === ' ' || /[0-9]/.test($event.key) || /[^A-Za-z]/.test($event.key)) $event.preventDefault()"
+                                class="w-full p-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                                placeholder="Enter company code (letters only, will be capitalized)"
+                                maxlength="10">
+                            <p x-show="errors.company_code" x-text="errors.company_code"
+                                class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Company Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" x-model="companyForm.name" required
+                                class="w-full p-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                                placeholder="Enter company name">
+                            <p x-show="errors.name" x-text="errors.name"
+                                class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Email
+                            </label>
+                            <input type="email" x-model="companyForm.email"
+                                class="w-full p-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                                placeholder="Enter company email">
+                            <p x-show="errors.email" x-text="errors.email"
+                                class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Phone
+                                </label>
+                                <input type="text" x-model="companyForm.phone"
+                                    class="w-full p-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                                    placeholder="Enter phone number">
+                                <p x-show="errors.phone" x-text="errors.phone"
+                                    class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    BIN No
+                                </label>
+                                <input type="text" x-model="companyForm.bin_no"
+                                    class="w-full p-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                                    placeholder="Enter BIN number">
+                                <p x-show="errors.bin_no" x-text="errors.bin_no"
+                                    class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Address (Optional)
+                            </label>
+                            <input type="text" x-model="companyForm.address"
+                                class="w-full p-3 border-2 border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+                                placeholder="Enter company address">
+                            <p x-show="errors.address" x-text="errors.address"
+                                class="text-red-500 text-xs mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex justify-end space-x-3">
+                        <button type="button" @click="closeModal"
+                            class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 hover:scale-105 active:scale-95 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <button type="submit" :disabled="loading"
+                            class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            x-show="!isEditing">
+                            <span x-show="!loading" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Add Company
+                            </span>
+                            <span x-show="loading" class="flex items-center gap-2">
+                                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                Adding...
+                            </span>
+                        </button>
+                        <button type="submit" :disabled="loading"
+                            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            x-show="isEditing">
+                            <span x-show="!loading" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Update Company
+                            </span>
+                            <span x-show="loading" class="flex items-center gap-2">
+                                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                Updating...
+                            </span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.data('companySearchableSelect', (config) => ({
-                    open: false,
-                    searchTerm: config.initialName || '',
-                    selectedValue: config.value || '',
-                    options: [],
-                    filteredOptions: [],
-                    loading: false,
 
-                    init() {
-                        this.$watch('searchTerm', (value) => {
-                            if (value && value !== this.initialName) {
-                                // Logic to clear selectedValue if user changes text after selection
-                                // But if it matches the selected name, keep it.
-                                // For simplicity, we filter options.
-                            }
-                        });
-                        
-                        // If we have an initial value but no name (e.g. old input), we might want to fetch it
-                        // But we passed initialName from blade, so it should be fine.
-                    },
-
-                    async filterOptions() {
-                        if (this.searchTerm.length < 2) {
-                            this.filteredOptions = [];
-                            return;
-                        }
-
-                        this.loading = true;
-                        try {
-                            const response = await fetch(`${config.endpoint}?query=${this.searchTerm}`);
-                            this.options = await response.json();
-                            this.filteredOptions = this.options;
-                        } catch (error) {
-                            console.error('Error fetching companies:', error);
-                        } finally {
-                            this.loading = false;
-                        }
-                    },
-
-                    selectOption(option) {
-                        this.selectedValue = option.id;
-                        this.searchTerm = option.name;
-                        this.initialName = option.name; // Update initial name to current selection
-                        this.open = false;
-                    },
-
-                    checkSelection() {
-                        // Optional: if user types something that matches exactly one option, select it
-                        // Or reset to last valid selection if they click away
-                        setTimeout(() => {
-                            if (!this.selectedValue) {
-                                // If strict selection required
-                                // this.searchTerm = '';
-                            }
-                        }, 200);
-                    },
-                    
-                    openModal() {
-                        this.open = false;
-                        this.$dispatch('open-company-modal');
-                    }
-                }));
-
+    <script>
+        document.addEventListener('alpine:init', () => {
+                // Company Modal Component
                 Alpine.data('companyModal', () => ({
                     showModal: false,
                     loading: false,
-                    isEdit: false,
-                    companyId: null,
+                    isEditing: false,
+                    editingCompanyId: null,
                     companyForm: {
                         company_code: '',
                         name: '',
@@ -442,14 +540,58 @@
                         bin_no: '',
                         address: ''
                     },
+                    errors: {},
 
                     openModal() {
                         this.showModal = true;
+                        this.isEditing = false;
+                        this.editingCompanyId = null;
+                        this.resetForm();
+                    },
+
+                    async openEditModal(company) {
+                        this.showModal = true;
+                        this.isEditing = true;
+                        this.editingCompanyId = company.id;
+                        this.loading = true;
+
+                        // Initialize with available data while loading
+                        this.companyForm = {
+                            company_code: '',
+                            name: company.name,
+                            email: '',
+                            phone: '',
+                            bin_no: '',
+                            address: ''
+                        };
+
+                        try {
+                            const response = await fetch(`/companies/${company.id}`);
+                            if (!response.ok) throw new Error('Failed to fetch company details');
+                            const fullCompany = await response.json();
+
+                            this.companyForm = {
+                                company_code: fullCompany.company_code || '',
+                                name: fullCompany.name,
+                                email: fullCompany.email || '',
+                                phone: fullCompany.phone || '',
+                                bin_no: fullCompany.bin_no || '',
+                                address: fullCompany.address || ''
+                            };
+                        } catch (error) {
+                            console.error('Error fetching company details:', error);
+                            alert('Error loading company details. Please try again.');
+                            // Optional: keep modal open with partial data or close it
+                        } finally {
+                            this.loading = false;
+                        }
+
+                        this.errors = {};
                     },
 
                     closeModal() {
                         this.showModal = false;
-                        setTimeout(() => this.resetForm(), 300);
+                        this.resetForm();
                     },
 
                     resetForm() {
@@ -461,54 +603,30 @@
                             bin_no: '',
                             address: ''
                         };
-                        this.isEdit = false;
-                        this.companyId = null;
-                    },
-
-                    async fetchCompany(id) {
-                        this.loading = true;
-                        this.openModal();
-                        this.isEdit = true;
-                        this.companyId = id;
-
-                        try {
-                            const response = await fetch(`/companies/${id}`);
-                            if (!response.ok) throw new Error('Failed to fetch company');
-                            
-                            const data = await response.json();
-                            this.companyForm = {
-                                company_code: data.company_code || '',
-                                name: data.name || '',
-                                email: data.email || '',
-                                phone: data.phone || '',
-                                bin_no: data.bin_no || '',
-                                address: data.address || ''
-                            };
-                        } catch (error) {
-                            console.error('Error:', error);
-                            alert('Error fetching company details');
-                            this.closeModal();
-                        } finally {
-                            this.loading = false;
-                        }
+                        this.errors = {};
+                        this.loading = false;
+                        this.isEditing = false;
+                        this.editingCompanyId = null;
                     },
 
                     async submitCompany() {
                         this.loading = true;
+                        this.errors = {};
+
                         try {
-                            const url = this.isEdit 
-                                ? `/companies/${this.companyId}` 
-                                : '{{ route('companies.store') }}';
-                            
-                            const method = this.isEdit ? 'PUT' : 'POST';
+                            const url = this.isEditing ?
+                                `/companies/${this.editingCompanyId}` :
+                                '{{ route('companies.store') }}';
+
+                            const method = this.isEditing ? 'PUT' : 'POST';
 
                             const response = await fetch(url, {
                                 method: method,
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'Accept': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                        .getAttribute('content')
+                                    'X-CSRF-TOKEN': document.querySelector(
+                                        'meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json'
                                 },
                                 body: JSON.stringify(this.companyForm)
                             });
@@ -516,20 +634,215 @@
                             const data = await response.json();
 
                             if (response.ok) {
-                                alert(this.isEdit ? 'Company updated successfully!' : 'Company created successfully!');
+                                // The controller returns the company object directly (store/update)
+                                const companyData = data;
+
+                                if (this.isEditing) {
+                                    if (window.companySearchInstance) {
+                                        window.companySearchInstance.updateCompany(companyData);
+                                    }
+                                } else {
+                                    if (window.companySearchInstance) {
+                                        window.companySearchInstance.addNewCompany(companyData);
+                                    }
+                                }
                                 this.closeModal();
+
                             } else {
-                                alert('Error: ' + (data.message || 'Unknown error'));
+                                this.errors = data.errors || {};
                             }
                         } catch (error) {
-                            console.error('Error:', error);
-                            alert('An error occurred.');
+                            console.error('Error saving company:', error);
+                            this.errors = {
+                                general: 'An error occurred while saving the company.'
+                            };
                         } finally {
                             this.loading = false;
                         }
                     }
                 }));
+
+                // Company Searchable Select Component with Edit Functionality
+                Alpine.data('companySearchableSelect', (config) => ({
+                    open: false,
+                    searchTerm: '',
+                    selectedValue: config.value || '',
+                    selectedCompany: null,
+                    allOptions: [],
+                    filteredOptions: [],
+                    endpoint: config.endpoint,
+                    loading: true,
+
+                    init() {
+                        window.companySearchInstance = this;
+
+                        if (!this.endpoint) {
+                            this.loading = false;
+                            console.error('CompanySearchableSelect: API endpoint is not defined.');
+                            return;
+                        }
+
+                        this.fetchCompanies();
+                    },
+
+                    async fetchCompanies() {
+                        try {
+                            const response = await fetch(this.endpoint);
+                            const data = await response.json();
+                            this.allOptions = data;
+
+                            if (this.selectedValue) {
+                                const selected = this.allOptions.find(opt => opt.id == this.selectedValue);
+                                if (selected) {
+                                    this.searchTerm = selected.name;
+                                    this.selectedCompany = selected;
+                                }
+                            }
+
+                            this.filterOptions();
+                            this.loading = false;
+                        } catch (error) {
+                            console.error('Error fetching companies:', error);
+                            this.loading = false;
+                        }
+                    },
+
+                    filterOptions() {
+                        if (!this.searchTerm) {
+                            this.filteredOptions = this.allOptions;
+                            return;
+                        }
+                        this.filteredOptions = this.allOptions.filter(option => {
+                            const term = this.searchTerm.toLowerCase();
+                            return option.name.toLowerCase().includes(term) ||
+                                   (option.company_code && option.company_code.toLowerCase().includes(term));
+                        });
+                    },
+
+                    selectOption(option) {
+                        this.selectedValue = option.id;
+                        this.selectedCompany = option;
+                        this.searchTerm = option.name;
+                        this.open = false;
+
+                        // Generate customer number when company is changed
+                        this.generateCustomerNumber(option);
+                    },
+
+                    checkSelection() {
+                        setTimeout(() => {
+                            if (!this.selectedValue) {
+                                this.searchTerm = '';
+                            } else {
+                                const selected = this.allOptions.find(opt => opt.id == this.selectedValue);
+                                if (selected) {
+                                    this.searchTerm = selected.name;
+                                }
+                            }
+                        }, 200);
+                    },
+
+                    async generateCustomerNumber(company) {
+                        try {
+                            const customerNoInput = document.querySelector('input[name="customer_no"]');
+                            const currentCustomerNo = customerNoInput ? customerNoInput.value : '';
+
+                            // Only generate new customer number if the current one doesn't start with the new company code
+                            if (company.company_code && (!currentCustomerNo || !currentCustomerNo.startsWith(company.company_code + '-'))) {
+                                const response = await fetch(`/companies/${company.id}/next-customer-serial`);
+                                const data = await response.json();
+
+                                if (data.customer_no && customerNoInput) {
+                                    customerNoInput.value = data.customer_no;
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error generating customer number:', error);
+                        }
+                    },
+
+                    openModal() {
+                        this.open = false;
+                        this.$dispatch('open-company-modal');
+                    },
+
+                    editCompany(company) {
+                        this.open = false;
+                        this.$dispatch('edit-company-modal', company);
+                    },
+
+                    async deleteCompany(company) {
+                        this.open = false;
+
+                        if (!confirm(
+                            `Are you sure you want to delete "${company.name}"?\n\nThis action cannot be undone and will fail if the company has associated customers.`
+                        )) {
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`/companies/${company.id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+
+                            const data = await response.json();
+
+                            if (response.ok) {
+                                this.allOptions = this.allOptions.filter(opt => opt.id !== company.id);
+                                this.filterOptions();
+
+                                if (this.selectedValue == company.id) {
+                                    this.selectedValue = '';
+                                    this.selectedCompany = null;
+                                    this.searchTerm = '';
+                                }
+
+                                alert(data.message || 'Company deleted successfully');
+                            } else {
+                                alert(data.message || data.error || 'Failed to delete company');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting company:', error);
+                            alert('An error occurred while deleting the company');
+                        }
+                    },
+
+                    addNewCompany(company) {
+                        this.allOptions.unshift(company);
+                        this.selectOption(company);
+                        this.filterOptions();
+                    },
+
+                    updateCompany(updatedCompany) {
+                        const index = this.allOptions.findIndex(opt => opt.id === updatedCompany.id);
+                        if (index !== -1) {
+                            this.allOptions[index] = updatedCompany;
+
+                            if (this.selectedValue == updatedCompany.id) {
+                                this.selectOption(updatedCompany);
+                            }
+
+                            this.filterOptions();
+                        }
+                    }
+                }));
             });
         </script>
-    @endpush
+
+        <style>
+            /* Ensure smooth scrolling for company list */
+            .max-h-60 {
+                scroll-behavior: smooth;
+            }
+
+            /* Add subtle shadow to fixed button for better visibility */
+            .absolute.bottom-0 {
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+        </style>
 </x-dashboard.layout.default>

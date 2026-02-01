@@ -563,7 +563,7 @@
                 this.isEditing = true;
                 this.editingCompanyId = company.id;
                 this.loading = true;
-                
+
                 // Initialize with available data while loading
                 this.companyForm = {
                     company_code: '',
@@ -573,12 +573,12 @@
                     bin_no: '',
                     address: ''
                 };
-                
+
                 try {
                     const response = await fetch(`/companies/${company.id}`);
                     if (!response.ok) throw new Error('Failed to fetch company details');
                     const fullCompany = await response.json();
-                    
+
                     this.companyForm = {
                         company_code: fullCompany.company_code || '',
                         name: fullCompany.name,
@@ -594,7 +594,7 @@
                 } finally {
                     this.loading = false;
                 }
-                
+
                 this.errors = {};
             },
 
@@ -644,8 +644,8 @@
 
                     if (response.ok) {
                         // The controller returns the company object directly (store/update)
-                        const companyData = data; 
-                        
+                        const companyData = data;
+
                         if (this.isEditing) {
                             if (window.companySearchInstance) {
                                 window.companySearchInstance.updateCompany(companyData);
@@ -733,6 +733,9 @@
                 this.selectedCompany = option;
                 this.searchTerm = option.name;
                 this.open = false;
+
+                // Generate customer number when company is changed
+                this.generateCustomerNumber(option);
             },
 
             checkSelection() {
@@ -746,6 +749,25 @@
                         }
                     }
                 }, 200);
+            },
+
+            async generateCustomerNumber(company) {
+                try {
+                    const customerNoInput = document.querySelector('input[name="customer_no"]');
+                    const currentCustomerNo = customerNoInput ? customerNoInput.value : '';
+
+                    // Only generate new customer number if the current one doesn't start with the new company code
+                    if (company.company_code && (!currentCustomerNo || !currentCustomerNo.startsWith(company.company_code + '-'))) {
+                        const response = await fetch(`/companies/${company.id}/next-customer-serial`);
+                        const data = await response.json();
+
+                        if (data.customer_no && customerNoInput) {
+                            customerNoInput.value = data.customer_no;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error generating customer number:', error);
+                }
             },
 
             openModal() {

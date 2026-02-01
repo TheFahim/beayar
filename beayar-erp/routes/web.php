@@ -57,6 +57,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 
     // Customer Routes
     Route::get('/companies/search', [\App\Http\Controllers\Tenant\CustomerController::class, 'searchCompanies'])->name('companies.search');
+    Route::get('/companies/{company}/next-customer-serial', [\App\Http\Controllers\Api\V1\CompanyController::class, 'nextCustomerSerial'])->name('companies.next-serial');
     Route::resource('customers', \App\Http\Controllers\Tenant\CustomerController::class)->names('tenant.customers');
     Route::resource('companies', \App\Http\Controllers\Api\V1\CompanyController::class)->names('companies'); // For modal creation
 

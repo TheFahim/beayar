@@ -24,4 +24,19 @@ class Product extends Model
     {
         return $this->belongsTo(Image::class);
     }
+
+    public function quotationProducts()
+    {
+        return $this->hasMany(QuotationProduct::class);
+    }
+
+    public function challanProducts()
+    {
+        return $this->hasMany(ChallanProduct::class);
+    }
+
+    public function getIsDeletableAttribute()
+    {
+        return $this->quotationProducts()->doesntExist() && $this->challanProducts()->doesntExist();
+    }
 }

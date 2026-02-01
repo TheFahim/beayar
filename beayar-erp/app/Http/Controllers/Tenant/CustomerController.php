@@ -31,8 +31,8 @@ class CustomerController extends Controller
     {
         // Generate a customer number
         $count = Customer::where('user_company_id', auth()->user()->current_user_company_id)->count();
-        $customerNo = 'CUS-' . str_pad($count + 1, 5, '0', STR_PAD_LEFT);
-        
+        $customerNo = '';
+
         return view('tenant.customers.create', compact('customerNo'));
     }
 
@@ -83,7 +83,7 @@ class CustomerController extends Controller
         if ($customer->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
         }
-        
+
         $customer->load('quotations');
         $hasQuotation = $customer->quotations()->count() > 0;
 
@@ -92,6 +92,7 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
+        // return $request;
         if ($customer->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
         }
@@ -111,7 +112,7 @@ class CustomerController extends Controller
          $data = [
             'customer_company_id' => $validated['customer_company_id'],
             'name' => $validated['customer_name'],
-            // 'customer_no' => $validated['customer_no'], // Usually don't update customer_no
+            'customer_no' => $validated['customer_no'], // Usually don't update customer_no
             'email' => $validated['email'],
             'phone' => $validated['phone'],
             'address' => $validated['address'],
@@ -132,29 +133,41 @@ class CustomerController extends Controller
             abort(403);
         }
 
-        if ($customer->quotations()->count() > 0) {
-            return back()->with('error', 'Cannot delete customer with existing quotations.');
+        if (!$customer->is_deletable) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete customer because it has existing quotations.',
+                ], 422);
+            }
+            return back()->with('error', 'Cannot delete customer because it has existing quotations.');
         }
 
         $customer->delete();
 
-        if (request()->ajax()) {
+        if (request()->ajax() || request()->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Customer deleted successfully']);
         }
 
         return redirect()->route('tenant.customers.index')
             ->with('success', 'Customer deleted successfully.');
     }
-    
+
     // API for searching customer companies (to replace Optimech's companies.search)
     public function searchCompanies(Request $request)
     {
-        $search = $request->get('query');
-        $companies = CustomerCompany::where('user_company_id', auth()->user()->current_user_company_id)
-            ->where('name', 'like', "%{$search}%")
-            ->limit(10)
-            ->get(['id', 'name']);
-            
+        $query = CustomerCompany::where('user_company_id', auth()->user()->current_user_company_id);
+
+        if ($request->has('query') && $request->get('query')) {
+            $search = $request->get('query');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('company_code', 'like', "%{$search}%");
+            });
+        }
+
+        $companies = $query->orderBy('name')->get(['id', 'name', 'company_code', 'address']);
+
         return response()->json($companies);
     }
 }

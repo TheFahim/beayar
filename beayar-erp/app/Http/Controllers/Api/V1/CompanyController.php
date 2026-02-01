@@ -43,4 +43,25 @@ class CompanyController extends Controller
         $company->delete();
         return response()->json(['message' => 'Company deleted successfully']);
     }
+
+    public function nextCustomerSerial(Request $request, CustomerCompany $company): JsonResponse
+    {
+        $lastCustomer = $company->customers()
+            ->where('customer_no', 'like', $company->company_code . '-%')
+            ->orderByRaw('CAST(SUBSTRING(customer_no, LENGTH(?) + 2) AS UNSIGNED) DESC', [$company->company_code])
+            ->first();
+
+        $nextSerial = 1;
+        if ($lastCustomer) {
+            $lastSerial = (int) substr($lastCustomer->customer_no, strlen($company->company_code) + 1);
+            $nextSerial = $lastSerial + 1;
+        }
+
+        $customerNo = $company->company_code . '-' . str_pad($nextSerial, 2, '0', STR_PAD_LEFT);
+
+        return response()->json([
+            'customer_no' => $customerNo,
+            'serial' => $nextSerial,
+        ]);
+    }
 }

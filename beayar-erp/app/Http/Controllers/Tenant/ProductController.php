@@ -189,9 +189,19 @@ class ProductController extends Controller
             abort(403);
         }
 
+        if (!$product->is_deletable) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete product because it is used in quotations or challans.',
+                ], 422);
+            }
+            return back()->with('error', 'Cannot delete product because it is used in quotations or challans.');
+        }
+
         $product->delete();
 
-        if (request()->ajax()) {
+        if (request()->ajax() || request()->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product deleted successfully',
