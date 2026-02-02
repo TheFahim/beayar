@@ -14,9 +14,11 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('user_id')->constrained('users'); // Creator
             $table->foreignId('status_id')->constrained('quotation_statuses');
+            $table->boolean('regular_billing_locked')->default(false);
             
             // Core Quotation Info
             $table->string('reference_no')->unique(); // QT-2024-001
+            $table->string('quotation_no')->nullable()->unique();
             $table->string('po_no')->nullable();
             $table->date('po_date')->nullable();
             $table->text('ship_to')->nullable();

@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('customer_companies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
+            $table->string('company_code')->nullable();
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
