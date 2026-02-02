@@ -18,6 +18,8 @@
     "dependencies": {
         "alpinejs": "^3.14.3",
         "apexcharts": "^3.46.0",
+        "exceljs": "^4.4.0",
+        "file-saver": "^2.0.5",
         "katex": "^0.16.19",
         "simple-datatables": "^9.2.1",
         "suneditor": "^2.47.0",

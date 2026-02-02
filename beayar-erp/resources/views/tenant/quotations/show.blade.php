@@ -186,7 +186,7 @@
                             </svg>
                             Print
                         </button>
-                        {{-- <button id="downloadExcelBtn" type="button"
+                        <button id="downloadExcelBtn" type="button"
                             class="inline-flex items-center text-white bg-green-600 hover:bg-green-700 rounded-lg px-4 py-2 text-sm transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -194,22 +194,13 @@
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
                             Download Excel
-                        </button> --}}
+                        </button>
                         <button @click="isTechnical = !isTechnical" type="button"
                             class="inline-flex items-center text-white rounded-lg px-4 py-2 text-sm transition-colors duration-200"
                             :class="isTechnical ? 'bg-gray-600 hover:bg-gray-700' : 'bg-indigo-600 hover:bg-indigo-700'">
                             <span x-text="isTechnical ? 'Show Commercial' : 'Technical'">Technical</span>
                         </button>
 
-                        {{-- @if (!$hasChallan)
-                        <a href="{{ route('tenant.challans.create', ['quotation_id' => $quotation->id]) }}"
-                            class="inline-flex items-center text-white bg-green-600 rounded-lg px-4 py-2 text-sm">Proceed
-                            to Challan</a>
-                    @else
-                        <a href="{{ route('tenant.challans.show', $activeRevision->challan->id) }}"
-                            class="inline-flex items-center text-white bg-green-600 rounded-lg px-4 py-2 text-sm">Show
-                            Challan</a>
-                    @endif --}}
                     </div>
 
                     <div class="text-sm text-gray-600">Created:
@@ -218,7 +209,7 @@
                 </div>
 
                 {{-- Invoice card (this will be printed) --}}
-                <div id="q-invoice" class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                <div id="q-invoice" class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg text-gray-900">
                     <div class="print-watermark hidden"></div>
 
                     <div class="px-6 py-6">
@@ -628,8 +619,113 @@
             </div>
         </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+        @php
+            $preparedProducts = [];
+            $products = $activeRevision->products;
+            $count = count($products);
+            
+            $prevSpecId = null;
+            $prevImagePath = null;
+            
+            for ($i = 0; $i < $count; $i++) {
+                $p = $products[$i];
+                $item = [
+                    'name' => $p->product->name,
+                    'size' => $p->size,
+                    'req_no' => $p->requision_no,
+                    'specification' => $p->specification->description,
+                    'brand_origin' => $p->brandOrigin->name ?? '',
+                    'add_spec' => $p->add_spec,
+                    'quantity' => $p->quantity,
+                    'unit' => $p->unit,
+                    'delivery_time' => $p->delivery_time,
+                    'image_url' => $p->product->image->path ?? null ? asset($p->product->image->path) : null,
+                    'unit_price' => $p->unit_price,
+                    'total' => $p->unit_price * $p->quantity,
+                    
+                    'skip_spec' => false,
+                    'spec_rowspan' => 1,
+                    'skip_image' => false,
+                    'image_rowspan' => 1,
+                ];
+                
+                // Spec Logic
+                if ($prevSpecId !== $p->specification_id) {
+                    $rowspan = 1;
+                    for ($j = $i + 1; $j < $count; $j++) {
+                        if ($products[$j]->specification_id === $p->specification_id) {
+                            $rowspan++;
+                        } else {
+                            break;
+                        }
+                    }
+                    $item['spec_rowspan'] = $rowspan;
+                    $prevSpecId = $p->specification_id;
+                } else {
+                    $item['skip_spec'] = true;
+                }
+                
+                // Image Logic
+                $currentImagePath = $p->product->image->path ?? null;
+                if ($prevImagePath !== $currentImagePath) {
+                    $imageRowspan = 1;
+                    for ($j = $i + 1; $j < $count; $j++) {
+                         $nextImagePath = $products[$j]->product->image->path ?? null;
+                         if ($nextImagePath === $currentImagePath) {
+                             $imageRowspan++;
+                         } else {
+                             break;
+                         }
+                    }
+                    $item['image_rowspan'] = $imageRowspan;
+                    $prevImagePath = $currentImagePath;
+                } else {
+                    $item['skip_image'] = true;
+                }
+                
+                $preparedProducts[] = $item;
+            }
+
+            $quotationData = [
+                'logo_url' => asset('assets/images/logo.png'),
+                'customer' => [
+                    'name' => $quotation->customer->customer_name,
+                    'designation' => $quotation->customer->designation,
+                    'department' => $quotation->customer->department,
+                    'company' => $quotation->customer->company->name,
+                    'address' => $quotation->customer->address,
+                    'phone' => $quotation->customer->phone,
+                    'email' => $quotation->customer->email,
+                    'attention' => $quotation->customer->attention,
+                ],
+                'shipTo' => [
+                    'company' => $quotation->customer->company->name,
+                    'address' => $quotation->ship_to,
+                ],
+                'quotationNo' => $quotation->quotation_no,
+                'revisionNo' => $activeRevision->revision_no,
+                'date' => $activeRevision->date->format('d/m/Y'),
+                'validity' => date('d/m/Y', strtotime($activeRevision->validity)),
+                'validityDays' => $activeRevision->date->diffInDays(\Carbon\Carbon::parse($activeRevision->validity)),
+                'currency' => $activeRevision->type == 'via' ? $activeRevision->currency : 'BDT',
+                'products' => $preparedProducts,
+                'subtotal' => $activeRevision->subtotal,
+                'discount_amount' => $activeRevision->discount_amount,
+                'shipping' => $activeRevision->shipping,
+                'vat_amount' => $activeRevision->vat_amount,
+                'vat_percentage' => (int)$activeRevision->vat_percentage,
+                'total' => $activeRevision->total,
+                'terms_conditions' => $activeRevision->terms_conditions ?: $quotation->terms_conditions,
+                'seal_url' => asset('assets/images/seal.jpg'),
+                'signature_url' => asset('assets/images/signature.jpg'),
+            ];
+        @endphp
+
+        <script>
+            window.quotationData = @json($quotationData);
+        </script>
+
+        @vite(['resources/js/quotations/show.js'])
 
         <script>
             // Keep printThis.js behavior intact (unchanged functionality)

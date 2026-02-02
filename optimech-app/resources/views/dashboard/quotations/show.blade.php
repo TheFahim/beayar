@@ -186,7 +186,7 @@
                             </svg>
                             Print
                         </button>
-                        {{-- <button id="downloadExcelBtn" type="button"
+                        <button id="downloadExcelBtn" type="button"
                             class="inline-flex items-center text-white bg-green-600 hover:bg-green-700 rounded-lg px-4 py-2 text-sm transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -194,7 +194,7 @@
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
                             Download Excel
-                        </button> --}}
+                        </button>
                         <button @click="isTechnical = !isTechnical" type="button"
                             class="inline-flex items-center text-white rounded-lg px-4 py-2 text-sm transition-colors duration-200"
                             :class="isTechnical ? 'bg-gray-600 hover:bg-gray-700' : 'bg-indigo-600 hover:bg-indigo-700'">
@@ -212,7 +212,7 @@
                     @endif --}}
                     </div>
 
-                    <div class="text-sm text-gray-600">Created:
+                    <div class="text-sm ">Created:
                         <strong>{{ $activeRevision->created_at->format('d M, Y') }}</strong>
                     </div>
                 </div>
@@ -233,13 +233,13 @@
                                                     class="h-20 w-auto" />
                                             </div>
                                             <div class="leading-tight text-right">
-                                                <div class="text-xs text-gray-600">Malek Mansion (Ground), 128 Motijheel
+                                                <div class="text-xs ">Malek Mansion (Ground), 128 Motijheel
                                                     C/A, Dhaka-1000
                                                 </div>
-                                                <div class="text-xs text-gray-600">ataur@optimech.com.bd,
+                                                <div class="text-xs ">ataur@optimech.com.bd,
                                                     ataur.optimech@gmail.com</div>
-                                                <div class="text-xs text-gray-600">+8801841176747, +8801712117558</div>
-                                                <div class="text-xs text-gray-600">www.optimech.com.bd</div>
+                                                <div class="text-xs ">+8801841176747, +8801712117558</div>
+                                                <div class="text-xs ">www.optimech.com.bd</div>
                                             </div>
                                         </div>
                                     </td>
@@ -254,45 +254,45 @@
                                                 class="border col-span-2 border-gray-200 rounded-lg p-4 bg-gray-50 grid grid-cols-2">
                                                 <div>
                                                     <span
-                                                        class="block text-xs text-gray-600 font-semibold uppercase">Bill
+                                                        class="block text-xs  font-semibold uppercase">Bill
                                                         To</span>
                                                     <div class="mt-1.5">
                                                         <div class="text-xs font-semibold text-gray-900">
                                                             {{ $quotation->customer->customer_name }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->designation }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->department }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->company->name }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->address }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->phone? 'Cell: '. $quotation->customer->phone : 'N/A' }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->email }}</div>
                                                         @if ($quotation->customer->attention)
-                                                            <div class="text-xs text-gray-600 mt-2 font-semibold">
+                                                            <div class="text-xs  mt-2 font-semibold">
                                                                 Attention:
                                                                 {{ $quotation->customer->attention }}</div>
                                                         @endif
-                                                        <div class="text-xs text-gray-600 mt-2 whitespace-pre-line">
+                                                        <div class="text-xs  mt-2 whitespace-pre-line">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div>
                                                     <span
-                                                        class="block text-xs text-gray-600 font-semibold uppercase">Ship
+                                                        class="block text-xs  font-semibold uppercase">Ship
                                                         To</span>
                                                     <div class="mt-1.5">
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs ">
                                                             {{ $quotation->customer->company->name }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">{{ $quotation->ship_to }}
+                                                        <div class="text-xs ">{{ $quotation->ship_to }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600 mt-2 whitespace-pre-line">
+                                                        <div class="text-xs  mt-2 whitespace-pre-line">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -316,12 +316,12 @@
                                                 </div>
 
                                                 <div class="grid grid-cols-2 gap-2 text-sm">
-                                                    <div class="text-gray-600">Date</div>
+                                                    <div class="">Date</div>
                                                     <div class="text-right font-semibold">
                                                         {{ $activeRevision->date->format('d/m/Y') }}
                                                     </div>
 
-                                                    <div class="text-gray-600">Validity</div>
+                                                    <div class="">Validity</div>
                                                     <div class="flex justify-end text-right">
                                                         <div class="text-xs text-gray-500 whitespace-nowrap">
                                                             ({{ $activeRevision->date->diffInDays(\Carbon\Carbon::parse($activeRevision->validity)) }}
@@ -578,7 +578,7 @@
                                         {{-- Signature and Terms --}}
                                         <div class="flex justify-between gap-3 mt-6 ">
                                             <div
-                                                class="text-xs text-gray-600 border border-gray-200 rounded-lg p-4 bg-gray-50 {{ $activeRevision->type === 'via' ? 'w-2/3' : '' }}">
+                                                class="text-xs  border border-gray-200 rounded-lg p-4 bg-gray-50 {{ $activeRevision->type === 'via' ? 'w-2/3' : '' }}">
                                                 @if ($activeRevision->terms_conditions)
                                                     {!! $activeRevision->terms_conditions !!}
                                                 @else
@@ -591,12 +591,12 @@
                                                         class="mx-auto h-16 w-auto" />
                                                 </div>
                                                 <div>
-                                                    <div class="text-xs text-gray-600 mb-2">Authorized By</div>
+                                                    <div class="text-xs  mb-2">Authorized By</div>
                                                     <div>
                                                         <img src="{{ asset('assets/images/signature.jpg') }}"
                                                             alt="Signature" class="mx-auto h-12 w-auto" />
                                                     </div>
-                                                    <p class="text-xs text-gray-600">Mohammad Ataur Rahman</p>
+                                                    <p class="text-xs ">Mohammad Ataur Rahman</p>
                                                 </div>
                                             </div>
 
