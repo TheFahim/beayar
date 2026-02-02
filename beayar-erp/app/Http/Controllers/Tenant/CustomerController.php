@@ -156,7 +156,18 @@ class CustomerController extends Controller
     // API for searching customer companies (to replace Optimech's companies.search)
     public function searchCompanies(Request $request)
     {
-        $query = CustomerCompany::where('user_company_id', auth()->user()->current_user_company_id);
+        $user = auth()->user();
+        // Fallback to first owned company if current_user_company_id is not set
+        $companyId = $user->current_user_company_id ?? $user->ownedCompanies()->first()?->id;
+
+        if (!$companyId) {
+            return response()->json([]);
+        }
+
+        // Use withoutGlobalScope to ensure we query based on the resolved $companyId
+        // This handles cases where the global scope might fail if current_user_company_id is null
+        $query = CustomerCompany::withoutGlobalScope('user_company_id')
+            ->where('user_company_id', $companyId);
 
         if ($request->has('query') && $request->get('query')) {
             $search = $request->get('query');

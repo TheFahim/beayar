@@ -686,10 +686,17 @@
                     },
 
                     async fetchCompanies() {
-                        try {
-                            const response = await fetch(this.endpoint);
-                            const data = await response.json();
-                            this.allOptions = data;
+                try {
+                    const response = await fetch(this.endpoint, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const data = await response.json();
+                    this.allOptions = data;
 
                             if (this.selectedValue) {
                                 const selected = this.allOptions.find(opt => opt.id == this.selectedValue);

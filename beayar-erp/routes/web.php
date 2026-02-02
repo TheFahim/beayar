@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\TenantController as AdminTenantController;
-use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+use App\Http\Controllers\Admin\TenantController as AdminTenantController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Tenant\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -46,11 +48,11 @@ Route::group(['middleware' => ['web', 'auth']], function () {
         return view('tenant.subscription.index');
     })->name('tenant.subscription.index');
 
-    Route::get('/images', [\App\Http\Controllers\ImageController::class, 'index'])->name('tenant.images.index');
-    Route::get('/images/search', [\App\Http\Controllers\ImageController::class, 'search'])->name('tenant.images.search');
-    Route::post('/images', [\App\Http\Controllers\ImageController::class, 'store'])->name('tenant.images.store');
-    Route::put('/images/{id}', [\App\Http\Controllers\ImageController::class, 'update'])->name('tenant.images.update');
-    Route::delete('/images/{id}', [\App\Http\Controllers\ImageController::class, 'destroy'])->name('tenant.images.destroy');
+    Route::get('/images', [ImageController::class, 'index'])->name('tenant.images.index');
+    Route::get('/images/search', [ImageController::class, 'search'])->name('tenant.images.search');
+    Route::post('/images', [ImageController::class, 'store'])->name('tenant.images.store');
+    Route::put('/images/{id}', [ImageController::class, 'update'])->name('tenant.images.update');
+    Route::delete('/images/{id}', [ImageController::class, 'destroy'])->name('tenant.images.destroy');
 
     // Product Specifications
     Route::get('/products/search', [\App\Http\Controllers\Tenant\QuotationController::class, 'searchProduct'])->name('tenant.products.search');
@@ -60,10 +62,10 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::resource('products', \App\Http\Controllers\Tenant\ProductController::class)->names('tenant.products');
 
     // Customer Routes
-    Route::get('/companies/search', [\App\Http\Controllers\Tenant\CustomerController::class, 'searchCompanies'])->name('companies.search');
-    Route::get('/companies/{company}/next-customer-serial', [\App\Http\Controllers\Api\V1\CompanyController::class, 'nextCustomerSerial'])->name('companies.next-serial');
-    Route::get('/customers/search', [\App\Http\Controllers\Tenant\CustomerController::class, 'searchCustomers'])->name('tenant.customers.search');
-    Route::resource('customers', \App\Http\Controllers\Tenant\CustomerController::class)->names('tenant.customers');
+    Route::get('/companies/search', [CustomerController::class, 'searchCompanies'])->name('companies.search');
+    Route::get('/companies/{company}/next-customer-serial', [CustomerController::class, 'nextCustomerSerial'])->name('companies.next-serial');
+    Route::get('/customers/search', [CustomerController::class, 'searchCustomers'])->name('tenant.customers.search');
+    Route::resource('customers', CustomerController::class)->names('tenant.customers');
     Route::resource('companies', \App\Http\Controllers\Api\V1\CompanyController::class)->names('companies'); // For modal creation
 
     // Quotation Routes
