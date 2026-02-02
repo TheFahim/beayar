@@ -39,7 +39,7 @@ function initQuotationForm(config = {}) {
             discounted_price: 0,
             air_freight: 0,
             shipping: config.oldQuotationRevision?.shipping || 0,
-            vat_percentage: config.oldQuotationRevision?.vat_percentage || 10,
+            vat_percentage: config.oldQuotationRevision?.vat_percentage ?? 15,
             vat_amount: 0,
             margin_percentage: 0,
             total: 0,
@@ -82,6 +82,10 @@ function initQuotationForm(config = {}) {
 
         format2(value) {
             return QuotationHelpers.format2(value);
+        },
+
+        formatToApi(dateStr) {
+            return QuotationHelpers.formatToApi(dateStr);
         },
 
         // ========================================================================
@@ -1009,6 +1013,205 @@ function initQuotationForm(config = {}) {
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         },
         
+        // ========================================================================
+        // FORM SUBMISSION
+        // ========================================================================
+
+        async saveQuotation(saveAs) {
+            try {
+                this.isSubmitting = true;
+
+                const errors = this.validateForm();
+
+                if (errors && errors.length > 0) {
+                    this.showValidationErrors(errors);
+                    this.isSubmitting = false;
+                    return;
+                }
+
+                let result = null;
+
+                if (saveAs == 'revision') {
+
+                    result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you want to save this quotation as a revision?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, save it!',
+                        background: 'rgb(55 65 81)',
+                        customClass: {
+                            title: 'text-white',
+                            htmlContainer: '!text-white',
+                        },
+                    });
+                } else if (saveAs == 'draft-update') {
+                    this.quotation_revision.saved_as = 'draft';
+                    result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you want to save this quotation as draft?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, save it!',
+                        background: 'rgb(55 65 81)',
+                        customClass: {
+                            title: 'text-white',
+                            htmlContainer: '!text-white',
+                        },
+                    });
+                } else if (saveAs == 'quotation-update') {
+                    this.quotation_revision.saved_as = 'quotation';
+                    result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you want to save this quotation as quotation?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, save it!',
+                        background: 'rgb(55 65 81)',
+                        customClass: {
+                            title: 'text-white',
+                            htmlContainer: '!text-white',
+                        },
+                    });
+                } else {
+                    // Set the save_as parameter
+                    this.quotation_revision.saved_as = saveAs;
+
+                    // Show SweetAlert confirmation
+                    result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you want to save this quotation as ${saveAs}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, save it!',
+                        background: 'rgb(55 65 81)',
+                        customClass: {
+                            title: 'text-white',
+                            htmlContainer: '!text-white',
+                        },
+                    });
+                }
+
+
+                if (result.isConfirmed) {
+                    // Sync all SunEditor content to their respective textareas
+                    if (window.sunEditorUtils) {
+                        const allContent = window.sunEditorUtils.getAllEditorsContent();
+
+                        Object.keys(allContent).forEach(textareaId => {
+                            const textarea = document.getElementById(textareaId);
+                            if (textarea) {
+                                textarea.value = allContent[textareaId];
+                            }
+                        });
+                    }
+
+                    this.updateFormDateFields();
+
+                    // Create a new form submission without Alpine.js interference
+                    const form = document.querySelector('#quotation-form');
+                    if (form) {
+                        // Create a new form element to bypass Alpine.js event handling
+                        const newForm = document.createElement('form');
+                        newForm.action = form.action;
+                        newForm.method = form.method;
+                        newForm.enctype = form.enctype;
+
+                        // Copy all form data
+                        const formData = new FormData(form);
+                        for (let [key, value] of formData.entries()) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = key;
+                            input.value = value;
+                            newForm.appendChild(input);
+                        }
+
+                        // Add new_revision field if saving as revision
+                        if (saveAs === 'revision') {
+                            const revisionInput = document.createElement('input');
+                            revisionInput.type = 'hidden';
+                            revisionInput.name = 'quotation_revision[new_revision]';
+                            revisionInput.value = true;
+                            newForm.appendChild(revisionInput);
+                        }
+                        if (saveAs === 'quotation-update' || saveAs === 'draft-update') {
+                            const revisionInput = document.createElement('input');
+                            revisionInput.type = 'hidden';
+                            revisionInput.name = 'quotation_revision[id]';
+                            revisionInput.value = config.oldQuotationRevision?.id;
+                            newForm.appendChild(revisionInput);
+                        }
+
+                        // Add to document and submit
+                        document.body.appendChild(newForm);
+                        newForm.submit();
+                    } else {
+                        console.error('Form not found');
+                        this.isSubmitting = false;
+                    }
+                } else {
+                    // User cancelled, reset submitting state
+                    this.isSubmitting = false;
+                }
+            } catch (e) {
+                console.error('Submission error:', e);
+                // this.showValidationErrors(['An unexpected error occurred while submitting the form.']);
+                this.isSubmitting = false;
+            }
+        },
+
+        async handleSubmit(event) {
+            try {
+                // Prevent default form submission initially
+                event.preventDefault();
+
+                const errors = this.validateForm();
+
+                if (errors && errors.length > 0) {
+                    this.showValidationErrors(errors);
+                    return;
+                }
+
+                // Sync all SunEditor content to their respective textareas before submission
+                if (window.sunEditorUtils) {
+                    const allContent = window.sunEditorUtils.getAllEditorsContent();
+
+                    Object.keys(allContent).forEach(textareaId => {
+                        const textarea = document.getElementById(textareaId);
+                        if (textarea) {
+                            textarea.value = allContent[textareaId];
+                        }
+                    });
+                }
+
+                this.updateFormDateFields();
+
+                // Now allow the form to submit naturally
+                if (event && event.target) {
+                    // Remove the event listener temporarily to avoid infinite loop
+                    event.target.removeEventListener('submit', this.handleSubmit);
+                    event.target.submit();
+                }
+            } catch (e) {
+                console.error('Submission error:', e);
+                this.showValidationErrors(['An unexpected error occurred while submitting the form.']);
+            }
+        },
+
+        updateFormDateFields() {
+            this.quotation_revision.date = this.formatToApi(this.quotation_revision.date);
+            this.quotation_revision.validity = this.formatToApi(this.quotation_revision.validity);
+        },
+
         // --- Add Visual Feedback ---
         addVisualFeedback(elementId, classes, duration) {
            const el = document.getElementById(elementId);

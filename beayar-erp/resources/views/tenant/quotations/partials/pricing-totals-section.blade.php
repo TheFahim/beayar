@@ -75,11 +75,12 @@
                     <div>
                         <x-ui.form.simple-select name="quotation_revision[vat_percentage]" label="VAT (%)"
                             x-model.number="quotation_revision.vat_percentage" class="w-full px-4 py-3 md:py-2.5 text-base md:text-sm min-h-[44px]"
+                            value="{{ isset($loadRevision) ? $loadRevision->vat_percentage : 15 }}"
                             @change="calculateTotals()" >
                             <option value="0">0%</option>
                             <option value="5">5%</option>
                             <option value="10">10%</option>
-                            <option value="15" selected>15%</option>
+                            <option value="15">15%</option>
                         </x-ui.form.simple-select>
                     </div>
                 </template>

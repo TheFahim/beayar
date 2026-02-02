@@ -24,5 +24,7 @@ class ProductSeeder extends Seeder
                 'user_company_id' => $company->id,
             ]);
         }
+
+        $this->call(SpecificationSeeder::class);
     }
 }

@@ -18,6 +18,7 @@ class QuotationRevision extends Model
         'total' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'vat_amount' => 'decimal:2',
+        'vat_percentage' => 'float',
         'shipping' => 'decimal:2',
         'is_active' => 'boolean',
     ];
