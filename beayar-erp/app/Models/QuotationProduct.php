@@ -10,7 +10,7 @@ class QuotationProduct extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'quantity' => 'decimal:2',
+        'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'total' => 'decimal:2',
     ];

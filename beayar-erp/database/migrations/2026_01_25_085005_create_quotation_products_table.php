@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('unit')->nullable();
             $table->string('delivery_time')->nullable();
             $table->string('requision_no')->nullable();
-            $table->decimal('quantity', 10, 2);
+            $table->integer('quantity');
             $table->decimal('unit_price', 15, 2);
             $table->decimal('foreign_currency_buying', 15, 2)->nullable();
             $table->decimal('bdt_buying', 15, 2)->nullable();

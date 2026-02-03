@@ -4,8 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Quotation;
 
-class QuotationRequest extends FormRequest
+class QuotationUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +15,9 @@ class QuotationRequest extends FormRequest
 
     public function rules(): array
     {
-        // Get the quotation ID from the route parameter (for update) or from the request (for create)
-        $quotationId = $this->route('quotation')?->id ?? $this->quotation['id'] ?? null;
+        // Get the quotation ID safely
+        $quotation = $this->route('quotation');
+        $quotationId = $quotation instanceof Quotation ? $quotation->id : $quotation;
 
         return [
             // Main quotation fields
@@ -39,8 +41,9 @@ class QuotationRequest extends FormRequest
                 'exists:quotation_revisions,id',
             ],
             'quotation_revision.type' => ['required', 'string', 'in:normal,via'],
-            'quotation_revision.date' => ['required', 'date_format:d/m/Y'],
-            'quotation_revision.validity' => ['required', 'date_format:d/m/Y'], // Removed after_or_equal check to simplify for now
+            // Allow both d/m/Y (datepicker often used in frontend) and Y-m-d (standard DB/HTML5)
+            'quotation_revision.date' => ['required', 'date_format:d/m/Y,Y-m-d'],
+            'quotation_revision.validity' => ['required', 'date_format:d/m/Y,Y-m-d'],
             'quotation_revision.currency' => ['required', 'string', 'in:USD,EUR,BDT,RMB,INR'],
             'quotation_revision.exchange_rate' => [
                 'required_if:quotation_revision.type,via',

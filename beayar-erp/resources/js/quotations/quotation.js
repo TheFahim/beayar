@@ -28,6 +28,7 @@ function initQuotationForm(config = {}) {
         },
 
         quotation_revision: {
+            id: config.oldQuotationRevision?.id || '',
             type: config.oldQuotationRevision?.type || 'normal',
             date: config.oldQuotationRevision?.date || '',
             validity: config.oldQuotationRevision?.validity || '',
@@ -46,6 +47,7 @@ function initQuotationForm(config = {}) {
             saved_as: config.oldQuotationRevision?.saved_as || 'draft',
             terms_conditions: config.oldQuotationRevision?.terms_conditions || '',
         },
+
 
         quotation_products: config.oldQuotationProducts || [QuotationHelpers.createEmptyProductRow()],
 
@@ -1012,7 +1014,7 @@ function initQuotationForm(config = {}) {
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         },
-        
+
         // ========================================================================
         // FORM SUBMISSION
         // ========================================================================
@@ -1214,16 +1216,16 @@ function initQuotationForm(config = {}) {
 
         // --- Add Visual Feedback ---
         addVisualFeedback(elementId, classes, duration) {
-           const el = document.getElementById(elementId);
-           if (el) {
-               const originalClasses = el.className;
-               el.className = `${originalClasses} ${classes}`;
-               setTimeout(() => {
-                   el.className = originalClasses;
-               }, duration);
-           }
+            const el = document.getElementById(elementId);
+            if (el) {
+                const originalClasses = el.className;
+                el.className = `${originalClasses} ${classes}`;
+                setTimeout(() => {
+                    el.className = originalClasses;
+                }, duration);
+            }
         },
-        
+
         // --- Reset Upload Modal ---
         resetUploadModal() {
             this.uploadImageModal = QuotationHelpers.createEmptyModal('uploadImage');

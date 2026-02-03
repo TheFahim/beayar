@@ -27,7 +27,7 @@ class QuotationService
             $status = QuotationStatus::forCurrentCompany()
                 ->where('is_default', true)
                 ->first();
-            
+
             if (!$status) {
                 // Fallback or create default
                 $status = QuotationStatus::firstOrCreate(
@@ -55,10 +55,10 @@ class QuotationService
 
             // Update status if saved as quotation (Active)
             if (($revisionData['saved_as'] ?? 'draft') === 'quotation') {
-                 $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                 if ($activeStatus) {
-                     $quotation->update(['status_id' => $activeStatus->id]);
-                 }
+                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
+                if ($activeStatus) {
+                    $quotation->update(['status_id' => $activeStatus->id]);
+                }
             }
 
             return $quotation;
@@ -92,10 +92,10 @@ class QuotationService
 
             // Update quotation status if saved as quotation
             if (($revisionData['saved_as'] ?? 'draft') === 'quotation') {
-                 $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                 if ($activeStatus) {
-                     $quotation->update(['status_id' => $activeStatus->id]);
-                 }
+                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
+                if ($activeStatus) {
+                    $quotation->update(['status_id' => $activeStatus->id]);
+                }
             }
 
             return $quotation;
@@ -122,10 +122,10 @@ class QuotationService
 
             // Update quotation status if saved as quotation
             if (($revisionData['saved_as'] ?? 'draft') === 'quotation') {
-                 $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                 if ($activeStatus) {
-                     $quotation->update(['status_id' => $activeStatus->id]);
-                 }
+                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
+                if ($activeStatus) {
+                    $quotation->update(['status_id' => $activeStatus->id]);
+                }
             }
 
             return $revision;
@@ -159,7 +159,7 @@ class QuotationService
             'validity' => $validity,
             'valid_until' => $validity, // Sync valid_until
             'currency' => $revisionData['currency'],
-            'exchange_rate' => $revisionData['exchange_rate'],
+            'exchange_rate' => $revisionData['exchange_rate'] ?? 1,
             'subtotal' => $revisionData['subtotal'] ?? 0,
             'shipping' => $revisionData['shipping'] ?? 0,
             'shipping_cost' => $revisionData['shipping'] ?? 0, // Sync shipping_cost
@@ -192,7 +192,7 @@ class QuotationService
         } catch (\Exception $e) {
             $date = $revisionData['date']; // Fallback
         }
-        
+
         try {
             $validity = Carbon::createFromFormat('d/m/Y', $revisionData['validity'])->format('Y-m-d');
         } catch (\Exception $e) {
@@ -205,7 +205,7 @@ class QuotationService
             'validity' => $validity,
             'valid_until' => $validity,
             'currency' => $revisionData['currency'],
-            'exchange_rate' => $revisionData['exchange_rate'],
+            'exchange_rate' => $revisionData['exchange_rate'] ?? 1,
             'subtotal' => $revisionData['subtotal'] ?? 0,
             'shipping' => $revisionData['shipping'] ?? 0,
             'shipping_cost' => $revisionData['shipping'] ?? 0,
@@ -229,13 +229,13 @@ class QuotationService
     {
         // Collect existing product IDs from payload
         $payloadIds = collect($productsData)
-            ->map(fn ($p) => $p['id'] ?? null)
+            ->map(fn($p) => $p['id'] ?? null)
             ->filter()
             ->values()
             ->all();
 
         // Delete products not present in payload
-        if (! empty($payloadIds)) {
+        if (!empty($payloadIds)) {
             $revision->products()->whereNotIn('id', $payloadIds)->delete();
         } else {
             $revision->products()->delete();
@@ -360,7 +360,7 @@ class QuotationService
         $lastRevNo = $lastRevision->revision_no; // E.g. R00
         $num = (int) substr($lastRevNo, 1);
         $num++;
-        
+
         return 'R' . str_pad($num, 2, '0', STR_PAD_LEFT);
     }
 
@@ -374,7 +374,7 @@ class QuotationService
         // Beayar: filter by company
         $latestQuotation = Quotation::where('user_company_id', Auth::user()->current_user_company_id)
             ->where('customer_id', $customer->id)
-            ->where('quotation_no', 'LIKE', $customerNo.'-%')
+            ->where('quotation_no', 'LIKE', $customerNo . '-%')
             ->orderBy('quotation_no', 'desc')
             ->first();
 
@@ -391,7 +391,7 @@ class QuotationService
 
         $sequence = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        return $customerNo.'-'.$sequence;
+        return $customerNo . '-' . $sequence;
     }
 
     /**
@@ -410,7 +410,7 @@ class QuotationService
             ->whereHas('challan')
             ->exists();
 
-        return ! $hasChallan;
+        return !$hasChallan;
     }
 
     /**

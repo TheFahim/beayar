@@ -17,10 +17,15 @@ class QuotationRevisionRequest extends FormRequest
             // Quotation revision fields
             'quotation_revision' => ['required', 'array'],
             'quotation_revision.type' => ['required', 'string', 'in:normal,via'],
-            'quotation_revision.date' => ['required', 'date_format:d/m/Y'],
-            'quotation_revision.validity' => ['required', 'date_format:d/m/Y'],
+            'quotation_revision.date' => ['required', 'date_format:d/m/Y,Y-m-d'],
+            'quotation_revision.validity' => ['required', 'date_format:d/m/Y,Y-m-d'],
             'quotation_revision.currency' => ['required', 'string', 'in:USD,EUR,BDT,RMB,INR'],
-            'quotation_revision.exchange_rate' => ['required', 'numeric', 'min:0.01'],
+            'quotation_revision.exchange_rate' => [
+                'required_if:quotation_revision.type,via',
+                'nullable',
+                'numeric',
+                'min:0.01',
+            ],
             'quotation_revision.saved_as' => ['required', 'string', 'in:draft,quotation'],
 
             // Financial calculations

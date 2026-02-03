@@ -4,9 +4,13 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\TenantController as AdminTenantController;
+use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Tenant\BrandOriginController;
 use App\Http\Controllers\Tenant\CustomerController;
+use App\Http\Controllers\Tenant\ProductController;
+use App\Http\Controllers\Tenant\QuotationController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -55,32 +59,32 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::delete('/images/{id}', [ImageController::class, 'destroy'])->name('tenant.images.destroy');
 
     // Product Specifications
-    Route::get('/products/search', [\App\Http\Controllers\Tenant\QuotationController::class, 'searchProduct'])->name('tenant.products.search');
-    Route::get('/products/{product}/specifications', [\App\Http\Controllers\Tenant\QuotationController::class, 'getProductSpecifications'])->name('tenant.products.specifications');
+    Route::get('/products/search', [QuotationController::class, 'searchProduct'])->name('tenant.products.search');
+    Route::get('/products/{product}/specifications', [QuotationController::class, 'getProductSpecifications'])->name('tenant.products.specifications');
 
     // Products Routes
-    Route::resource('products', \App\Http\Controllers\Tenant\ProductController::class)->names('tenant.products');
+    Route::resource('products', ProductController::class)->names('tenant.products');
 
     // Customer Routes
     Route::get('/companies/search', [CustomerController::class, 'searchCompanies'])->name('companies.search');
     Route::get('/companies/{company}/next-customer-serial', [CustomerController::class, 'nextCustomerSerial'])->name('companies.next-serial');
     Route::get('/customers/search', [CustomerController::class, 'searchCustomers'])->name('tenant.customers.search');
     Route::resource('customers', CustomerController::class)->names('tenant.customers');
-    Route::resource('companies', \App\Http\Controllers\Api\V1\CompanyController::class)->names('companies'); // For modal creation
+    Route::resource('companies', CompanyController::class)->names('companies'); // For modal creation
 
     // Quotation Routes
-    Route::get('/quotations/exchange-rate', [\App\Http\Controllers\Tenant\QuotationController::class, 'getExchangeRate'])->name('exchange.rate');
-    Route::get('/quotations/next-number', [\App\Http\Controllers\Tenant\QuotationController::class, 'getNextQuotationNo'])->name('tenant.quotations.next-number');
-    Route::post('/quotations/product', [\App\Http\Controllers\Tenant\QuotationController::class, 'createProduct'])->name('tenant.quotations.create-product');
-    Route::patch('/quotations/{quotation}/status', [\App\Http\Controllers\Tenant\QuotationController::class, 'updateStatus'])->name('tenant.quotations.status');
-    Route::delete('/quotations/{quotation}/revisions/{revision}', [\App\Http\Controllers\Tenant\QuotationController::class, 'destroyRevision'])->name('tenant.quotations.revisions.destroy');
-    Route::resource('quotations', \App\Http\Controllers\Tenant\QuotationController::class)->names('tenant.quotations');
+    Route::get('/quotations/exchange-rate', [QuotationController::class, 'getExchangeRate'])->name('exchange.rate');
+    Route::get('/quotations/next-number', [QuotationController::class, 'getNextQuotationNo'])->name('tenant.quotations.next-number');
+    Route::post('/quotations/product', [QuotationController::class, 'createProduct'])->name('tenant.quotations.create-product');
+    Route::patch('/quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])->name('tenant.quotations.status');
+    Route::delete('/quotations/{quotation}/revisions/{revision}', [QuotationController::class, 'destroyRevision'])->name('tenant.quotations.revisions.destroy');
+    Route::resource('quotations', QuotationController::class)->names('tenant.quotations');
 
     // Brand Origins
-    Route::get('/brand-origins/search', [\App\Http\Controllers\Tenant\BrandOriginController::class, 'search'])->name('tenant.brand-origins.search');
-    Route::post('/brand-origins', [\App\Http\Controllers\Tenant\BrandOriginController::class, 'store'])->name('tenant.brand-origins.store');
-    Route::put('/brand-origins/{brandOrigin}', [\App\Http\Controllers\Tenant\BrandOriginController::class, 'update'])->name('tenant.brand-origins.update');
-    Route::delete('/brand-origins/{brandOrigin}', [\App\Http\Controllers\Tenant\BrandOriginController::class, 'destroy'])->name('tenant.brand-origins.destroy');
+    Route::get('/brand-origins/search', [BrandOriginController::class, 'search'])->name('tenant.brand-origins.search');
+    Route::post('/brand-origins', [BrandOriginController::class, 'store'])->name('tenant.brand-origins.store');
+    Route::put('/brand-origins/{brandOrigin}', [BrandOriginController::class, 'update'])->name('tenant.brand-origins.update');
+    Route::delete('/brand-origins/{brandOrigin}', [BrandOriginController::class, 'destroy'])->name('tenant.brand-origins.destroy');
 });
 
 // Admin Routes

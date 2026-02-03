@@ -1,4 +1,7 @@
 <x-dashboard.layout.default title="Edit Quotation">
+    @php
+        print_r(session('errors'));
+    @endphp
     <x-dashboard.ui.bread-crumb>
         <li class="inline-flex items-center">
             <a href="{{ route('tenant.quotations.index') }}"
