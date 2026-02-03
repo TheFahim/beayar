@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
             $table->foreignId('quotation_id')->nullable()->constrained('quotations');
             $table->foreignId('customer_id')->constrained('customers');
+            $table->foreignId('quotation_revision_id')->nullable()->constrained('quotation_revisions')->cascadeOnDelete();
             $table->string('challan_no')->unique();
             $table->date('date');
             $table->text('delivery_address')->nullable();

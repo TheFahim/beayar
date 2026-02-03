@@ -282,6 +282,38 @@ class QuotationController extends Controller
     }
 
     /**
+     * Activate a specific revision.
+     */
+    public function activateRevision(QuotationRevision $revision)
+    {
+        $quotation = $revision->quotation;
+        $this->authorizeQuotation($quotation);
+
+        if ($quotation->hasBills()) {
+            return redirect()->back()->with('error', 'Cannot change active revision because quotation has associated bills.');
+        }
+
+        DB::transaction(function () use ($quotation, $revision) {
+            // Deactivate all revisions
+            $this->quotationService->deactivateAllRevisions($quotation);
+            
+            // Activate this revision
+            $revision->update(['is_active' => true]);
+
+            // Update quotation status if saved as quotation
+            if (($revision->saved_as ?? 'draft') === 'quotation') {
+                 $activeStatus = \App\Models\QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
+                 if ($activeStatus) {
+                     $quotation->update(['status_id' => $activeStatus->id]);
+                 }
+            }
+        });
+
+        return redirect()->route('tenant.quotations.edit', $quotation->id)
+            ->with('success', 'Revision activated successfully!');
+    }
+
+    /**
      * Remove the specified quotation from storage.
      */
     public function destroy(Quotation $quotation)

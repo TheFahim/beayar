@@ -36,6 +36,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->enum('status', ['draft', 'sent', 'approved', 'rejected'])->default('draft');
             $table->boolean('is_active')->default(true); // Current active revision
+            $table->enum('saved_as', ['draft', 'quotation'])->default('draft');
 
             // Tracking
             $table->foreignId('created_by')->constrained('users');
