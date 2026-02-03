@@ -83,7 +83,7 @@
         </div>
     @endif
 
-    <form id="runningBillForm" class="space-y-6" action="{{ route('tenant.bills.store-running-bill', $quotation) }}"
+    <form id="runningBillForm" class="space-y-6" action="{{ route('tenant.quotations.bills.running.store', $quotation) }}"
         method="POST" x-data="{
             quotation: {{ json_encode($quotation) }},
             parentBill: {{ json_encode($parentBill) }},
