@@ -449,7 +449,7 @@
                                                                 </form>
                                                             @endif
                                                             {{-- add create bill button --}}
-                                                            {{-- @php
+                                                            @php
                                                                 $isActiveRevision =
                                                                     $quotation->revisions[0]->saved_as === 'quotation';
                                                                 $hasChallan = (bool) $quotation->has_challan;
@@ -480,7 +480,7 @@
 
                                                                 @if ($hasChallan)
                                                                     @if ($hasAdvance)
-                                                                        <a href="{{ route('bills.create', ['quotation_id' => $quotation->id, 'parent_bill_id' => $advanceId]) }}"
+                                                                        <a href="{{ route('tenant.quotations.bill', ['quotation' => $quotation->id, 'parent_bill_id' => $advanceId]) }}"
                                                                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                                                                             Create Running Bill
                                                                         </a>
@@ -489,19 +489,19 @@
                                                                             Regular billing disabled (advance exists)
                                                                         </div>
                                                                     @elseif ($canContinueRegular($quotation))
-                                                                        <a href="{{ route('bills.create', ['quotation_id' => $quotation->id]) }}"
+                                                                        <a href="{{ route('tenant.quotations.bill', ['quotation' => $quotation->id]) }}"
                                                                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                                                                             Continue Regular Bill
                                                                         </a>
                                                                     @elseif ($canCreateRegular($quotation))
-                                                                        <a href="{{ route('bills.create', ['quotation_id' => $quotation->id]) }}"
+                                                                        <a href="{{ route('tenant.quotations.bill', ['quotation' => $quotation->id]) }}"
                                                                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                                                                             Create Regular Bill
                                                                         </a>
                                                                     @endif
                                                                 @else
                                                                     @if ($canCreateRunning($quotation))
-                                                                        <a href="{{ route('bills.create', ['quotation_id' => $quotation->id, 'parent_bill_id' => $advanceId]) }}"
+                                                                        <a href="{{ route('tenant.quotations.bill', ['quotation' => $quotation->id, 'parent_bill_id' => $advanceId]) }}"
                                                                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                                                                             Create Running Bill
                                                                         </a>
@@ -511,7 +511,7 @@
                                                                             You can view/edit the advance bill.
                                                                         </div>
                                                                     @elseif ($canCreateAdvance($quotation))
-                                                                        <a href="{{ route('bills.create', ['quotation_id' => $quotation->id]) }}"
+                                                                        <a href="{{ route('tenant.quotations.bill', ['quotation' => $quotation->id]) }}"
                                                                             class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                                                                             Create Advance Bill
                                                                         </a>
@@ -525,7 +525,7 @@
                                                                         actions are disabled for draft quotations.
                                                                         Activate the revision to proceed.</span>
                                                                 </div>
-                                                            @endif --}}
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </template>

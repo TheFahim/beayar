@@ -76,7 +76,7 @@
             </li>
 
              <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.billing.index') }}">
+                <x-dashboard.common.sidebar-link url="{{ route('tenant.bills.index') }}">
                     <x-ui.svg.bill class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Billing</span>
                 </x-dashboard.common.sidebar-link>

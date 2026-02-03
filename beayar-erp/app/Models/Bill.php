@@ -3,63 +3,116 @@
 namespace App\Models;
 
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Bill extends Model
 {
-    use BelongsToCompany;
+    use HasFactory, BelongsToCompany;
 
-    protected $guarded = ['id'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'quotation_id',
+        'quotation_revision_id',
+        'parent_bill_id',
+        'invoice_no',
+        'bill_date',
+        'payment_received_date',
+        'bill_type',
+        'total_amount',
+        'bill_amount',
+        'bill_percentage',
+        'due',
+        'shipping',
+        'discount',
+        'status',
+        'notes',
+    ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'bill_date' => 'date',
         'payment_received_date' => 'date',
         'total_amount' => 'decimal:2',
-        'bill_amount' => 'decimal:2',
+        'bill_percentage' => 'decimal:2',
+        'paid' => 'decimal:2',
+        'paid_percent' => 'decimal:2',
         'due' => 'decimal:2',
+        'shipping' => 'decimal:2',
         'discount' => 'decimal:2',
     ];
 
-    public function quotation(): BelongsTo
+    public function quotation()
     {
         return $this->belongsTo(Quotation::class);
     }
 
-    public function quotationRevision(): BelongsTo
+    public function quotationRevision()
     {
         return $this->belongsTo(QuotationRevision::class);
     }
 
-    public function parentBill(): BelongsTo
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function parent()
     {
         return $this->belongsTo(Bill::class, 'parent_bill_id');
     }
 
-    public function subBills(): HasMany
+    public function children()
     {
         return $this->hasMany(Bill::class, 'parent_bill_id');
     }
 
-    public function billChallans(): HasMany
+    public function challans()
     {
-        return $this->hasMany(BillChallan::class);
+        return $this->belongsToMany(Challan::class, 'bill_challans')
+            ->withPivot('id')
+            ->withTimestamps();
     }
 
-    public function challans(): HasManyThrough
+    public function items()
     {
-        return $this->hasManyThrough(Challan::class, BillChallan::class, 'bill_id', 'id', 'id', 'challan_id');
+        return $this->hasManyThrough(
+            BillItem::class,
+            BillChallan::class,
+            'bill_id',          // Foreign key on bill_challans referencing bills
+            'bill_challan_id',  // Foreign key on bill_items referencing bill_challans
+            'id',               // Local key on bills
+            'id'                // Local key on bill_challans
+        );
     }
 
-    public function receivedBills(): HasMany
+    // Removed bill_installments relations
+
+    public function receivedBills()
     {
         return $this->hasMany(ReceivedBill::class);
     }
 
-    public function payments(): HasMany
+    public function isAdvance()
     {
-        return $this->hasMany(Payment::class);
+        return $this->bill_type === 'advance';
+    }
+
+    public function isRunning()
+    {
+        return $this->bill_type === 'running';
+    }
+
+    public function isRegular()
+    {
+        return $this->bill_type === 'regular';
     }
 }

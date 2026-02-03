@@ -7,11 +7,13 @@ use App\Http\Controllers\Admin\TenantController as AdminTenantController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Tenant\BillController;
 use App\Http\Controllers\Tenant\BrandOriginController;
 use App\Http\Controllers\Tenant\ChallanController;
 use App\Http\Controllers\Tenant\CustomerController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\QuotationController;
+use App\Http\Controllers\Tenant\ReceivedBillController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -41,9 +43,19 @@ Route::group(['middleware' => ['web', 'auth']], function () {
         return view('tenant.dashboard');
     })->name('tenant.dashboard');
 
-    Route::get('/billing', function () {
-        return view('tenant.billing.index');
-    })->name('tenant.billing.index');
+    // Billing Routes
+    Route::get('/bills/search', [BillController::class, 'search'])->name('tenant.bills.search');
+    Route::get('/bills/data', [BillController::class, 'getBillingData'])->name('tenant.bills.data');
+    Route::get('/quotations/{quotation}/bill', [BillController::class, 'createFromQuotation'])->name('tenant.quotations.bill');
+    Route::post('/quotations/{quotation}/bills/advance', [BillController::class, 'storeAdvanceBill'])->name('tenant.quotations.bills.advance.store');
+    Route::post('/quotations/{quotation}/bills/running', [BillController::class, 'storeRunningBill'])->name('tenant.quotations.bills.running.store');
+    Route::put('/bills/{bill}/advance', [BillController::class, 'updateAdvance'])->name('tenant.bills.advance.update');
+    Route::put('/bills/{bill}/regular', [BillController::class, 'updateRegular'])->name('tenant.bills.regular.update');
+    Route::put('/bills/{bill}/running', [BillController::class, 'updateRunning'])->name('tenant.bills.running.update');
+    Route::resource('bills', BillController::class)->names('tenant.bills');
+
+    // Received Bills (Payments)
+    Route::resource('received-bills', ReceivedBillController::class)->names('tenant.received-bills');
 
     Route::get('/finance', function () {
         return view('tenant.finance.index');

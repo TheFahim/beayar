@@ -26,7 +26,7 @@ import './imageLibrary';
 
 // Import billing system
 // import './bills';
-// import './advanceBills';
+import './advanceBills';
 
 // Start Alpine after components have registered
 // Alpine.start();
