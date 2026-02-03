@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\QuotationRequest;
-use App\Http\Requests\QuotationUpdateRequest;
-use App\Http\Requests\QuotationRevisionRequest;
-use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Customer;
 use App\Models\Quotation;
-use App\Models\QuotationRevision;
-use App\Models\Specification;
-use App\Services\ExchangeRateService;
-use App\Services\QuotationQueryService;
-use App\Services\QuotationService;
 use Illuminate\Http\Request;
+use App\Models\Specification;
+use App\Models\QuotationStatus;
+use Illuminate\Validation\Rule;
+use App\Models\QuotationRevision;
+use App\Services\QuotationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use App\Services\ExchangeRateService;
+use App\Http\Requests\QuotationRequest;
+use App\Services\QuotationQueryService;
+use App\Http\Requests\QuotationUpdateRequest;
+use App\Http\Requests\QuotationRevisionRequest;
 
 class QuotationController extends Controller
 {
@@ -302,7 +303,7 @@ class QuotationController extends Controller
 
             // Update quotation status if saved as quotation
             if (($revision->saved_as ?? 'draft') === 'quotation') {
-                 $activeStatus = \App\Models\QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
+                 $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
                  if ($activeStatus) {
                      $quotation->update(['status_id' => $activeStatus->id]);
                  }

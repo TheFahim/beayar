@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Tenant\BrandOriginController;
+use App\Http\Controllers\Tenant\ChallanController;
 use App\Http\Controllers\Tenant\CustomerController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\QuotationController;
@@ -86,6 +87,10 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::post('/brand-origins', [BrandOriginController::class, 'store'])->name('tenant.brand-origins.store');
     Route::put('/brand-origins/{brandOrigin}', [BrandOriginController::class, 'update'])->name('tenant.brand-origins.update');
     Route::delete('/brand-origins/{brandOrigin}', [BrandOriginController::class, 'destroy'])->name('tenant.brand-origins.destroy');
+
+    // Challan Routes
+    Route::get('/challans/products', [ChallanController::class, 'getProductsByChallanIds'])->name('tenant.challans.products');
+    Route::resource('challans', ChallanController::class)->names('tenant.challans');
 });
 
 // Admin Routes

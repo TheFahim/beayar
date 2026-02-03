@@ -97,4 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
         autohide: true,
         orientation: 'bottom'
     });
+
+    // Initialize generic flowbite datepickers
+    window.flowbiteDatepicker = new ReusableDatepicker('flowbite-datepicker', {
+        format: 'dd/mm/yyyy',
+        autohide: true,
+        orientation: 'bottom'
+    });
 });

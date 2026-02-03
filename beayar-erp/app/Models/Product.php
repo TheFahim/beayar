@@ -33,7 +33,14 @@ class Product extends Model
 
     public function challanProducts()
     {
-        return $this->hasMany(ChallanProduct::class);
+        return $this->hasManyThrough(
+            ChallanProduct::class,
+            QuotationProduct::class,
+            'product_id', // Foreign key on quotation_products table...
+            'quotation_product_id', // Foreign key on challan_products table...
+            'id', // Local key on products table...
+            'id' // Local key on quotation_products table...
+        );
     }
 
     public function getIsDeletableAttribute()

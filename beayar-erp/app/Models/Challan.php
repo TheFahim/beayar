@@ -6,6 +6,7 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Challan extends Model
 {
@@ -14,7 +15,8 @@ class Challan extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'challan_date' => 'date',
+        'date' => 'date',
+        'delivery_date' => 'date',
     ];
 
     public function quotation(): BelongsTo
@@ -22,8 +24,18 @@ class Challan extends Model
         return $this->belongsTo(Quotation::class);
     }
 
+    public function revision(): BelongsTo
+    {
+        return $this->belongsTo(QuotationRevision::class, 'quotation_revision_id');
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(ChallanProduct::class);
+    }
+
+    public function bills(): BelongsToMany
+    {
+        return $this->belongsToMany(Bill::class, 'bill_challans');
     }
 }

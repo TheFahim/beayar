@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('challan_products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('challan_id')->constrained('challans')->cascadeOnDelete();
-            $table->foreignId('product_id')->nullable()->constrained('products');
-            $table->string('product_name');
-            $table->decimal('quantity', 10, 2);
+            $table->foreignId('quotation_product_id')->constrained('quotation_products')->cascadeOnDelete();
+            $table->integer('quantity');
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

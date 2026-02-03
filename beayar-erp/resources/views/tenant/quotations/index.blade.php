@@ -240,95 +240,6 @@
                                                 <div>
                                                     {{ $quotation->quotation_no }}
                                                 </div>
-                                                {{-- <div>
-                                                    @php
-                                                        $latestType = $quotation->latestBillType;
-                                                        $parentType = null;
-                                                        if (!empty($quotation->parentBillId)) {
-                                                            $parent = optional(
-                                                                $quotation->bills->firstWhere(
-                                                                    'id',
-                                                                    $quotation->parentBillId,
-                                                                ),
-                                                            );
-                                                            $parentType = $parent?->bill_type;
-                                                        }
-                                                    @endphp
-                                                    @if ($latestType)
-                                                        <div class="flex items-center gap-2">
-                                                            @if ($latestType === 'advance')
-                                                                <span
-                                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200"
-                                                                    title="This quotation has an advance bill.">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                        class="w-3 h-3" viewBox="0 0 20 20"
-                                                                        fill="currentColor">
-                                                                        <path
-                                                                            d="M10 2a4 4 0 00-4 4v2H5a1 1 0 00-1 1v7a1 1 0 001 1h10a1 1 0 001-1V9a1 1 0 00-1-1h-1V6a4 4 0 00-4-4zm-2 6V6a2 2 0 114 0v2H8z" />
-                                                                    </svg>
-                                                                    Advance
-                                                                </span>
-                                                            @elseif ($latestType === 'regular')
-                                                                <span
-                                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200"
-                                                                    title="This quotation has regular bills against challans.">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                        class="w-3 h-3" viewBox="0 0 20 20"
-                                                                        fill="currentColor">
-                                                                        <path
-                                                                            d="M4 3a2 2 0 00-2 2v1h16V5a2 2 0 00-2-2H4zm14 5H2v7a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                                                                    </svg>
-                                                                    Regular
-                                                                </span>
-                                                            @elseif ($latestType === 'running')
-                                                                <span
-                                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
-                                                                    title="This quotation has running installments.">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                        class="w-3 h-3" viewBox="0 0 20 20"
-                                                                        fill="currentColor">
-                                                                        <path d="M13 7H7v6h6V7z" />
-                                                                        <path fill-rule="evenodd"
-                                                                            d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm10 12H5V5h10v10z"
-                                                                            clip-rule="evenodd" />
-                                                                    </svg>
-                                                                    Running
-                                                                </span>
-                                                                @if ($parentType)
-                                                                    <span
-                                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200"
-                                                                        title="Parent bill type for this running installment.">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            class="w-3 h-3" viewBox="0 0 20 20"
-                                                                            fill="currentColor">
-                                                                            <path
-                                                                                d="M10 2a4 4 0 00-4 4v2H5a1 1 0 00-1 1v7a1 1 0 001 1h10a1 1 0 001-1V9a1 1 0 00-1-1h-1V6a4 4 0 00-4-4zm-2 6V6a2 2 0 114 0v2H8z" />
-                                                                        </svg>
-                                                                        Parent: {{ ucfirst($parentType) }}
-                                                                    </span>
-                                                                @else
-                                                                    <span
-                                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                                                                        title="No parent bill information.">
-                                                                        Parent: N/A
-                                                                    </span>
-                                                                @endif
-                                                            @endif
-                                                        </div>
-                                                        @if ($latestType === 'running' && $parentType)
-                                                            <div class="mt-1 text-[11px] text-gray-600 dark:text-gray-400"
-                                                                title="Relationship between the bill types">
-                                                                Running → {{ ucfirst($parentType) }}
-                                                            </div>
-                                                        @endif
-                                                    @else
-                                                        <span
-                                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                                                            title="No bills created yet for this quotation">
-                                                            No bills
-                                                        </span>
-                                                    @endif
-                                                </div> --}}
                                             </a>
                                         </td>
                                         <td class="px-6 py-4">
@@ -510,32 +421,20 @@
                                                                 href="{{ route('tenant.quotations.edit', $quotation) }}">
                                                                 Edit Info
                                                             </a>
-                                                            {{-- <a class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                                                                href="{{ route('quotations.revisions', $quotation) }}">
-                                                                <i class="fas fa-code-branch mr-2"></i> Manage
-                                                                Revisions
-                                                            </a> --}}
+
                                                             <hr class="border-gray-200 dark:border-gray-600">
-                                                            {{-- <form
-                                                                action="{{ route('quotations.duplicate', $quotation) }}"
-                                                                method="POST" class="inline-block w-full">
-                                                                @csrf
-                                                                <button type="submit"
-                                                                    class="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                                                                    Duplicate
-                                                                </button>
-                                                            </form> --}}
-                                                            {{-- @if (($quotation->revisions[0]->saved_as === 'quotation' && !$quotation->has_challan) && $quotation->type === 'normal')
+
+                                                            @if (($quotation->revisions[0]->saved_as === 'quotation' && !$quotation->has_challan) && $quotation->type === 'normal')
                                                                 <a class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                                                                    href="{{ route('challans.create', ['quotation_id' => $quotation->id]) }}">
+                                                                    href="{{ route('tenant.challans.create', ['quotation_id' => $quotation->id]) }}">
                                                                     Create Challan
                                                                 </a>
                                                             @elseif (($quotation->revisions[0]->saved_as === 'quotation' && !$quotation->challan_fulfilled) && $quotation->type === 'normal')
                                                                 <a class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                                                                    href="{{ route('challans.create', ['quotation_id' => $quotation->id]) }}">
+                                                                    href="{{ route('tenant.challans.create', ['quotation_id' => $quotation->id]) }}">
                                                                     Continue Challan
                                                                 </a>
-                                                            @endif --}}
+                                                            @endif
                                                             @if (!$quotation->revisions[0]->challan()->exists())
                                                                 <hr class="border-gray-200 dark:border-gray-600">
                                                                 <form

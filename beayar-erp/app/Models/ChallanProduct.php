@@ -14,8 +14,8 @@ class ChallanProduct extends Model
         return $this->belongsTo(Challan::class);
     }
 
-    public function product(): BelongsTo
+    public function quotationProduct(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(QuotationProduct::class);
     }
 }

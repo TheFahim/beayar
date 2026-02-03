@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class QuotationProduct extends Model
 {
@@ -33,5 +34,10 @@ class QuotationProduct extends Model
     public function specification(): BelongsTo
     {
         return $this->belongsTo(Specification::class);
+    }
+
+    public function challanProducts(): HasMany
+    {
+        return $this->hasMany(ChallanProduct::class);
     }
 }

@@ -14,8 +14,9 @@ return new class extends Migration
             $table->foreignId('quotation_id')->nullable()->constrained('quotations');
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('quotation_revision_id')->nullable()->constrained('quotation_revisions')->cascadeOnDelete();
-            $table->string('challan_no')->unique();
+            $table->string('challan_no');
             $table->date('date');
+            $table->date('delivery_date')->nullable();
             $table->text('delivery_address')->nullable();
             $table->string('status')->default('pending'); // pending, delivered
             $table->timestamps();
