@@ -474,13 +474,17 @@ class BillController extends Controller
             ->get();
 
         $advanceBills = $quotation->bills()
+            ->with('children')
             ->where('bill_type', 'advance')
             ->get();
 
         if ($advanceBills->isNotEmpty()) {
             $this->calculateAdvanceBillRemaining($advanceBills);
 
-            return view('tenant.bills.running', compact('quotation', 'advanceBills'));
+            $parentBill = $advanceBills->first();
+            $nextInvoiceNo = $this->invoiceNumberGenerator->generate($quotation);
+
+            return view('tenant.bills.create-running', compact('quotation', 'parentBill', 'nextInvoiceNo'));
         }
 
         if ($challans->isNotEmpty()) {

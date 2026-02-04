@@ -82,7 +82,7 @@
         </div>
     @endif
 
-    <form id="editRunningBillForm" class="space-y-6" action="{{ route('tenant.bills.update-running', $bill) }}" method="POST"
+    <form id="editRunningBillForm" class="space-y-6" action="{{ route('tenant.bills.running.update', $bill) }}" method="POST"
         x-data="{
             bill: {{ json_encode($bill) }},
             quotation: {{ json_encode($quotation) }},
@@ -369,42 +369,6 @@
                                     @error('notes')
                                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                                     @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
-                            <div class="flex items-center gap-2">
-                                <div
-                                    class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-base font-bold text-white">Bill Summary</h3>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="grid md:grid-cols-3 gap-4">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400"
-                                        x-text="`{{ ($bill->quotationRevision?->type === 'via') ? ($bill->quotationRevision?->currency) : 'BDT' }} ${runAmt}`">{{ ($bill->quotationRevision?->type === 'via') ? ($bill->quotationRevision?->currency) : 'BDT' }} 0.00</div>
-                                    <div class="text-xs text-gray-600 dark:text-gray-400">Running Amount</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-green-600 dark:text-green-400"
-                                        x-text="`{{ ($bill->quotationRevision?->type === 'via') ? ($bill->quotationRevision?->currency) : 'BDT' }} ${(parseFloat(dueAfter)||0).toFixed(2)}`">{{ ($bill->quotationRevision?->type === 'via') ? ($bill->quotationRevision?->currency) : 'BDT' }} 0.00</div>
-                                    <div class="text-xs text-gray-600 dark:text-gray-400">Remaining After This</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400"
-                                        x-text="`${(parseFloat(runPct)||0).toFixed(2)}%`">0%</div>
-                                    <div class="text-xs text-gray-600 dark:text-gray-400">Running %</div>
                                 </div>
                             </div>
                         </div>

@@ -101,35 +101,33 @@
             init() {
                 this.total = parseFloat(this.parentBill?.total_amount || 0);
                 const children = Array.isArray(this.parentBill?.children) ? this.parentBill.children : [];
-                const childrenSum = children.reduce((sum, c) => sum + parseFloat(c?.total_amount || 0), 0);
-                const billedFromDb = parseFloat(this.parentBill?.bill_percentage || 0);
-                const billedFromChildren = this.total > 0 ? ((childrenSum / this.total) * 100) : 0;
                 this.billedPct = this.calculateBillPct();
                 this.remainPct = Math.max(0, 100 - this.billedPct);
                 const fallbackDue = this.parentBill.due;
-                this.dueCurrent = parseFloat(this.parentBill.children[this.parentBill.children.length - 1]?.due ?? fallbackDue);
-                this.runAmt = parseFloat(this.runAmt || 0);
-                this.runPct = parseFloat(this.runPct || 0);
-                this.dueAfter = Math.max(0, this.dueCurrent - this.runAmt);
-                this.remainAfterPct = Math.max(0, 100 - this.billedPct - this.runPct);
+                this.dueCurrent = parseFloat(children.length > 0 ? children[children.length - 1].due : fallbackDue);
+                this.runAmt = 0;
+                this.runPct = 10;
+                this.dueAfter = this.dueCurrent;
+                this.remainAfterPct = this.remainPct;
                 const base = this.parentBill?.invoice_no || '';
-                const count = Array.isArray(this.parentBill?.children) ? this.parentBill.children.length : 0;
+                const count = children.length;
                 const nextChar = String.fromCharCode(65 + (count || 0));
                 this.invoiceNo = base ? `${base}-${nextChar}` : '';
                 this.computeFromPercentage();
-
-                {{-- console.log(this.parentBill) --}}
             },
 
             calculateBillPct() {
                 let value = 0;
-                console.log(this.parentBill);
-                const parentVal = this.parentBill.bill_percentage;
-                value += parseFloat(parentVal || 0);
-                for (i = 0; i < this.parentBill.children.length; i++) {
-                    value += parseFloat(this.parentBill.children[i]?.bill_percentage || 0);
+                // Calculate original advance percentage (bill_amount / total_amount * 100)
+                // because parentBill.bill_percentage might be overwritten by controller logic
+                if (this.parentBill?.total_amount > 0) {
+                    value = (parseFloat(this.parentBill.bill_amount || 0) / parseFloat(this.parentBill.total_amount)) * 100;
                 }
-                console.log(value);
+
+                const children = Array.isArray(this.parentBill?.children) ? this.parentBill.children : [];
+                for (i = 0; i < children.length; i++) {
+                    value += parseFloat(children[i]?.bill_percentage || 0);
+                }
                 return value;
             },
             clampValues() {

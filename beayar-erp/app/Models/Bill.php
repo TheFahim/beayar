@@ -16,6 +16,7 @@ class Bill extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_company_id',
         'quotation_id',
         'quotation_revision_id',
         'parent_bill_id',
