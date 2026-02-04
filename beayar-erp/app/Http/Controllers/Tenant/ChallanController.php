@@ -28,10 +28,10 @@ class ChallanController extends Controller
             'products.quotationProduct.product',
         ])
             ->withCount('bills')
-            ->latest()->get();
+            ->latest()->paginate(15);
 
         // Add challan fulfillment logic for each challan
-        $challans->each(function ($challan) {
+        $challans->getCollection()->each(function ($challan) {
             $revision = $challan->revision;
 
             // Determine whether all products/quantities are fully challaned
@@ -319,9 +319,9 @@ class ChallanController extends Controller
             'quotation_revision_id' => 'required|exists:quotation_revisions,id',
             'date' => 'required|date_format:d/m/Y',
             'challan_no' => [
-                'required', 
-                'string', 
-                'max:255', 
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('challans', 'challan_no')
                     ->ignore($challan->id)
                     ->where(function ($query) {

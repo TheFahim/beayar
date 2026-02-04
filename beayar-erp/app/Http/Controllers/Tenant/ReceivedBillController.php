@@ -20,7 +20,7 @@ class ReceivedBillController extends Controller
     {
         $receivedBills = Bill::with(['receivedBills', 'challan', 'challan.quotation', 'challan.quotation.customer'])
             ->latest()
-            ->get();
+            ->paginate(15);
 
         return view('tenant.payments.index', compact('receivedBills'));
     }

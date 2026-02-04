@@ -161,5 +161,8 @@
                 </tbody>
             </table>
         </div>
+        <div class="mt-4">
+            {{ $receivedBills->links() }}
+        </div>
     </x-ui.card>
 </x-dashboard.layout.default>

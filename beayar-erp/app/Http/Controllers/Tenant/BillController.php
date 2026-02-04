@@ -43,23 +43,27 @@ class BillController extends Controller
     public function index()
     {
         try {
-            $bills = Bill::with(['quotation', 'user'])->latest()->get();
+            $bills = Bill::with(['quotation', 'user'])->latest()->paginate(15);
 
             $bills->load(['quotation.revisions' => function ($query) {
                 $query->where('is_active', true)->latest()->limit(1);
             }]);
 
-            $latestByQuotation = Bill::select('id', 'quotation_id', 'bill_date')
-                ->orderBy('quotation_id')
-                ->orderBy('bill_date', 'desc')
-                ->orderBy('id', 'desc')
-                ->get()
+            // Calculate metrics based on all bills, not just the paginated ones
+            // This might be expensive, so we might want to cache it or optimize it
+            $allBills = Bill::select('id', 'quotation_id', 'bill_date', 'total_amount', 'due')
+                ->withSum('receivedBills as paid', 'amount')
+                ->get();
+
+            $latestByQuotation = $allBills
+                ->sortByDesc('id')
+                ->sortByDesc('bill_date')
                 ->groupBy('quotation_id')
                 ->map(function ($group) {
                     return optional($group->first())->id;
                 });
 
-            $totalAmountUniqueByQuotation = $bills->groupBy('quotation_id')->map(function ($group) use ($latestByQuotation) {
+            $totalAmountUniqueByQuotation = $allBills->groupBy('quotation_id')->map(function ($group) use ($latestByQuotation) {
                 $qid = optional($group->first())->quotation_id;
                 $latestId = $qid !== null ? ($latestByQuotation[$qid] ?? null) : null;
                 $latest = $latestId ? $group->firstWhere('id', $latestId) : $group->sortByDesc('bill_date')->sortByDesc('id')->first();
@@ -67,7 +71,7 @@ class BillController extends Controller
                 return (float) ($latest->total_amount ?? 0);
             })->sum();
 
-            $totalDueUniqueByQuotation = $bills->groupBy('quotation_id')->map(function ($group) use ($latestByQuotation) {
+            $totalDueUniqueByQuotation = $allBills->groupBy('quotation_id')->map(function ($group) use ($latestByQuotation) {
                 $qid = optional($group->first())->quotation_id;
                 $latestId = $qid !== null ? ($latestByQuotation[$qid] ?? null) : null;
                 $latest = $latestId ? $group->firstWhere('id', $latestId) : $group->sortByDesc('bill_date')->sortByDesc('id')->first();
@@ -76,10 +80,10 @@ class BillController extends Controller
             })->sum();
 
             $metrics = [
-                'total_bills' => (int) $bills->count(),
+                'total_bills' => (int) $allBills->count(),
                 'total_amount_unique_by_quotation' => (float) $totalAmountUniqueByQuotation,
-                'total_paid' => (float) $bills->sum('paid'),
-                'total_due' => (float) $bills->sum('due'),
+                'total_paid' => (float) $allBills->sum('paid'),
+                'total_due' => (float) $allBills->sum('due'),
                 'total_due_unique_by_quotation' => (float) $totalDueUniqueByQuotation,
             ];
 

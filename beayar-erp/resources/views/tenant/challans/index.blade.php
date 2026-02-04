@@ -323,6 +323,9 @@
                 </tbody>
             </table>
         </div>
+        <div class="mt-4">
+            {{ $challans->links() }}
+        </div>
     </x-ui.card>
 
     {{-- Shared Dropdown Component --}}
