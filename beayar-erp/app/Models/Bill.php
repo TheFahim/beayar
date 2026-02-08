@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Bill extends Model
 {
-    use HasFactory, BelongsToCompany;
+    use HasFactory, BelongsToTenant;
 
     /**
      * The attributes that are mass assignable.

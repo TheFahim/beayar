@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            'tenant.context' => \App\Http\Middleware\SetTenantContext::class,
             'tenant.scope' => \App\Http\Middleware\TenantScope::class,
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
             'subscription.check' => \App\Http\Middleware\CheckSubscriptionLimits::class,

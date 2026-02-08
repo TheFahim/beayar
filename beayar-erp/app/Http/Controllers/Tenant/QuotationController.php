@@ -47,22 +47,18 @@ class QuotationController extends Controller
      */
     public function create()
     {
-        $userCompanyId = auth()->user()->current_user_company_id;
+        $this->authorize('create', Quotation::class);
 
-        $customers = Customer::where('user_company_id', $userCompanyId)
-            ->with('customerCompany:id,name')
+        $customers = Customer::with('customerCompany:id,name')
             ->select('id', 'name', 'customer_company_id', 'customer_no', 'address', 'phone', 'email', 'attention')
             ->orderBy('name')
             ->get();
 
-        $products = Product::where('user_company_id', $userCompanyId)
-            ->select('id', 'name', 'image_id')
+        $products = Product::select('id', 'name', 'image_id')
             ->orderBy('name')
             ->get();
 
-        $specifications = Specification::whereHas('product', function ($q) use ($userCompanyId) {
-            $q->where('user_company_id', $userCompanyId);
-        })
+        $specifications = Specification::whereHas('product')
             ->select('id', 'description')
             ->get();
 

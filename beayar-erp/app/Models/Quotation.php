@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Quotation extends Model
+class Quotation extends BaseModel
 {
-    use BelongsToCompany;
+    use HasFactory, BelongsToTenant;
 
     protected $guarded = ['id'];
 

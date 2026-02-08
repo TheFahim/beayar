@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
 

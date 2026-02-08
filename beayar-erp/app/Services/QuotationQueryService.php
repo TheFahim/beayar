@@ -35,7 +35,7 @@ class QuotationQueryService
         ])->withCount('revisions');
 
         // Apply tenant scope if not already applied by global scope
-        $query->where('user_company_id', Auth::user()->current_user_company_id);
+        // $query->where('user_company_id', Auth::user()->current_user_company_id);
 
         // Apply filters
         $this->applyStatusFilter($query, $request->status);

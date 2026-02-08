@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Customer extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
 

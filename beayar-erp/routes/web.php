@@ -38,10 +38,13 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Tenant Routes (Protected by auth in real app)
-Route::group(['middleware' => ['web', 'auth']], function () {
+Route::group(['middleware' => ['web', 'auth', 'tenant.context']], function () {
     Route::get('/dashboard', function () {
         return view('tenant.dashboard');
     })->name('tenant.dashboard');
+
+    // Company Members
+    Route::resource('company-members', \App\Http\Controllers\CompanyMemberController::class)->names('company-members');
 
     // Billing Routes
     Route::get('/bills/search', [BillController::class, 'search'])->name('tenant.bills.search');

@@ -52,6 +52,24 @@ class User extends Authenticatable
         return $this->hasMany(UserCompany::class, 'owner_id');
     }
 
+    public function companies()
+    {
+        return $this->belongsToMany(UserCompany::class, 'company_members', 'user_id', 'user_company_id')
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    public function roleInCompany($companyId)
+    {
+        $company = $this->companies()->where('user_company_id', $companyId)->first();
+        return $company ? $company->pivot->role : null;
+    }
+
+    public function isOwnerOf($companyId)
+    {
+        return $this->ownedCompanies()->where('id', $companyId)->exists();
+    }
+
     // Subscription Helpers
     public function canPerformAction(string $metric): bool
     {

@@ -18,6 +18,13 @@ class UserCompany extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'company_members', 'user_company_id', 'user_id')
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
     public function parentCompany(): BelongsTo
     {
         return $this->belongsTo(UserCompany::class, 'parent_company_id');
