@@ -18,9 +18,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create Roles
         $roles = [
-            'admin',
-            'tenant',
-            'user',
+            'super_admin',  // Manages the entire application (tenants/customers)
+            'tenant_admin', // The Owner who signed up (manages companies)
+            'company_admin',// Manages a specific company (employees, data)
+            'employee',     // Regular user within a company
         ];
 
         foreach ($roles as $roleName) {

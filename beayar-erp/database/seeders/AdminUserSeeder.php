@@ -22,7 +22,7 @@ class AdminUserSeeder extends Seeder
         );
 
         // Assign Admin Role
-        $user->assignRole('admin');
+        $user->assignRole('super_admin');
 
         // Create Default Company
         $company = UserCompany::firstOrCreate(
@@ -50,7 +50,7 @@ class AdminUserSeeder extends Seeder
             ]
         );
 
-        $tenantUser->assignRole('tenant');
+        $tenantUser->assignRole('tenant_admin');
 
         $tenantCompany = UserCompany::firstOrCreate(
             ['owner_id' => $tenantUser->id],

@@ -27,9 +27,19 @@ class CompanyMemberPolicy
         }
 
         $tenantId = Session::get('tenant_id');
+
+        // Check Global Role (Spatie)
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
+        // Check Contextual Role (Company Member)
         $role = $user->roleInCompany($tenantId);
 
-        return $user->isOwnerOf($tenantId) || $role === 'admin';
+        // Tenant Admin (Owner) OR Company Admin can create members
+        return $user->isOwnerOf($tenantId) ||
+               $user->hasRole('tenant_admin') ||
+               $role === 'company_admin';
     }
 
     /**
@@ -37,12 +47,18 @@ class CompanyMemberPolicy
      */
     public function update(User $user, UserCompany $company): bool
     {
-        // $company here is the company context, typically passed or inferred.
-        // If the policy is checked against the Company object itself:
-        
+        // Check Global Role
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
         $role = $user->roleInCompany($company->id);
 
-        return $user->isOwnerOf($company->id) || $role === 'admin';
+        // Tenant Admin (Owner) OR Company Admin can update roles
+        // BUT Company Admin cannot demote/promote the Owner or other Tenant Admins (logic needs care)
+        return $user->isOwnerOf($company->id) ||
+               $user->hasRole('tenant_admin') ||
+               $role === 'company_admin';
     }
 
     /**
@@ -50,8 +66,14 @@ class CompanyMemberPolicy
      */
     public function delete(User $user, UserCompany $company): bool
     {
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
         $role = $user->roleInCompany($company->id);
 
-        return $user->isOwnerOf($company->id) || $role === 'admin';
+        return $user->isOwnerOf($company->id) ||
+               $user->hasRole('tenant_admin') ||
+               $role === 'company_admin';
     }
 }

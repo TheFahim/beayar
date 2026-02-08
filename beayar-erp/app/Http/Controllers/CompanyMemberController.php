@@ -50,7 +50,7 @@ class CompanyMemberController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            'role' => 'required|in:admin,editor,member',
+            'role' => 'required|in:company_admin,employee',
         ]);
 
         $user = Auth::user();
@@ -62,6 +62,7 @@ class CompanyMemberController extends Controller
             abort(403);
         }
         
+        // Use Policy to check creation rights
         // $this->authorize('create', [User::class, $company]);
 
         try {
@@ -78,7 +79,7 @@ class CompanyMemberController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'role' => 'required|in:admin,editor,member',
+            'role' => 'required|in:company_admin,employee',
         ]);
 
         $targetUser = User::findOrFail($id);

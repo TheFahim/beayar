@@ -11,7 +11,7 @@ class AdminAuth
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('admin')->check()) {
+        if (!Auth::check() || !Auth::user()->hasRole('super_admin')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
