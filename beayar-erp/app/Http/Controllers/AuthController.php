@@ -50,6 +50,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
+            'company_name' => ['required', 'string', 'max:255'],
         ]);
 
         $user = \App\Models\User::create([
@@ -58,9 +59,13 @@ class AuthController extends Controller
             'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
         ]);
         
-        // Assign default role (e.g., tenant or user)
-        // For now, let's assume 'tenant' or just basic 'user' until configured otherwise
-        // $user->assignRole('tenant'); 
+        // Create the company immediately
+        \App\Models\UserCompany::create([
+            'owner_id' => $user->id,
+            'name' => $validated['company_name'],
+            'organization_type' => \App\Models\UserCompany::TYPE_INDEPENDENT,
+            'status' => 'active',
+        ]);
 
         Auth::login($user);
 

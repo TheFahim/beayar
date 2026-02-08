@@ -13,6 +13,46 @@ class UserCompany extends Model
 
     protected $guarded = ['id'];
 
+    public const TYPE_INDEPENDENT = 'independent';
+    public const TYPE_HOLDING = 'holding';
+    public const TYPE_SUBSIDIARY = 'subsidiary';
+
+    public function isHolding(): bool
+    {
+        return $this->organization_type === self::TYPE_HOLDING;
+    }
+
+    public function isSubsidiary(): bool
+    {
+        return $this->organization_type === self::TYPE_SUBSIDIARY;
+    }
+
+    public function isIndependent(): bool
+    {
+        return $this->organization_type === self::TYPE_INDEPENDENT;
+    }
+
+    /**
+     * Get IDs of the company and its subsidiaries if it's a holding company.
+     * Useful for aggregated reporting.
+     */
+    public function getGroupIds(): array
+    {
+        if ($this->isHolding()) {
+            return $this->subCompanies()->pluck('id')->push($this->id)->toArray();
+        }
+        return [$this->id];
+    }
+
+    /**
+     * Scope to get the company and its subsidiaries.
+     */
+    public function scopeDescendantsOf($query, $companyId)
+    {
+        return $query->where('id', $companyId)
+                     ->orWhere('parent_company_id', $companyId);
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');

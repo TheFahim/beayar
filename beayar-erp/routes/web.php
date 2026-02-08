@@ -63,10 +63,10 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     Route::put('/bills/{bill}/advance', [BillController::class, 'updateAdvance'])->name('tenant.bills.advance.update');
     Route::put('/bills/{bill}/regular', [BillController::class, 'updateRegular'])->name('tenant.bills.regular.update');
     Route::put('/bills/{bill}/running', [BillController::class, 'updateRunning'])->name('tenant.bills.running.update');
-    Route::resource('bills', BillController::class)->names('tenant.bills');
+    Route::resource('bills', BillController::class)->names('tenant.bills')->middleware('ensure.operational');
 
     // Received Bills (Payments)
-    Route::resource('received-bills', ReceivedBillController::class)->names('tenant.received-bills');
+    Route::resource('received-bills', ReceivedBillController::class)->names('tenant.received-bills')->middleware('ensure.operational');
 
     Route::get('/finance', function () {
         return view('tenant.finance.index');
@@ -87,7 +87,7 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     Route::get('/products/{product}/specifications', [QuotationController::class, 'getProductSpecifications'])->name('tenant.products.specifications');
 
     // Products Routes
-    Route::resource('products', ProductController::class)->names('tenant.products');
+    Route::resource('products', ProductController::class)->names('tenant.products')->middleware('ensure.operational');
 
     // Customer Routes
     Route::get('/companies/search', [CustomerController::class, 'searchCompanies'])->name('companies.search');
@@ -103,7 +103,7 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     Route::patch('/quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])->name('tenant.quotations.status');
     Route::get('/quotations/revisions/{revision}/activate', [QuotationController::class, 'activateRevision'])->name('tenant.quotations.revisions.activate');
     Route::delete('/quotations/{quotation}/revisions/{revision}', [QuotationController::class, 'destroyRevision'])->name('tenant.quotations.revisions.destroy');
-    Route::resource('quotations', QuotationController::class)->names('tenant.quotations');
+    Route::resource('quotations', QuotationController::class)->names('tenant.quotations')->middleware('ensure.operational');
 
     // Brand Origins
     Route::get('/brand-origins/search', [BrandOriginController::class, 'search'])->name('tenant.brand-origins.search');
