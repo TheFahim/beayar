@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant.context' => \App\Http\Middleware\SetTenantContext::class,
             'tenant.scope' => \App\Http\Middleware\TenantScope::class,
+            'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingComplete::class,
             'admin.auth' => \App\Http\Middleware\AdminAuth::class,
             'subscription.check' => \App\Http\Middleware\CheckSubscriptionLimits::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,

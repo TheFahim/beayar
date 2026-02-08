@@ -37,8 +37,16 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Tenant Routes (Protected by auth in real app)
-Route::group(['middleware' => ['web', 'auth', 'tenant.context']], function () {
+// Onboarding Routes (Protected by auth)
+Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'onboarding', 'as' => 'onboarding.'], function () {
+    Route::get('/plan', [\App\Http\Controllers\OnboardingController::class, 'index'])->name('plan');
+    Route::post('/plan', [\App\Http\Controllers\OnboardingController::class, 'storePlan'])->name('plan.store');
+    Route::get('/company', [\App\Http\Controllers\OnboardingController::class, 'createCompany'])->name('company');
+    Route::post('/company', [\App\Http\Controllers\OnboardingController::class, 'storeCompany'])->name('company.store');
+});
+
+// Tenant Routes (Protected by auth in reazl app)
+Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.context']], function () {
     Route::get('/dashboard', function () {
         return view('tenant.dashboard');
     })->name('tenant.dashboard');

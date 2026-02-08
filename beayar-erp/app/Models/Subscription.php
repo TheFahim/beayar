@@ -20,6 +20,7 @@ class Subscription extends Model
 
     protected $casts = [
         'custom_limits' => 'array',
+        'module_access' => 'array',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'trial_ends_at' => 'datetime',
