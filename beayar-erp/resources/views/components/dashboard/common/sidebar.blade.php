@@ -54,19 +54,23 @@
                 </x-dashboard.common.sidebar-link>
             </li>
 
+            @if(Auth::user()->hasModuleAccess('quotations'))
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.index') }}">
                     <x-ui.svg.qutation class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Quotations</span>
                 </x-dashboard.common.sidebar-link>
             </li>
+            @endif
 
+            @if(Auth::user()->hasModuleAccess('challans'))
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.challans.index') }}">
                     <x-ui.svg.chalan class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Challans</span>
                 </x-dashboard.common.sidebar-link>
             </li>
+            @endif
 
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}">
@@ -75,19 +79,23 @@
                 </x-dashboard.common.sidebar-link>
             </li>
 
+            @if(Auth::user()->hasModuleAccess('billing'))
              <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.bills.index') }}">
                     <x-ui.svg.bill class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Billing</span>
                 </x-dashboard.common.sidebar-link>
             </li>
+            @endif
 
+            @if(Auth::user()->hasModuleAccess('finance'))
              <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.finance.index') }}">
                     <x-ui.svg.payment class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Finance</span>
                 </x-dashboard.common.sidebar-link>
             </li>
+            @endif
 
              <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">

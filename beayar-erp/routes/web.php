@@ -45,6 +45,11 @@ Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'onboarding', 'as' =>
     Route::post('/company', [\App\Http\Controllers\OnboardingController::class, 'storeCompany'])->name('company.store');
 });
 
+// Context Switching
+Route::post('/companies/{company}/switch', [\App\Http\Controllers\CompanyContextController::class, 'switch'])
+    ->middleware(['web', 'auth'])
+    ->name('companies.switch');
+
 // Tenant Routes (Protected by auth in reazl app)
 Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.context']], function () {
     Route::get('/dashboard', function () {
@@ -53,6 +58,9 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
 
     // Company Members
     Route::resource('company-members', \App\Http\Controllers\CompanyMemberController::class)->names('company-members');
+
+    // User Companies (Workspaces)
+    Route::resource('user-companies', \App\Http\Controllers\Tenant\UserCompanyController::class)->names('tenant.user-companies');
 
     // Billing Routes
     Route::get('/bills/search', [BillController::class, 'search'])->name('tenant.bills.search');

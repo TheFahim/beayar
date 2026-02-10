@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\Tenant;
+use App\Models\User;
+use App\Models\UserCompany;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Auth\Events\PasswordReset;
 
 class AuthController extends Controller
 {
@@ -50,57 +57,17 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
-            'company_name' => ['required', 'string', 'max:255'],
         ]);
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
-            // Step 1: Create User
-            $user = \App\Models\User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-            ]);
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
 
-            // Step 2: Create Tenant
-            $tenant = \App\Models\Tenant::create([
-                'user_id' => $user->id,
-                'name' => $validated['company_name'] . ' Account',
-            ]);
+        Auth::login($user);
 
-            // Step 2b: Create Subscription (Default 'Free')
-            $plan = \App\Models\Plan::where('slug', 'free')->first() ?? \App\Models\Plan::first();
-            
-            \App\Models\Subscription::create([
-                'tenant_id' => $tenant->id,
-                'user_id' => $user->id, // Optional legacy
-                'plan_id' => $plan ? $plan->id : 1,
-                'status' => 'active',
-                'starts_at' => now(),
-                'plan_type' => 'free',
-            ]);
-            
-            // Step 3: Create Company
-            $company = \App\Models\UserCompany::create([
-                'tenant_id' => $tenant->id,
-                'owner_id' => $user->id,
-                'name' => $validated['company_name'],
-                'organization_type' => \App\Models\UserCompany::TYPE_INDEPENDENT,
-                'status' => 'active',
-            ]);
-
-            // Step 4: Attach User to Company as Super Admin
-            $company->members()->attach($user->id, [
-                'role' => 'company_admin',
-                'is_active' => true,
-            ]);
-
-            // Set context
-            $user->update(['current_user_company_id' => $company->id]);
-
-            Auth::login($user);
-
-            return redirect()->route('tenant.dashboard');
-        });
+        return redirect()->route('onboarding.plan');
     }
 
     public function showForgotPassword()
@@ -144,7 +111,7 @@ class AuthController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => \Illuminate\Support\Facades\Hash::make($password)
+                    'password' => Hash::make($password)
                 ])->setRememberToken(Str::random(60));
 
                 $user->save();

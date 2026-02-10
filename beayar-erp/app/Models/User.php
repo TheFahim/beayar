@@ -87,6 +87,14 @@ class User extends Authenticatable
         return $this->subscription->isActive() && $this->subscription->checkLimit($metric);
     }
 
+    public function hasModuleAccess(string $module): bool
+    {
+        if (!$this->subscription) {
+            return false;
+        }
+        return $this->subscription->hasModuleAccess($module);
+    }
+
     public function recordActionUsage(string $metric, int $quantity = 1): void
     {
         if ($this->subscription) {

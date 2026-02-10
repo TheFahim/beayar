@@ -43,13 +43,47 @@ class OnboardingController extends Controller
             DB::beginTransaction();
 
             $user = Auth::user();
-            
+
+            // Create Tenant if not exists
+            if (!$user->tenant) {
+                $tenant = \App\Models\Tenant::create([
+                    'user_id' => $user->id,
+                    'name' => $user->name . "'s Account",
+                ]);
+            } else {
+                $tenant = $user->tenant;
+            }
+
             // Calculate limits based on input
             $limits = $this->calculateLimits($validated);
             $price = $this->calculatePrice($validated);
 
+            // Create/Update Subscription
+            $plan = \App\Models\Plan::where('slug', $validated['plan_type'])->first();
+
+            if (!$plan) {
+                // Fallback: Create a default free plan if missing (e.g. first run)
+                $plan = \App\Models\Plan::firstOrCreate(
+                    ['slug' => 'free'],
+                    [
+                        'name' => 'Free Plan',
+                        'base_price' => 0,
+                        'billing_cycle' => 'monthly',
+                        'is_active' => true,
+                        'limits' => [
+                            'company_limit' => 1,
+                            'user_limit_per_company' => 2,
+                            'quotation_limit_per_month' => 5
+                        ],
+                        'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance']
+                    ]
+                );
+            }
+
             $subscription = new Subscription();
+            $subscription->tenant_id = $tenant->id;
             $subscription->user_id = $user->id;
+            $subscription->plan_id = $plan->id;
             $subscription->plan_type = $validated['plan_type'];
             $subscription->status = 'active';
             $subscription->starts_at = now();
@@ -60,7 +94,7 @@ class OnboardingController extends Controller
             $subscription->user_limit_per_company = $limits['user_limit_per_company'];
             $subscription->quotation_limit_per_month = $limits['quotation_limit_per_month'];
             $subscription->module_access = $limits['module_access'];
-            
+
             // Populate custom_limits JSON for backward compatibility / existing logic
             $subscription->custom_limits = [
                 'companies' => $limits['company_limit'],
@@ -115,24 +149,37 @@ class OnboardingController extends Controller
 
             $user = Auth::user();
 
+            // Ensure Tenant exists (should be created in plan step, but double check)
+            if (!$user->tenant) {
+                 $tenant = \App\Models\Tenant::create([
+                    'user_id' => $user->id,
+                    'name' => $user->name . "'s Account",
+                ]);
+            } else {
+                $tenant = $user->tenant;
+            }
+
             // Create Company
             $company = UserCompany::create([
+                'tenant_id' => $tenant->id,
                 'owner_id' => $user->id,
                 'name' => $request->name,
                 'address' => $request->address,
                 'phone' => $request->phone,
+                'organization_type' => UserCompany::TYPE_INDEPENDENT,
                 'status' => 'active',
             ]);
 
             // Add user as admin member
-            // Assuming we have the CompanyMemberService or manual pivot logic
-            // Using the new 'company_members' table we created in the previous task
-            $company->members()->attach($user->id, ['role' => 'admin']);
+            $company->members()->attach($user->id, [
+                'role' => 'company_admin',
+                'is_active' => true,
+            ]);
 
             // Set current context
             $user->current_user_company_id = $company->id;
             $user->save();
-            
+
             // Set session
             session(['tenant_id' => $company->id]);
 
@@ -153,23 +200,27 @@ class OnboardingController extends Controller
     private function calculateLimits(array $data): array
     {
         if ($data['plan_type'] === 'free') {
+            // Fetch module access from the Plan model if available
+            $plan = \App\Models\Plan::where('slug', 'free')->first();
+            $modules = $plan->module_access ?? ['basic_crm', 'quotations', 'challans', 'billing', 'finance'];
+
             return [
                 'company_limit' => 1,
                 'user_limit_per_company' => 2,
                 'quotation_limit_per_month' => 5,
-                'module_access' => ['basic_crm', 'quotations'],
+                'module_access' => $modules,
             ];
         }
 
         // Custom Plan Logic
         // Simple mapping for demonstration
-        
+
         // Distribute total employees across companies (average) or per company limit
         // Logic: "Total number of employees you need to manage across all companies?"
         // If 10 employees and 2 companies -> 5 per company? Or 10 global?
         // Let's assume the input is "User limit per company" for simplicity or calculated.
         // Prompt says: "Total number of employees... across all companies"
-        
+
         $companyCount = (int) $data['company_count'];
         $totalEmployees = (int) $data['total_employees'];
         $userLimitPerCompany = ceil($totalEmployees / max($companyCount, 1));
@@ -195,7 +246,7 @@ class OnboardingController extends Controller
         $basePrice = 10;
         $companyPrice = $data['company_count'] * 10;
         $userPrice = $data['total_employees'] * 5;
-        
+
         return $basePrice + $companyPrice + $userPrice;
     }
 }

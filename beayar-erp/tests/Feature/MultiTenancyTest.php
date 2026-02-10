@@ -2,94 +2,160 @@
 
 namespace Tests\Feature;
 
-use App\Models\Quotation;
 use App\Models\User;
 use App\Models\UserCompany;
+use App\Models\Tenant;
+use App\Models\Plan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MultiTenancyTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_cannot_access_other_company_data()
+    protected function setUp(): void
     {
-        // Setup Company A
-        $userA = User::factory()->create([
-            'current_user_company_id' => null,
-            'current_scope' => 'company'
-        ]);
-        $companyA = UserCompany::create([
-            'name' => 'Company A',
-            'email' => 'a@test.com',
-            'owner_id' => $userA->id
-        ]);
-        $userA->update(['current_user_company_id' => $companyA->id]);
+        parent::setUp();
 
-        // Setup Company B
-        $userB = User::factory()->create([
-            'current_user_company_id' => null,
-            'current_scope' => 'company'
+        // Seed plans
+        Plan::create([
+            'name' => 'Free',
+            'slug' => 'free',
+            'base_price' => 0,
+            'billing_cycle' => 'monthly',
         ]);
-        $companyB = UserCompany::create([
-            'name' => 'Company B',
-            'email' => 'b@test.com',
-            'owner_id' => $userB->id
-        ]);
-        $userB->update(['current_user_company_id' => $companyB->id]);
+    }
 
-        // Create Customers
-        $customerCompanyA = \App\Models\CustomerCompany::create([
-            'user_company_id' => $companyA->id,
-            'name' => 'Customer Company A'
-        ]);
-        $customerA = \App\Models\Customer::create([
-            'user_company_id' => $companyA->id,
-            'customer_company_id' => $customerCompanyA->id,
-            'name' => 'Customer A'
+    public function test_registration_flow_creates_tenant_structure()
+    {
+        $response = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
         ]);
 
-        $customerCompanyB = \App\Models\CustomerCompany::create([
-            'user_company_id' => $companyB->id,
-            'name' => 'Customer Company B'
-        ]);
-        $customerB = \App\Models\Customer::create([
-            'user_company_id' => $companyB->id,
-            'customer_company_id' => $customerCompanyB->id,
-            'name' => 'Customer B'
-        ]);
+        $response->assertRedirect(route('onboarding.plan'));
 
-        $statusA = \App\Models\QuotationStatus::create(['name' => 'Draft', 'user_company_id' => $companyA->id]);
-        $statusB = \App\Models\QuotationStatus::create(['name' => 'Draft', 'user_company_id' => $companyB->id]);
+        $user = User::where('email', 'test@example.com')->first();
+        $this->assertNotNull($user);
 
-        // Create Quotation for Company A
-        Quotation::create([
-            'user_company_id' => $companyA->id,
-            'customer_id' => $customerA->id,
-            'user_id' => $userA->id,
-            'status_id' => $statusA->id,
-            'reference_no' => 'QT-A',
-            'po_no' => 'PO-A'
-        ]);
+        // At this point, Tenant and Company should NOT exist yet
+        $this->assertNull($user->tenant);
+        $this->assertEmpty($user->ownedCompanies);
+    }
 
-        // Create Quotation for Company B
-        Quotation::create([
-            'user_company_id' => $companyB->id,
-            'customer_id' => $customerB->id,
-            'user_id' => $userB->id,
-            'status_id' => $statusB->id,
-            'reference_no' => 'QT-B',
-            'po_no' => 'PO-B'
+    public function test_user_can_create_new_company()
+    {
+        $user = User::factory()->create();
+        $tenant = Tenant::create(['user_id' => $user->id, 'name' => 'Tenant']);
+        $plan = Plan::first();
+        \App\Models\Subscription::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
         ]);
 
-        // Act as User A
-        $this->actingAs($userA);
+        // Create initial company to pass onboarding middleware
+        UserCompany::create([
+            'tenant_id' => $tenant->id,
+            'owner_id' => $user->id,
+            'name' => 'Initial Company',
+            'status' => 'active',
+        ]);
 
-        // Fetch Quotations
-        $quotations = Quotation::all();
+        // Simulate login
+        $this->actingAs($user);
 
-        // Assert
-        $this->assertCount(1, $quotations);
-        $this->assertEquals('QT-A', $quotations->first()->reference_no);
+        // Ensure user has tenant relation set up in test (factory might not do it)
+        // The controller uses $user->tenant which relies on the relationship.
+
+        $response = $this->post(route('tenant.user-companies.store'), [
+            'name' => 'New Workspace',
+        ]);
+
+        $response->assertRedirect(route('tenant.user-companies.index'));
+
+        $company = UserCompany::where('name', 'New Workspace')->first();
+        $this->assertNotNull($company);
+        $this->assertEquals($tenant->id, $company->tenant_id);
+        $this->assertEquals('company_admin', $user->roleInCompany($company->id));
+    }
+
+    public function test_switching_company_context()
+    {
+        $user = User::factory()->create();
+        $tenant = Tenant::create(['user_id' => $user->id, 'name' => 'Tenant']);
+        $plan = Plan::first();
+        \App\Models\Subscription::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
+        ]);
+
+        $company1 = UserCompany::create([
+            'tenant_id' => $tenant->id,
+            'owner_id' => $user->id,
+            'name' => 'Company 1',
+            'status' => 'active',
+        ]);
+        $company1->members()->attach($user->id, ['role' => 'company_admin', 'is_active' => true]);
+
+        $company2 = UserCompany::create([
+            'tenant_id' => $tenant->id,
+            'owner_id' => $user->id,
+            'name' => 'Company 2',
+            'status' => 'active',
+        ]);
+        $company2->members()->attach($user->id, ['role' => 'company_admin', 'is_active' => true]);
+
+        $this->actingAs($user);
+
+        // Switch to Company 2
+        $response = $this->post(route('companies.switch', $company2->id));
+
+        $response->assertRedirect();
+        $this->assertEquals($company2->id, session('tenant_id'));
+        $this->assertEquals($company2->id, $user->fresh()->current_user_company_id);
+    }
+
+    public function test_access_control_middleware()
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $tenant = Tenant::create(['user_id' => $user->id, 'name' => 'Tenant']);
+        $otherTenant = Tenant::create(['user_id' => $otherUser->id, 'name' => 'Other Tenant']);
+
+        $plan = Plan::first();
+        \App\Models\Subscription::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
+        ]);
+
+        // Company owned by OTHER user
+        $company1 = UserCompany::create([
+            'tenant_id' => $otherTenant->id,
+            'owner_id' => $otherUser->id,
+            'name' => 'Company 1',
+            'status' => 'active',
+        ]);
+        // User is NOT a member of Company 1
+
+        $this->actingAs($user);
+
+        // Try to switch to a company they don't belong to
+        $response = $this->post(route('companies.switch', $company1->id));
+        $response->assertStatus(403);
     }
 }

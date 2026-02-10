@@ -16,7 +16,10 @@ class Subscription extends Model
         'status',
         'starts_at',
         'ends_at',
-        'trial_ends_at'
+        'trial_ends_at',
+        'plan_type',
+        'price',
+        'module_access'
     ];
 
     protected $casts = [
@@ -45,15 +48,22 @@ class Subscription extends Model
     // Check if subscription is active
     public function isActive(): bool
     {
-        return $this->status === 'active' && 
+        return $this->status === 'active' &&
                ($this->ends_at === null || $this->ends_at->isFuture());
+    }
+
+    // Check if subscription has access to a module
+    public function hasModuleAccess(string $module): bool
+    {
+        $access = $this->module_access ?? [];
+        return in_array($module, $access);
     }
 
     // Check limit for a metric
     public function checkLimit(string $metric): bool
     {
         $limit = $this->getLimit($metric);
-        
+
         if ($limit === -1) { // Unlimited
             return true;
         }
