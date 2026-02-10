@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use App\Traits\BelongsToTenant;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Quotation extends BaseModel
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $guarded = ['id'];
 
@@ -20,8 +19,8 @@ class Quotation extends BaseModel
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->reference_no) {
-                $model->reference_no = 'QT-' . date('Y') . '-' . strtoupper(Str::random(5));
+            if (! $model->reference_no) {
+                $model->reference_no = 'QT-'.date('Y').'-'.strtoupper(Str::random(5));
             }
         });
     }
@@ -64,12 +63,13 @@ class Quotation extends BaseModel
     public function hasChallan(): bool
     {
         $activeRevision = $this->getActiveRevision();
+
         return $activeRevision ? $activeRevision->hasChallan() : false;
     }
 
     public function isEditable(): bool
     {
-        return !$this->hasBills();
+        return ! $this->hasBills();
     }
 
     public function isDeletable(): bool
@@ -77,6 +77,7 @@ class Quotation extends BaseModel
         if ($this->hasBills()) {
             return false;
         }
-        return !$this->hasChallan();
+
+        return ! $this->hasChallan();
     }
 }

@@ -4,7 +4,6 @@ namespace Tests\Unit\Services;
 
 use App\Models\Customer;
 use App\Models\Quotation;
-use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
 use App\Models\User;
 use App\Models\UserCompany;
@@ -17,45 +16,49 @@ class QuotationServiceTest extends TestCase
     use RefreshDatabase;
 
     protected $service;
+
     protected $user;
+
     protected $company;
+
     protected $customer;
+
     protected $status;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new QuotationService();
+        $this->service = new QuotationService;
 
         // Setup Tenant Context
         $this->user = User::factory()->create([
             'current_user_company_id' => null,
-            'current_scope' => 'company'
+            'current_scope' => 'company',
         ]);
 
         $this->company = UserCompany::create([
             'name' => 'Test Company',
             'owner_id' => $this->user->id,
-            'email' => 'company@test.com'
+            'email' => 'company@test.com',
         ]);
 
         $this->user->update(['current_user_company_id' => $this->company->id]);
 
         $customerCompany = \App\Models\CustomerCompany::create([
             'user_company_id' => $this->company->id,
-            'name' => 'Test Customer Company'
+            'name' => 'Test Customer Company',
         ]);
 
         $this->customer = Customer::create([
             'user_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'Test Customer',
-            'email' => 'customer@test.com'
+            'email' => 'customer@test.com',
         ]);
 
         $this->status = QuotationStatus::create([
             'name' => 'Draft',
-            'user_company_id' => $this->company->id
+            'user_company_id' => $this->company->id,
         ]);
     }
 
@@ -72,9 +75,9 @@ class QuotationServiceTest extends TestCase
                     'product_name' => 'Test Product',
                     'quantity' => 1,
                     'unit_price' => 1000,
-                    'total' => 1000
-                ]
-            ]
+                    'total' => 1000,
+                ],
+            ],
         ];
 
         $quotation = $this->service->createQuotation($this->user, $data);
@@ -86,7 +89,7 @@ class QuotationServiceTest extends TestCase
         // Check Revision
         $this->assertCount(1, $quotation->revisions);
         $revision = $quotation->revisions->first();
-        $this->assertTrue((bool)$revision->is_active);
+        $this->assertTrue((bool) $revision->is_active);
         $this->assertEquals(1100, $revision->total);
 
         // Check Products
@@ -110,7 +113,7 @@ class QuotationServiceTest extends TestCase
         $newData = [
             'subtotal' => 200,
             'total' => 200,
-            'revision_no' => 'R2'
+            'revision_no' => 'R2',
         ];
         $newRevision = $this->service->createRevision($quotation, $newData, $this->user);
 
@@ -118,8 +121,8 @@ class QuotationServiceTest extends TestCase
         $oldRevision->refresh();
         $quotation->refresh();
 
-        $this->assertTrue((bool)$newRevision->is_active);
-        $this->assertFalse((bool)$oldRevision->is_active);
+        $this->assertTrue((bool) $newRevision->is_active);
+        $this->assertFalse((bool) $oldRevision->is_active);
         $this->assertCount(2, $quotation->revisions);
     }
 }

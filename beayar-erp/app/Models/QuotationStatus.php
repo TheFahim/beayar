@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 
 class QuotationStatus extends Model
 {
@@ -25,9 +25,10 @@ class QuotationStatus extends Model
         if (auth()->check() && auth()->user()->current_user_company_id) {
             return $query->where(function ($q) {
                 $q->where('user_company_id', auth()->user()->current_user_company_id)
-                  ->orWhereNull('user_company_id');
+                    ->orWhereNull('user_company_id');
             });
         }
+
         return $query->whereNull('user_company_id');
     }
 }

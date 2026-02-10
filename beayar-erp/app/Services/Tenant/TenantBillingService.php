@@ -17,7 +17,7 @@ class TenantBillingService
             'quotation_id' => $quotation->id,
             'quotation_revision_id' => $activeRevision?->id,
             'bill_type' => $type,
-            'invoice_no' => 'INV-' . strtoupper(uniqid()),
+            'invoice_no' => 'INV-'.strtoupper(uniqid()),
             'bill_date' => now(),
             'total_amount' => $activeRevision?->total ?? 0,
             'bill_amount' => $activeRevision?->total ?? 0,

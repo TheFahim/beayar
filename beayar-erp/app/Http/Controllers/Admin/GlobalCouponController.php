@@ -12,6 +12,7 @@ class GlobalCouponController extends Controller
     public function index(): JsonResponse
     {
         $coupons = Coupon::where('type', 'campaign')->latest()->paginate(20);
+
         return response()->json($coupons);
     }
 
@@ -28,6 +29,7 @@ class GlobalCouponController extends Controller
     public function destroy(Coupon $coupon): JsonResponse
     {
         $coupon->delete();
+
         return response()->json(['message' => 'Coupon deleted successfully']);
     }
 }

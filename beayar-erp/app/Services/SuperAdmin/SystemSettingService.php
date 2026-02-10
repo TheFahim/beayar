@@ -9,6 +9,7 @@ class SystemSettingService
     public function get(string $key, $default = null)
     {
         $setting = SystemSetting::where('key', $key)->first();
+
         return $setting ? $setting->value : $default;
     }
 

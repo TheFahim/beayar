@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -63,9 +62,9 @@ class ProductController extends Controller
 
                 if (isset($prodData['specifications'])) {
                     foreach ($prodData['specifications'] as $spec) {
-                    $product->specifications()->create([
-                        'description' => $spec['description'],
-                    ]);
+                        $product->specifications()->create([
+                            'description' => $spec['description'],
+                        ]);
                     }
                 }
 
@@ -85,12 +84,12 @@ class ProductController extends Controller
                 ->with('success', "{$createdCount} product(s) created successfully.");
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Product creation failed: ' . $e->getMessage());
+            Log::error('Product creation failed: '.$e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to create products. ' . $e->getMessage(),
+                    'message' => 'Failed to create products. '.$e->getMessage(),
                 ], 500);
             }
 
@@ -104,7 +103,7 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         $product = Product::with(['image', 'specifications'])->findOrFail($id);
-        
+
         // Ensure tenant access
         if ($product->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
@@ -119,7 +118,7 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $product = Product::findOrFail($id);
-        
+
         // Ensure tenant access
         if ($product->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
@@ -141,11 +140,11 @@ class ProductController extends Controller
 
             // Sync specifications: Delete all and recreate
             $product->specifications()->delete();
-            
+
             if (isset($validated['specifications'])) {
                 foreach ($validated['specifications'] as $spec) {
                     $product->specifications()->create([
-                        'description' => $spec['description']
+                        'description' => $spec['description'],
                     ]);
                 }
             }
@@ -164,12 +163,12 @@ class ProductController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Product update failed: ' . $e->getMessage());
+            Log::error('Product update failed: '.$e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to update product. ' . $e->getMessage(),
+                    'message' => 'Failed to update product. '.$e->getMessage(),
                 ], 500);
             }
 
@@ -183,19 +182,20 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
-        
+
         // Ensure tenant access
         if ($product->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
         }
 
-        if (!$product->is_deletable) {
+        if (! $product->is_deletable) {
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot delete product because it is used in quotations or challans.',
                 ], 422);
             }
+
             return back()->with('error', 'Cannot delete product because it is used in quotations or challans.');
         }
 

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Module extends Model
 {
-    protected $fillable = ['slug', 'price'];
+    use HasFactory;
+
+    protected $fillable = ['name', 'slug', 'price', 'description'];
 
     protected $casts = [
         'price' => 'decimal:2',

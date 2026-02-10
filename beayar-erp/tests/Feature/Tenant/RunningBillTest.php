@@ -18,10 +18,15 @@ class RunningBillTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $company;
+
     protected $quotation;
+
     protected $revision;
+
     protected $advanceBill;
+
     protected $status;
 
     protected function setUp(): void
@@ -105,7 +110,7 @@ class RunningBillTest extends TestCase
         $response = $this->actingAs($this->user)
             ->get(route('tenant.quotations.bill', [
                 'quotation' => $this->quotation->id,
-                'parent_bill_id' => $this->advanceBill->id
+                'parent_bill_id' => $this->advanceBill->id,
             ]));
 
         $response->assertStatus(200);

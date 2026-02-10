@@ -16,7 +16,6 @@ use App\Services\InvoiceNumberGenerator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -29,6 +28,7 @@ use Illuminate\Validation\ValidationException;
 class BillController extends Controller
 {
     protected $billingService;
+
     protected $invoiceNumberGenerator;
 
     public function __construct(BillingService $billingService, InvoiceNumberGenerator $invoiceNumberGenerator)
@@ -217,6 +217,7 @@ class BillController extends Controller
     public function createAdvanceView(Quotation $quotation, $activeRevision, $existingAdvanceBill = null)
     {
         $nextInvoiceNo = $this->invoiceNumberGenerator->generate($quotation);
+
         return view('tenant.bills.create-advance', compact('quotation', 'activeRevision', 'existingAdvanceBill', 'nextInvoiceNo'));
     }
 
@@ -226,6 +227,7 @@ class BillController extends Controller
         $quotation->load('bills');
 
         $nextInvoiceNo = $this->invoiceNumberGenerator->generate($quotation);
+
         return view('tenant.bills.create-regular', compact('quotation', 'activeRevision', 'challans', 'nextInvoiceNo'));
     }
 
@@ -235,6 +237,7 @@ class BillController extends Controller
         $quotation->load('bills');
 
         $nextInvoiceNo = $this->invoiceNumberGenerator->generate($quotation);
+
         return view('tenant.bills.create-running', compact('quotation', 'parentBill', 'nextInvoiceNo'));
     }
 

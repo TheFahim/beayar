@@ -50,7 +50,7 @@ return new class extends Migration
             $table->dropForeign(['tenant_id']);
             $table->dropColumn('tenant_id');
             // Revert user_id to not null (caution: this might fail if data was changed)
-             $table->foreignId('user_id')->nullable(false)->change();
+            $table->foreignId('user_id')->nullable(false)->change();
         });
 
         Schema::table('user_companies', function (Blueprint $table) {

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\TenantController as AdminTenantController;
 use App\Http\Controllers\Api\V1\CompanyController;
@@ -20,8 +21,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('/login');
 });
-
-
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -125,16 +124,29 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
 });
 
 // Admin Routes
-Route::prefix('admin')->middleware(['web', 'auth', 'role:admin'])->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+    // Tenants
     Route::get('/tenants', [AdminTenantController::class, 'index'])->name('tenants.index');
+    Route::get('/tenants/{company}', [AdminTenantController::class, 'show'])->name('tenants.show');
+    Route::put('/tenants/{company}/subscription', [AdminTenantController::class, 'updateSubscription'])->name('tenants.subscription.update');
     Route::post('/tenants/{company}/suspend', [AdminTenantController::class, 'suspend'])->name('tenants.suspend');
     Route::post('/tenants/{company}/impersonate', [AdminTenantController::class, 'impersonate'])->name('tenants.impersonate');
 
+    // Plans
     Route::get('/plans', [AdminPlanController::class, 'index'])->name('plans.index');
+    Route::post('/plans', [AdminPlanController::class, 'store'])->name('plans.store');
     Route::put('/plans/{plan}', [AdminPlanController::class, 'update'])->name('plans.update');
+    Route::delete('/plans/{plan}', [AdminPlanController::class, 'destroy'])->name('plans.destroy');
 
+    // Modules
+    Route::get('/modules', [AdminModuleController::class, 'index'])->name('modules.index');
+    Route::post('/modules', [AdminModuleController::class, 'store'])->name('modules.store');
+    Route::put('/modules/{module}', [AdminModuleController::class, 'update'])->name('modules.update');
+    Route::delete('/modules/{module}', [AdminModuleController::class, 'destroy'])->name('modules.destroy');
+
+    // Coupons
     Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
     Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
     Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');

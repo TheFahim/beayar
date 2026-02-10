@@ -26,7 +26,7 @@ class ModuleSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-             [
+            [
                 'name' => 'HRM',
                 'slug' => 'hrm',
                 'price' => 15.00,

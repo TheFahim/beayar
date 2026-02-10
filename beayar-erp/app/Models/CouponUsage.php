@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CouponUsage extends Model
 {
     protected $table = 'coupon_usage';
-    
+
     protected $guarded = ['id'];
 
     protected $casts = [

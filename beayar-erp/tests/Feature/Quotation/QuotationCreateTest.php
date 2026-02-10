@@ -6,7 +6,6 @@ use App\Models\BrandOrigin;
 use App\Models\Customer;
 use App\Models\CustomerCompany;
 use App\Models\Product;
-use App\Models\Quotation;
 use App\Models\QuotationStatus;
 use App\Models\User;
 use App\Models\UserCompany;
@@ -18,9 +17,13 @@ class QuotationCreateTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $company;
+
     protected $customer;
+
     protected $status;
+
     protected $product;
 
     protected function setUp(): void
@@ -113,7 +116,7 @@ class QuotationCreateTest extends TestCase
                     'quantity' => 10,
                     'unit_price' => 100,
                     'total' => 1000,
-                ]
+                ],
             ],
         ];
 

@@ -17,9 +17,9 @@ class CustomerController extends Controller
         if ($request->has('search')) {
             $search = $request->search;
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('customer_no', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('customer_no', 'like', "%{$search}%");
         }
 
         $customers = $query->latest()->paginate(10);
@@ -67,9 +67,9 @@ class CustomerController extends Controller
         // Ensure uniqueness of customer_no within tenant? Or globally?
         // Optimech has global unique.
         if (Customer::where('customer_no', $data['customer_no'])->exists()) {
-             // Regenerate or fail?
-             // Let's just append random string if exists
-             $data['customer_no'] .= '-' . Str::random(4);
+            // Regenerate or fail?
+            // Let's just append random string if exists
+            $data['customer_no'] .= '-'.Str::random(4);
         }
 
         Customer::create($data);
@@ -109,7 +109,7 @@ class CustomerController extends Controller
             'department' => 'nullable|string|max:255',
         ]);
 
-         $data = [
+        $data = [
             'customer_company_id' => $validated['customer_company_id'],
             'name' => $validated['customer_name'],
             'customer_no' => $validated['customer_no'], // Usually don't update customer_no
@@ -133,13 +133,14 @@ class CustomerController extends Controller
             abort(403);
         }
 
-        if (!$customer->is_deletable) {
+        if (! $customer->is_deletable) {
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot delete customer because it has existing quotations.',
                 ], 422);
             }
+
             return back()->with('error', 'Cannot delete customer because it has existing quotations.');
         }
 
@@ -160,7 +161,7 @@ class CustomerController extends Controller
         // Fallback to first owned company if current_user_company_id is not set
         $companyId = $user->current_user_company_id ?? $user->ownedCompanies()->first()?->id;
 
-        if (!$companyId) {
+        if (! $companyId) {
             return response()->json([]);
         }
 
@@ -171,9 +172,9 @@ class CustomerController extends Controller
 
         if ($request->has('query') && $request->get('query')) {
             $search = $request->get('query');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('company_code', 'like', "%{$search}%");
+                    ->orWhere('company_code', 'like', "%{$search}%");
             });
         }
 
@@ -190,14 +191,14 @@ class CustomerController extends Controller
 
         if ($request->has('query') && $request->get('query')) {
             $search = $request->get('query');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('customer_no', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('customerCompany', function($q) use ($search) {
+                    ->orWhere('customer_no', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('customerCompany', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
-                  });
+                    });
             });
         }
 

@@ -4,8 +4,8 @@ namespace App\Services\SuperAdmin;
 
 use App\Models\Admin;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminService
 {

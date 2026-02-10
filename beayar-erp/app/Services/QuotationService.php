@@ -28,7 +28,7 @@ class QuotationService
                 ->where('is_default', true)
                 ->first();
 
-            if (!$status) {
+            if (! $status) {
                 // Fallback or create default
                 $status = QuotationStatus::firstOrCreate(
                     ['name' => 'Draft', 'user_company_id' => Auth::user()->current_user_company_id],
@@ -229,13 +229,13 @@ class QuotationService
     {
         // Collect existing product IDs from payload
         $payloadIds = collect($productsData)
-            ->map(fn($p) => $p['id'] ?? null)
+            ->map(fn ($p) => $p['id'] ?? null)
             ->filter()
             ->values()
             ->all();
 
         // Delete products not present in payload
-        if (!empty($payloadIds)) {
+        if (! empty($payloadIds)) {
             $revision->products()->whereNotIn('id', $payloadIds)->delete();
         } else {
             $revision->products()->delete();
@@ -265,7 +265,7 @@ class QuotationService
         // Beayar uses product_name, opimech doesn't explicitly pass it in fillable but beayar needs it
         // We assume productData has what we need or we fetch from Product model if product_id is set
         $productName = $productData['product_name'] ?? '';
-        if (empty($productName) && !empty($productData['product_id'])) {
+        if (empty($productName) && ! empty($productData['product_id'])) {
             $prod = \App\Models\Product::find($productData['product_id']);
             $productName = $prod ? $prod->name : '';
         }
@@ -353,7 +353,7 @@ class QuotationService
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if (!$lastRevision) {
+        if (! $lastRevision) {
             return 'R00';
         }
 
@@ -361,7 +361,7 @@ class QuotationService
         $num = (int) substr($lastRevNo, 1);
         $num++;
 
-        return 'R' . str_pad($num, 2, '0', STR_PAD_LEFT);
+        return 'R'.str_pad($num, 2, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -374,7 +374,7 @@ class QuotationService
         // Beayar: filter by company
         $latestQuotation = Quotation::where('user_company_id', Auth::user()->current_user_company_id)
             ->where('customer_id', $customer->id)
-            ->where('quotation_no', 'LIKE', $customerNo . '-%')
+            ->where('quotation_no', 'LIKE', $customerNo.'-%')
             ->orderBy('quotation_no', 'desc')
             ->first();
 
@@ -391,7 +391,7 @@ class QuotationService
 
         $sequence = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        return $customerNo . '-' . $sequence;
+        return $customerNo.'-'.$sequence;
     }
 
     /**
@@ -410,7 +410,7 @@ class QuotationService
             ->whereHas('challan')
             ->exists();
 
-        return !$hasChallan;
+        return ! $hasChallan;
     }
 
     /**

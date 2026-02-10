@@ -20,6 +20,7 @@ class BillController extends Controller
     public function index(): JsonResponse
     {
         $bills = Bill::with(['challans', 'items'])->latest()->paginate(20);
+
         return response()->json($bills);
     }
 
@@ -31,8 +32,8 @@ class BillController extends Controller
             $request->validated(),
             [
                 'user_company_id' => $request->user()->current_user_company_id,
-                'invoice_no' => 'INV-' . strtoupper(uniqid()),
-                'status' => 'draft'
+                'invoice_no' => 'INV-'.strtoupper(uniqid()),
+                'status' => 'draft',
             ]
         ));
 
@@ -52,6 +53,7 @@ class BillController extends Controller
     public function show(Bill $bill): JsonResponse
     {
         $bill->load(['challans', 'items']);
+
         return response()->json($bill);
     }
 }

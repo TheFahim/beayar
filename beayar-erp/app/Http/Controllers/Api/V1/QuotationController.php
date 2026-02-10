@@ -22,24 +22,28 @@ class QuotationController extends Controller
     public function index(): JsonResponse
     {
         $quotations = Quotation::with(['customer', 'latestRevision', 'status'])->latest()->paginate(20);
+
         return response()->json($quotations);
     }
 
     public function store(QuotationCreateRequest $request): JsonResponse
     {
         $quotation = $this->quotationService->createQuotation($request->user(), $request->validated());
+
         return response()->json($quotation, 201);
     }
 
     public function show(Quotation $quotation): JsonResponse
     {
         $quotation->load(['customer', 'revisions.products', 'latestRevision']);
+
         return response()->json($quotation);
     }
 
     public function update(QuotationUpdateRequest $request, Quotation $quotation): JsonResponse
     {
         $quotation->update($request->validated());
+
         return response()->json($quotation);
     }
 
@@ -57,12 +61,14 @@ class QuotationController extends Controller
         ]);
 
         $revision = $this->quotationService->createRevision($quotation, $data);
+
         return response()->json($revision, 201);
     }
 
     public function destroy(Quotation $quotation): JsonResponse
     {
         $quotation->delete();
+
         return response()->json(['message' => 'Quotation deleted successfully']);
     }
 

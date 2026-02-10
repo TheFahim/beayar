@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -20,7 +19,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $roles = [
             'super_admin',  // Manages the entire application (tenants/customers)
             'tenant_admin', // The Owner who signed up (manages companies)
-            'company_admin',// Manages a specific company (employees, data)
+            'company_admin', // Manages a specific company (employees, data)
             'employee',     // Regular user within a company
         ];
 

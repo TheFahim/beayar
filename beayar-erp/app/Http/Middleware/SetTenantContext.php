@@ -20,7 +20,7 @@ class SetTenantContext
         if (Auth::check()) {
             $user = Auth::user();
 
-            if (!Session::has('tenant_id')) {
+            if (! Session::has('tenant_id')) {
                 // Try to set the first company available
                 $company = $user->companies->first() ?? $user->ownedCompanies->first();
 
@@ -34,8 +34,9 @@ class SetTenantContext
                 $isMember = $user->companies()->where('user_companies.id', $tenantId)->exists();
                 $isOwner = $user->ownedCompanies()->where('id', $tenantId)->exists();
 
-                if (!$isMember && !$isOwner) {
+                if (! $isMember && ! $isOwner) {
                     Session::forget('tenant_id');
+
                     return redirect()->route('dashboard')->with('error', 'You do not have access to this company context.');
                 }
             }

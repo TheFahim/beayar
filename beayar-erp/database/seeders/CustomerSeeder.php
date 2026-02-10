@@ -16,7 +16,7 @@ class CustomerSeeder extends Seeder
     {
         // Ensure we have at least one UserCompany to attach customers to
         $userCompanies = UserCompany::all();
-        
+
         if ($userCompanies->isEmpty()) {
             $userCompanies = UserCompany::factory(5)->create();
         }

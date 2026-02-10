@@ -30,7 +30,7 @@ class QuotationService
     public function createRevision(Quotation $quotation, array $data, User $user): QuotationRevision
     {
         $revision = $quotation->revisions()->create([
-            'revision_no' => $data['revision_no'] ?? 'R' . ($quotation->revisions()->count()),
+            'revision_no' => $data['revision_no'] ?? 'R'.($quotation->revisions()->count()),
             'date' => now(),
             'subtotal' => $data['subtotal'],
             'total' => $data['total'],

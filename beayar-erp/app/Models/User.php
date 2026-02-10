@@ -3,25 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, HasApiTokens;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
         'current_user_company_id',
-        'current_scope'
+        'current_scope',
     ];
 
     protected $hidden = [
@@ -63,13 +63,14 @@ class User extends Authenticatable
     public function companies()
     {
         return $this->belongsToMany(UserCompany::class, 'company_members', 'user_id', 'user_company_id')
-                    ->withPivot('role', 'is_active')
-                    ->withTimestamps();
+            ->withPivot('role', 'is_active')
+            ->withTimestamps();
     }
 
     public function roleInCompany($companyId)
     {
         $company = $this->companies()->where('user_company_id', $companyId)->first();
+
         return $company ? $company->pivot->role : null;
     }
 
@@ -81,17 +82,19 @@ class User extends Authenticatable
     // Subscription Helpers
     public function canPerformAction(string $metric): bool
     {
-        if (!$this->subscription) {
+        if (! $this->subscription) {
             return false;
         }
+
         return $this->subscription->isActive() && $this->subscription->checkLimit($metric);
     }
 
     public function hasModuleAccess(string $module): bool
     {
-        if (!$this->subscription) {
+        if (! $this->subscription) {
             return false;
         }
+
         return $this->subscription->hasModuleAccess($module);
     }
 

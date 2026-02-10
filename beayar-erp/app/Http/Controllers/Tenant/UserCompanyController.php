@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserCompany;
 use App\Models\Tenant;
+use App\Models\UserCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class UserCompanyController extends Controller
 {
@@ -47,11 +46,11 @@ class UserCompanyController extends Controller
 
         // Ensure user has a tenant record (should have from registration)
         $tenant = $user->tenant;
-        if (!$tenant) {
+        if (! $tenant) {
             // Fallback: Create tenant if missing (legacy users)
             $tenant = Tenant::create([
                 'user_id' => $user->id,
-                'name' => $user->name . "'s Account",
+                'name' => $user->name."'s Account",
             ]);
         }
 

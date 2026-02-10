@@ -13,20 +13,21 @@ class PaginationTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $company;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create a user and company
         $this->user = User::factory()->create();
         $this->company = UserCompany::factory()->create([
-            'owner_id' => $this->user->id
+            'owner_id' => $this->user->id,
         ]);
-        
+
         $this->user->update([
-            'current_user_company_id' => $this->company->id
+            'current_user_company_id' => $this->company->id,
         ]);
     }
 
@@ -45,7 +46,7 @@ class PaginationTest extends TestCase
             $response = $this->actingAs($this->user)->get(route($route));
 
             $response->assertStatus(200);
-            
+
             // Assert the view has the key
             $response->assertViewHas($viewKey);
 
@@ -54,7 +55,7 @@ class PaginationTest extends TestCase
 
             // Assert it is a paginator
             $this->assertTrue(
-                $data instanceof AbstractPaginator, 
+                $data instanceof AbstractPaginator,
                 "The data for route {$route} (key: {$viewKey}) is not a paginator instance."
             );
         }

@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\UserCompany;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models\Product;
-use App\Models\UserCompany;
 
 class MigrateProducts extends Command
 {
@@ -36,11 +35,11 @@ class MigrateProducts extends Command
             // Simplified logic: In reality, we'd link companies back to source IDs
             // For now, let's assume we fetch all products from source and assign to first company found matching email
             // This is a placeholder for the actual mapping logic which requires a 'source_id' column on UserCompany
-            
+
             // Example for Optimech
             // $products = DB::connection('optimech_db')->table('products')->where('company_id', $company->source_id)->get();
             // foreach($products as $prod) { ... }
-            
+
             $this->info("Processed products for company: {$company->name}");
         }
 

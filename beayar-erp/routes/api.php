@@ -1,17 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\GlobalCouponController;
+use App\Http\Controllers\Admin\PlatformRevenueController;
+use App\Http\Controllers\Admin\TenantManagementController;
+use App\Http\Controllers\Api\V1\BillController;
+use App\Http\Controllers\Api\V1\CompanyController;
+use App\Http\Controllers\Api\V1\CouponController;
+use App\Http\Controllers\Api\V1\FinanceController;
+use App\Http\Controllers\Api\V1\QuotationController;
+use App\Http\Controllers\Api\V1\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\TenantManagementController;
-use App\Http\Controllers\Admin\PlatformRevenueController;
-use App\Http\Controllers\Admin\GlobalCouponController;
-use App\Http\Controllers\Api\V1\SubscriptionController;
-use App\Http\Controllers\Api\V1\CompanyController;
-use App\Http\Controllers\Api\V1\QuotationController;
-use App\Http\Controllers\Api\V1\BillController;
-use App\Http\Controllers\Api\V1\FinanceController;
-use App\Http\Controllers\Api\V1\CouponController;
 
 /*
 |--------------------------------------------------------------------------

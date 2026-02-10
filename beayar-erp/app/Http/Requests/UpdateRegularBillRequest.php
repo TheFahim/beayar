@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\ChallanProduct;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UpdateRegularBillRequest extends FormRequest
@@ -80,7 +78,7 @@ class UpdateRegularBillRequest extends FormRequest
                 foreach ($item['allocations'] as $a => $allocation) {
                     $challanProductId = $allocation['challan_product_id'] ?? null;
                     $billedQty = (float) ($allocation['billed_quantity'] ?? 0);
-                    
+
                     // Additional validation logic here
                 }
             }

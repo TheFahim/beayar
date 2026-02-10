@@ -20,15 +20,15 @@ class EnsureOnboardingComplete
             $user = Auth::user();
 
             // Step 1: Check Subscription
-            if (!$user->subscription) {
-                if (!$request->routeIs('onboarding.plan') && !$request->routeIs('onboarding.plan.store')) {
+            if (! $user->subscription) {
+                if (! $request->routeIs('onboarding.plan') && ! $request->routeIs('onboarding.plan.store')) {
                     return redirect()->route('onboarding.plan');
                 }
             }
             // Step 2: Check Company (only if subscription exists)
-            elseif (!$user->ownedCompanies()->exists() && !$user->companies()->exists()) {
+            elseif (! $user->ownedCompanies()->exists() && ! $user->companies()->exists()) {
                 // Check if user is already attempting to create company
-                if (!$request->routeIs('onboarding.company') && !$request->routeIs('onboarding.company.store')) {
+                if (! $request->routeIs('onboarding.company') && ! $request->routeIs('onboarding.company.store')) {
                     return redirect()->route('onboarding.company');
                 }
             }

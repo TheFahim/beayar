@@ -25,6 +25,7 @@ class PlatformRevenueController extends Controller
     public function invoices(): JsonResponse
     {
         $invoices = PlatformInvoice::with(['user.company', 'subscription.plan'])->latest()->paginate(20);
+
         return response()->json($invoices);
     }
 }

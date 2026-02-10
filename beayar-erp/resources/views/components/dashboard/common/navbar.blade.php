@@ -14,46 +14,56 @@
                 </button>
                 <a href="{{ route('tenant.dashboard') }}" class="flex ms-2 md:me-24">
                     {{-- <img src="{{ asset('assets/images/app-logo.jpeg') }}" class="h-8 me-3" alt="Site Logo" /> --}}
-                    <span
-                        class="self-center text-lg font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Beayar ERP</span>
+                    <span class="self-center text-lg font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Beayar
+                        ERP</span>
                 </a>
             </div>
             <div class="flex items-center">
                 {{-- Company Switcher --}}
                 @auth
-                    @php
-                        $allCompanies = Auth::user()->companies;
-                        $currentCompany = Auth::user()->currentCompany;
-                    @endphp
+                    @if(Auth::user() instanceof \App\Models\User)
+                        @php
+                            $allCompanies = Auth::user()->companies;
+                            $currentCompany = Auth::user()->currentCompany;
+                        @endphp
 
-                    @if($allCompanies->count() > 1)
-                        <div class="mr-4 hidden md:block">
-                            <button id="dropdownCompanyButton" data-dropdown-toggle="dropdownCompany" class="text-gray-900 dark:text-white bg-white hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700" type="button">
-                                {{ $currentCompany->name ?? 'Select Company' }} 
-                                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                                </svg>
-                            </button>
-                            <!-- Dropdown menu -->
-                            <div id="dropdownCompany" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownCompanyButton">
-                                    @foreach($allCompanies as $company)
-                                        <li>
-                                            <form action="{{ route('companies.switch', $company->id) }}" method="POST" class="block">
-                                                @csrf
-                                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white {{ ($currentCompany->id ?? 0) == $company->id ? 'font-bold' : '' }}">
-                                                    {{ $company->name }}
-                                                </button>
-                                            </form>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                        @if($allCompanies->count() > 1)
+                            <div class="mr-4 hidden md:block">
+                                <button id="dropdownCompanyButton" data-dropdown-toggle="dropdownCompany"
+                                    class="text-gray-900 dark:text-white bg-white hover:bg-gray-100 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700"
+                                    type="button">
+                                    {{ $currentCompany->name ?? 'Select Company' }}
+                                    <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="m1 1 4 4 4-4" />
+                                    </svg>
+                                </button>
+                                <!-- Dropdown menu -->
+                                <div id="dropdownCompany"
+                                    class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                        aria-labelledby="dropdownCompanyButton">
+                                        @foreach($allCompanies as $company)
+                                            <li>
+                                                <form action="{{ route('companies.switch', $company->id) }}" method="POST"
+                                                    class="block">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white {{ ($currentCompany->id ?? 0) == $company->id ? 'font-bold' : '' }}">
+                                                        {{ $company->name }}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                    @elseif($currentCompany)
-                         <div class="mr-4 hidden md:block text-sm font-medium text-gray-900 dark:text-white">
-                            {{ $currentCompany->name }}
-                        </div>
+                        @elseif($currentCompany)
+                            <div class="mr-4 hidden md:block text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $currentCompany->name }}
+                            </div>
+                        @endif
                     @endif
                 @endauth
 
@@ -117,7 +127,7 @@
     let themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia(
-            '(prefers-color-scheme: dark)').matches)) {
+        '(prefers-color-scheme: dark)').matches)) {
         themeToggleLightIcon.classList.remove('hidden');
     } else {
         themeToggleDarkIcon.classList.remove('hidden');
@@ -125,32 +135,32 @@
 
     var themeToggleBtn = document.getElementById('theme-toggle');
 
-    themeToggleBtn.addEventListener('click', function() {
+    themeToggleBtn.addEventListener('click', function () {
 
-    // toggle icons inside button
-    themeToggleDarkIcon.classList.toggle('hidden');
-    themeToggleLightIcon.classList.toggle('hidden');
+        // toggle icons inside button
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
 
-    // if set via local storage previously
-    if (localStorage.getItem('color-theme')) {
-        if (localStorage.getItem('color-theme') === 'light') {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
+        // if set via local storage previously
+        if (localStorage.getItem('color-theme')) {
+            if (localStorage.getItem('color-theme') === 'light') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            }
+
+            // if NOT set via local storage previously
         } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
         }
 
-    // if NOT set via local storage previously
-    } else {
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        }
-    }
-    
-});
+    });
 </script>

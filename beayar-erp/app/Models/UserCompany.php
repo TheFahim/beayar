@@ -14,7 +14,9 @@ class UserCompany extends Model
     protected $guarded = ['id'];
 
     public const TYPE_INDEPENDENT = 'independent';
+
     public const TYPE_HOLDING = 'holding';
+
     public const TYPE_SUBSIDIARY = 'subsidiary';
 
     public function isHolding(): bool
@@ -41,6 +43,7 @@ class UserCompany extends Model
         if ($this->isHolding()) {
             return $this->subCompanies()->pluck('id')->push($this->id)->toArray();
         }
+
         return [$this->id];
     }
 
@@ -50,7 +53,7 @@ class UserCompany extends Model
     public function scopeDescendantsOf($query, $companyId)
     {
         return $query->where('id', $companyId)
-                     ->orWhere('parent_company_id', $companyId);
+            ->orWhere('parent_company_id', $companyId);
     }
 
     public function owner(): BelongsTo
@@ -66,8 +69,8 @@ class UserCompany extends Model
     public function members()
     {
         return $this->belongsToMany(User::class, 'company_members', 'user_company_id', 'user_id')
-                    ->withPivot('role', 'is_active')
-                    ->withTimestamps();
+            ->withPivot('role', 'is_active')
+            ->withTimestamps();
     }
 
     public function parentCompany(): BelongsTo

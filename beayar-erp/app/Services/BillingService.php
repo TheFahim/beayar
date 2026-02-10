@@ -503,7 +503,7 @@ class BillingService
             })->exists();
 
             if ($hasChallans) {
-                 throw ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'bill_type' => 'Cannot create advance bill - challans already exist for this quotation',
                 ]);
             }

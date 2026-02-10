@@ -14,6 +14,7 @@ class CompanyController extends Controller
     {
         // Assuming we are listing CustomerCompanies (sub-companies)
         $companies = CustomerCompany::paginate(20);
+
         return response()->json($companies);
     }
 
@@ -35,19 +36,21 @@ class CompanyController extends Controller
     public function update(CompanyCreateRequest $request, CustomerCompany $company): JsonResponse
     {
         $company->update($request->validated());
+
         return response()->json($company);
     }
 
     public function destroy(CustomerCompany $company): JsonResponse
     {
         $company->delete();
+
         return response()->json(['message' => 'Company deleted successfully']);
     }
 
     public function nextCustomerSerial(Request $request, CustomerCompany $company): JsonResponse
     {
         $lastCustomer = $company->customers()
-            ->where('customer_no', 'like', $company->company_code . '-%')
+            ->where('customer_no', 'like', $company->company_code.'-%')
             ->orderByRaw('CAST(SUBSTRING(customer_no, LENGTH(?) + 2) AS UNSIGNED) DESC', [$company->company_code])
             ->first();
 
@@ -57,7 +60,7 @@ class CompanyController extends Controller
             $nextSerial = $lastSerial + 1;
         }
 
-        $customerNo = $company->company_code . '-' . str_pad($nextSerial, 2, '0', STR_PAD_LEFT);
+        $customerNo = $company->company_code.'-'.str_pad($nextSerial, 2, '0', STR_PAD_LEFT);
 
         return response()->json([
             'customer_no' => $customerNo,

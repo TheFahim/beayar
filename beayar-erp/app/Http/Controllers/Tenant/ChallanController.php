@@ -326,7 +326,7 @@ class ChallanController extends Controller
                     ->ignore($challan->id)
                     ->where(function ($query) {
                         return $query->where('user_company_id', auth()->user()->current_user_company_id);
-                    })
+                    }),
             ],
             'po_no' => [
                 'required',

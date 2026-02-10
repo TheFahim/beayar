@@ -37,7 +37,7 @@ class QuotationSeeder extends Seeder
         $statuses = QuotationStatus::all();
         $brandOrigins = BrandOrigin::all();
 
-        if ($customers->isEmpty() || $products->isEmpty() || !$owner) {
+        if ($customers->isEmpty() || $products->isEmpty() || ! $owner) {
             return;
         }
 
@@ -51,9 +51,9 @@ class QuotationSeeder extends Seeder
                 'customer_id' => $customer->id,
                 'user_id' => $owner->id,
                 'status_id' => $status->id,
-                'quotation_no' => 'QT-' . $company->id . '-' . date('Y') . '-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT) . '-' . uniqid(),
-                'reference_no' => 'REF-' . uniqid(),
-                'po_no' => 'PO-' . uniqid(),
+                'quotation_no' => 'QT-'.$company->id.'-'.date('Y').'-'.str_pad($i + 1, 4, '0', STR_PAD_LEFT).'-'.uniqid(),
+                'reference_no' => 'REF-'.uniqid(),
+                'po_no' => 'PO-'.uniqid(),
                 'po_date' => Carbon::now()->subDays(rand(1, 30)),
                 'ship_to' => $customer->address,
             ]);
@@ -66,16 +66,16 @@ class QuotationSeeder extends Seeder
     {
         // Create 1-3 revisions
         $revisionCount = rand(1, 3);
-        
+
         for ($j = 0; $j < $revisionCount; $j++) {
             $isActive = ($j === $revisionCount - 1); // Last one is active
-            
+
             $subtotal = 0;
             $items = [];
 
             // Pick random products
             $selectedProducts = $products->random(rand(1, min(3, $products->count())));
-            
+
             foreach ($selectedProducts as $product) {
                 $qty = rand(1, 10);
                 $price = rand(100, 1000);
@@ -100,7 +100,7 @@ class QuotationSeeder extends Seeder
 
             $revision = QuotationRevision::create([
                 'quotation_id' => $quotation->id,
-                'revision_no' => 'R' . $j,
+                'revision_no' => 'R'.$j,
                 'date' => Carbon::now(),
                 'valid_until' => Carbon::now()->addDays(15),
                 'currency' => 'BDT',

@@ -18,11 +18,17 @@ class QuotationUpdateSpecificTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $company;
+
     protected $customer;
+
     protected $status;
+
     protected $product;
+
     protected $quotation;
+
     protected $revision;
 
     protected function setUp(): void
@@ -154,7 +160,7 @@ class QuotationUpdateSpecificTest extends TestCase
         $this->assertEquals('Updated Address', $this->quotation->ship_to);
     }
 
-    public function test_can_update_quotation_with_dmY_date_format()
+    public function test_can_update_quotation_with_dm_y_date_format()
     {
         $response = $this->actingAs($this->user)
             ->put(route('tenant.quotations.update', $this->quotation), [
@@ -245,12 +251,12 @@ class QuotationUpdateSpecificTest extends TestCase
 
         // If it fails with errors, we expect validation errors on date
         if (session()->has('errors')) {
-             $errors = session('errors');
-             if ($errors->has('quotation_revision.date')) {
-                 // It failed as expected, which means we need to fix QuotationRevisionRequest too
-                 // But for now, let's see if it passes
-                 $this->fail('Validation failed for date format in new revision');
-             }
+            $errors = session('errors');
+            if ($errors->has('quotation_revision.date')) {
+                // It failed as expected, which means we need to fix QuotationRevisionRequest too
+                // But for now, let's see if it passes
+                $this->fail('Validation failed for date format in new revision');
+            }
         }
 
         $response->assertRedirect(route('tenant.quotations.edit', $this->quotation));

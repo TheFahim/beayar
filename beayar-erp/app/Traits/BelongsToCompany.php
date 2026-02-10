@@ -18,7 +18,7 @@ trait BelongsToCompany
 
         // Auto-assign company on create
         static::creating(function ($model) {
-            if (auth()->check() && auth()->user()->current_user_company_id && !$model->user_company_id) {
+            if (auth()->check() && auth()->user()->current_user_company_id && ! $model->user_company_id) {
                 $model->user_company_id = auth()->user()->current_user_company_id;
             }
         });

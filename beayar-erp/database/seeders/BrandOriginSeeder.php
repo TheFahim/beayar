@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\BrandOrigin;
 use App\Models\UserCompany;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class BrandOriginSeeder extends Seeder
 {
@@ -33,7 +32,7 @@ class BrandOriginSeeder extends Seeder
                     ->where('name', $origin['name'])
                     ->exists();
 
-                if (!$exists) {
+                if (! $exists) {
                     BrandOrigin::create(array_merge($origin, [
                         'user_company_id' => $company->id,
                     ]));

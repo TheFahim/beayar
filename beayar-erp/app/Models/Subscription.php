@@ -19,7 +19,7 @@ class Subscription extends Model
         'trial_ends_at',
         'plan_type',
         'price',
-        'module_access'
+        'module_access',
     ];
 
     protected $casts = [
@@ -56,6 +56,7 @@ class Subscription extends Model
     public function hasModuleAccess(string $module): bool
     {
         $access = $this->module_access ?? [];
+
         return in_array($module, $access);
     }
 
@@ -83,6 +84,7 @@ class Subscription extends Model
 
         // Fallback to plan limits
         $planLimits = $this->plan->limits ?? [];
+
         return $planLimits[$metric] ?? 0;
     }
 

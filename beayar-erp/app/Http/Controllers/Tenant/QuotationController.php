@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use App\Models\Product;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\QuotationRequest;
+use App\Http\Requests\QuotationRevisionRequest;
+use App\Http\Requests\QuotationUpdateRequest;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\Quotation;
-use Illuminate\Http\Request;
-use App\Models\Specification;
-use App\Models\QuotationStatus;
-use Illuminate\Validation\Rule;
 use App\Models\QuotationRevision;
+use App\Models\QuotationStatus;
+use App\Models\Specification;
+use App\Services\ExchangeRateService;
+use App\Services\QuotationQueryService;
 use App\Services\QuotationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-use App\Services\ExchangeRateService;
-use App\Http\Requests\QuotationRequest;
-use App\Services\QuotationQueryService;
-use App\Http\Requests\QuotationUpdateRequest;
-use App\Http\Requests\QuotationRevisionRequest;
 
 class QuotationController extends Controller
 {
@@ -26,8 +25,7 @@ class QuotationController extends Controller
         private QuotationService $quotationService,
         private QuotationQueryService $queryService,
         private ExchangeRateService $exchangeRateService
-    ) {
-    }
+    ) {}
 
     /**
      * Display a listing of quotations with nested structure.
@@ -79,13 +77,13 @@ class QuotationController extends Controller
             $revisionNo = $quotation->getActiveRevision()?->revision_no ?? 'R00';
 
             return redirect()->route('tenant.quotations.index')
-                ->with('success', 'Quotation created successfully with revision ' . $revisionNo);
+                ->with('success', 'Quotation created successfully with revision '.$revisionNo);
         } catch (\Exception $e) {
-            Log::error('Quotation creation failed: ' . $e->getMessage());
+            Log::error('Quotation creation failed: '.$e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to create quotation: ' . $e->getMessage());
+                ->with('error', 'Failed to create quotation: '.$e->getMessage());
         }
     }
 
@@ -201,7 +199,7 @@ class QuotationController extends Controller
     {
         $this->authorizeQuotation($quotation);
 
-        if (!$quotation->isEditable()) {
+        if (! $quotation->isEditable()) {
             return redirect()->back()->with('error', 'Cannot modify quotation because it has associated bills.');
         }
 
@@ -216,11 +214,11 @@ class QuotationController extends Controller
             return redirect()->route('tenant.quotations.index')
                 ->with('success', 'Quotation updated successfully!');
         } catch (\Exception $e) {
-            Log::error('Quotation update failed: ' . $e->getMessage());
+            Log::error('Quotation update failed: '.$e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to update quotation: ' . $e->getMessage());
+                ->with('error', 'Failed to update quotation: '.$e->getMessage());
         }
     }
 
@@ -243,7 +241,7 @@ class QuotationController extends Controller
         ]);
 
         // Validate revision data using QuotationRevisionRequest rules manually
-        $revisionRequest = new QuotationRevisionRequest();
+        $revisionRequest = new QuotationRevisionRequest;
         $validator = \Validator::make($request->all(), $revisionRequest->rules());
 
         if ($validator->fails()) {
@@ -268,13 +266,13 @@ class QuotationController extends Controller
         ]);
 
         $quotation->update([
-            'status' => $validated['status']
+            'status' => $validated['status'],
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Status updated successfully!',
-            'status' => $quotation->status
+            'status' => $quotation->status,
         ]);
     }
 
@@ -293,16 +291,16 @@ class QuotationController extends Controller
         DB::transaction(function () use ($quotation, $revision) {
             // Deactivate all revisions
             $this->quotationService->deactivateAllRevisions($quotation);
-            
+
             // Activate this revision
             $revision->update(['is_active' => true]);
 
             // Update quotation status if saved as quotation
             if (($revision->saved_as ?? 'draft') === 'quotation') {
-                 $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                 if ($activeStatus) {
-                     $quotation->update(['status_id' => $activeStatus->id]);
-                 }
+                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
+                if ($activeStatus) {
+                    $quotation->update(['status_id' => $activeStatus->id]);
+                }
             }
         });
 
@@ -317,7 +315,7 @@ class QuotationController extends Controller
     {
         $this->authorizeQuotation($quotation);
 
-        if (!$quotation->isDeletable()) {
+        if (! $quotation->isDeletable()) {
             $message = $quotation->hasBills()
                 ? 'Cannot delete quotation because it has associated bills.'
                 : 'Cannot delete quotation. A challan has been created from this quotation.';
@@ -336,7 +334,7 @@ class QuotationController extends Controller
             DB::rollBack();
 
             return redirect()->route('tenant.quotations.index')
-                ->with('error', 'Failed to delete quotation: ' . $e->getMessage());
+                ->with('error', 'Failed to delete quotation: '.$e->getMessage());
         }
     }
 
@@ -371,10 +369,10 @@ class QuotationController extends Controller
                 ->with('success', 'Revision deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Failed to delete revision {$revision->id}: " . $e->getMessage());
+            Log::error("Failed to delete revision {$revision->id}: ".$e->getMessage());
 
             return redirect()->route('tenant.quotations.edit', $quotation->id)
-                ->with('error', 'Failed to delete revision: ' . $e->getMessage());
+                ->with('error', 'Failed to delete revision: '.$e->getMessage());
         }
     }
 
@@ -422,7 +420,7 @@ class QuotationController extends Controller
         $userCompanyId = auth()->user()->current_user_company_id;
         $product = Product::where('user_company_id', $userCompanyId)->find($productId);
 
-        if (!$product) {
+        if (! $product) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -489,7 +487,7 @@ class QuotationController extends Controller
             ]);
 
             $specifications = [];
-            if (!empty($validated['specifications'][0]['description'])) {
+            if (! empty($validated['specifications'][0]['description'])) {
                 $specification = $product->specifications()->create([
                     'description' => $validated['specifications'][0]['description'],
                 ]);
@@ -517,7 +515,7 @@ class QuotationController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create product: ' . $e->getMessage(),
+                'message' => 'Failed to create product: '.$e->getMessage(),
                 'errors' => [],
             ], 422);
         }

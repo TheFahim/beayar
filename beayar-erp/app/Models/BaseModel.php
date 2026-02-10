@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
     protected $guarded = ['id'];
-    
+
     // Helper to check if model uses the company scope
     public function isTenantScoped(): bool
     {

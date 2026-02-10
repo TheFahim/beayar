@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\User;
 use App\Models\Quotation;
+use App\Models\User;
+use Illuminate\Console\Command;
 
 class VerifyMigration extends Command
 {
@@ -36,7 +36,7 @@ class VerifyMigration extends Command
         $this->info("Total Quotations: {$quoteCount}");
 
         // Add more specific checks (e.g. sum of revenue vs source)
-        
+
         $this->info('Verification Completed.');
     }
 }

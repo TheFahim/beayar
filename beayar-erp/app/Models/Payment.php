@@ -10,7 +10,7 @@ class Payment extends Model
     use BelongsToCompany;
 
     protected $guarded = ['id'];
-    
+
     protected $casts = [
         'amount' => 'decimal:2',
         'payment_date' => 'date',

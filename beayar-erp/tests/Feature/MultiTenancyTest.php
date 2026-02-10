@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Plan;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Models\UserCompany;
-use App\Models\Tenant;
-use App\Models\Plan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MultiTenancyTest extends TestCase

@@ -13,6 +13,7 @@ class CouponController extends Controller
     public function index(): View
     {
         $coupons = Coupon::where('type', 'campaign')->latest()->paginate(10);
+
         return view('admin.coupons.index', compact('coupons'));
     }
 
@@ -44,6 +45,7 @@ class CouponController extends Controller
     public function destroy(Coupon $coupon): RedirectResponse
     {
         $coupon->delete();
+
         return back()->with('success', 'Coupon deleted successfully.');
     }
 }

@@ -23,7 +23,7 @@ class MigrateExistingOwnersSeeder extends Seeder
                     ->where('user_id', $company->owner_id)
                     ->exists();
 
-                if (!$exists) {
+                if (! $exists) {
                     DB::table('company_members')->insert([
                         'user_company_id' => $company->id,
                         'user_id' => $company->owner_id,
@@ -31,10 +31,10 @@ class MigrateExistingOwnersSeeder extends Seeder
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-                    
+
                     // Also assign Spatie Role 'tenant_admin' globally to the owner
                     $user = \App\Models\User::find($company->owner_id);
-                    if ($user && !$user->hasRole('tenant_admin')) {
+                    if ($user && ! $user->hasRole('tenant_admin')) {
                         $user->assignRole('tenant_admin');
                     }
                 }

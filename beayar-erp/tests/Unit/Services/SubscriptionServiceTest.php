@@ -2,9 +2,8 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\User;
 use App\Models\Subscription;
-use App\Models\SubscriptionUsage;
+use App\Models\User;
 use App\Services\Subscription\SubscriptionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
@@ -19,7 +18,7 @@ class SubscriptionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new SubscriptionService();
+        $this->service = new SubscriptionService;
     }
 
     public function test_check_limit_returns_false_if_no_subscription()
@@ -36,7 +35,7 @@ class SubscriptionServiceTest extends TestCase
     {
         $user = Mockery::mock(User::class);
         $subscription = Mockery::mock(Subscription::class);
-        
+
         $user->shouldReceive('getAttribute')->with('subscription')->andReturn($subscription);
         $subscription->shouldReceive('checkLimit')->with('quotations')->once()->andReturn(true);
 
@@ -49,12 +48,12 @@ class SubscriptionServiceTest extends TestCase
     {
         $user = Mockery::mock(User::class);
         $subscription = Mockery::mock(Subscription::class);
-        
+
         $user->shouldReceive('getAttribute')->with('subscription')->andReturn($subscription);
         $subscription->shouldReceive('recordUsage')->with('quotations', 1)->once();
 
         $this->service->recordUsage($user, 'quotations');
-        
+
         // Mockery assertion handled by tearDown/mock expectation
         $this->assertTrue(true);
     }

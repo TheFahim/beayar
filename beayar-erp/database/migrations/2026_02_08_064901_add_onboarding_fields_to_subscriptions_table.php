@@ -32,7 +32,7 @@ return new class extends Migration
                 'company_limit',
                 'user_limit_per_company',
                 'quotation_limit_per_month',
-                'module_access'
+                'module_access',
             ]);
             $table->foreignId('plan_id')->nullable(false)->change();
         });

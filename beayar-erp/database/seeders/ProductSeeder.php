@@ -16,7 +16,7 @@ class ProductSeeder extends Seeder
         $userCompanies = UserCompany::all();
 
         if ($userCompanies->isEmpty()) {
-             $userCompanies = UserCompany::factory(5)->create();
+            $userCompanies = UserCompany::factory(5)->create();
         }
 
         foreach ($userCompanies as $company) {

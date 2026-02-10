@@ -25,7 +25,7 @@ class GroupOfIndustriesTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
         $this->assertDatabaseHas('user_companies', [
             'name' => 'Test Company',
-            'organization_type' => UserCompany::TYPE_INDEPENDENT
+            'organization_type' => UserCompany::TYPE_INDEPENDENT,
         ]);
 
         $user = User::where('email', 'test@example.com')->first();
@@ -42,7 +42,7 @@ class GroupOfIndustriesTest extends TestCase
             'slug' => 'basic',
             'base_price' => 10,
             'billing_cycle' => 'monthly',
-            'limits' => []
+            'limits' => [],
         ]);
         \App\Models\Subscription::forceCreate([
             'user_id' => $user->id,
@@ -52,6 +52,7 @@ class GroupOfIndustriesTest extends TestCase
             'ends_at' => now()->addDays(30),
             'price' => 10.00,
         ]);
+
         return $user;
     }
 
@@ -61,11 +62,11 @@ class GroupOfIndustriesTest extends TestCase
         $holdingCompany = UserCompany::create([
             'name' => 'Holding Corp',
             'owner_id' => $user->id,
-            'organization_type' => UserCompany::TYPE_HOLDING
+            'organization_type' => UserCompany::TYPE_HOLDING,
         ]);
 
         $this->actingAs($user)
-             ->withSession(['tenant_id' => $holdingCompany->id]);
+            ->withSession(['tenant_id' => $holdingCompany->id]);
 
         // Try to create a product (assuming route is tenant.products.store)
         $response = $this->post(route('tenant.products.store'), [
@@ -82,18 +83,18 @@ class GroupOfIndustriesTest extends TestCase
         $holdingCompany = UserCompany::create([
             'name' => 'Holding Corp',
             'owner_id' => $user->id,
-            'organization_type' => UserCompany::TYPE_HOLDING
+            'organization_type' => UserCompany::TYPE_HOLDING,
         ]);
-        
+
         $subsidiary = UserCompany::create([
             'name' => 'Subsidiary Inc',
             'owner_id' => $user->id,
             'parent_company_id' => $holdingCompany->id,
-            'organization_type' => UserCompany::TYPE_SUBSIDIARY
+            'organization_type' => UserCompany::TYPE_SUBSIDIARY,
         ]);
 
         $this->actingAs($user)
-             ->withSession(['tenant_id' => $subsidiary->id]);
+            ->withSession(['tenant_id' => $subsidiary->id]);
 
         // Try to create a product
         // Note: I need valid data for product creation or expect validation error (422), not 403.
@@ -111,23 +112,23 @@ class GroupOfIndustriesTest extends TestCase
         $holding = UserCompany::create([
             'name' => 'Holding',
             'owner_id' => $user->id,
-            'organization_type' => UserCompany::TYPE_HOLDING
+            'organization_type' => UserCompany::TYPE_HOLDING,
         ]);
         $sub1 = UserCompany::create([
             'name' => 'Sub 1',
             'owner_id' => $user->id,
             'parent_company_id' => $holding->id,
-            'organization_type' => UserCompany::TYPE_SUBSIDIARY
+            'organization_type' => UserCompany::TYPE_SUBSIDIARY,
         ]);
         $sub2 = UserCompany::create([
             'name' => 'Sub 2',
             'owner_id' => $user->id,
             'parent_company_id' => $holding->id,
-            'organization_type' => UserCompany::TYPE_SUBSIDIARY
+            'organization_type' => UserCompany::TYPE_SUBSIDIARY,
         ]);
 
         $ids = $holding->getGroupIds();
-        
+
         $this->assertContains($holding->id, $ids);
         $this->assertContains($sub1->id, $ids);
         $this->assertContains($sub2->id, $ids);

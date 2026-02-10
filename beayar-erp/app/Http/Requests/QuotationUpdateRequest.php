@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Quotation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Quotation;
 
 class QuotationUpdateRequest extends FormRequest
 {

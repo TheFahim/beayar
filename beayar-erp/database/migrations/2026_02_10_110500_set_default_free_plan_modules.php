@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use App\Models\Plan;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -16,7 +14,7 @@ return new class extends Migration
         $freePlan = Plan::where('slug', 'free')->first();
         if ($freePlan) {
             $freePlan->update([
-                'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance']
+                'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance'],
             ]);
         }
     }

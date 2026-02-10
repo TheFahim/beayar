@@ -17,10 +17,15 @@ class QuotationRevisionActivationTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected $user;
+
     protected $company;
+
     protected $customer;
+
     protected $quotation;
+
     protected $revision1;
+
     protected $revision2;
 
     protected function setUp(): void
@@ -126,7 +131,7 @@ class QuotationRevisionActivationTest extends TestCase
         $response = $this->get(route('tenant.quotations.revisions.activate', $this->revision2->id));
 
         $response->assertRedirect(route('tenant.quotations.edit', $this->quotation->id));
-        
+
         $this->assertDatabaseHas('quotations', [
             'id' => $this->quotation->id,
             'status_id' => QuotationStatus::where('name', 'Active')->first()->id,

@@ -65,7 +65,7 @@ class ImageController extends Controller
             // Get current company ID for folder isolation
             $companyId = auth()->user()->current_user_company_id;
 
-            $fullDirectoryPath = public_path(self::UPLOAD_DIR . '/' . $companyId);
+            $fullDirectoryPath = public_path(self::UPLOAD_DIR.'/'.$companyId);
             $this->ensureDirectoryExists($fullDirectoryPath);
 
             $finalFileName = Str::slug($request->name).'-'.uniqid().'.'.$extension;
@@ -74,7 +74,7 @@ class ImageController extends Controller
             // Compress and save the image
             $compressedSize = $this->compressAndSaveImage($file, $finalPath, $extension);
 
-            $relativePath = self::UPLOAD_DIR . '/' . $companyId . '/' . $finalFileName;
+            $relativePath = self::UPLOAD_DIR.'/'.$companyId.'/'.$finalFileName;
 
             $imageModel = Image::create([
                 'user_company_id' => $companyId,
@@ -118,10 +118,11 @@ class ImageController extends Controller
 
         // Get original image info
         $imageInfo = getimagesize($tempPath);
-        if (!$imageInfo) {
-             // Fallback if not an image or unreadable
-             move_uploaded_file($tempPath, $destinationPath);
-             return filesize($destinationPath);
+        if (! $imageInfo) {
+            // Fallback if not an image or unreadable
+            move_uploaded_file($tempPath, $destinationPath);
+
+            return filesize($destinationPath);
         }
 
         $originalWidth = $imageInfo[0];
@@ -159,6 +160,7 @@ class ImageController extends Controller
 
         if (! $sourceImage) {
             move_uploaded_file($tempPath, $destinationPath);
+
             return filesize($destinationPath);
         }
 
@@ -198,7 +200,7 @@ class ImageController extends Controller
                 imagewebp($newImage, $destinationPath, $jpegQuality);
                 break;
             default:
-                 imagejpeg($newImage, $destinationPath, $jpegQuality);
+                imagejpeg($newImage, $destinationPath, $jpegQuality);
         }
 
         imagedestroy($sourceImage);
@@ -217,7 +219,7 @@ class ImageController extends Controller
         if ($request->has('query') && $request->get('query') !== '') {
             $queryString = $request->get('query');
             $query->where('name', 'like', '%'.$queryString.'%')
-                  ->orWhere('original_name', 'like', '%'.$queryString.'%');
+                ->orWhere('original_name', 'like', '%'.$queryString.'%');
         }
 
         $images = $query->latest()->paginate(12);
@@ -236,7 +238,7 @@ class ImageController extends Controller
         ]);
 
         $image = Image::findOrFail($id);
-        
+
         // Ensure user belongs to the same company
         if ($image->user_company_id !== auth()->user()->current_user_company_id) {
             abort(403);
@@ -259,20 +261,20 @@ class ImageController extends Controller
                 $originalName = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $mime = $file->getClientMimeType();
-                
+
                 // Reuse company ID
                 $companyId = $image->user_company_id;
-                
-                $fullDirectoryPath = public_path(self::UPLOAD_DIR . '/' . $companyId);
+
+                $fullDirectoryPath = public_path(self::UPLOAD_DIR.'/'.$companyId);
                 $this->ensureDirectoryExists($fullDirectoryPath);
-                
+
                 $finalFileName = Str::slug($request->name).'-'.uniqid().'.'.$extension;
                 $finalPath = $fullDirectoryPath.'/'.$finalFileName;
-                
+
                 // Compress and save
                 $compressedSize = $this->compressAndSaveImage($file, $finalPath, $extension);
-                
-                $relativePath = self::UPLOAD_DIR . '/' . $companyId . '/' . $finalFileName;
+
+                $relativePath = self::UPLOAD_DIR.'/'.$companyId.'/'.$finalFileName;
 
                 $data['original_name'] = $originalName;
                 $data['file_name'] = $finalFileName;
@@ -284,9 +286,10 @@ class ImageController extends Controller
                 if ($request->ajax()) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to process image: ' . $e->getMessage(),
+                        'message' => 'Failed to process image: '.$e->getMessage(),
                     ], 500);
                 }
+
                 return redirect()->back()->with('error', 'Failed to update image.');
             }
         }
@@ -314,7 +317,7 @@ class ImageController extends Controller
     //     ]);
 
     //     $image = Image::findOrFail($id);
-        
+
     //     // Ensure user belongs to the same company
     //     if ($image->user_company_id !== auth()->user()->current_user_company_id) {
     //         abort(403);

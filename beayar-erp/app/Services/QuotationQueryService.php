@@ -58,9 +58,9 @@ class QuotationQueryService
             if (is_numeric($status)) {
                 $query->where('status_id', $status);
             } else {
-                 $query->whereHas('status', function ($q) use ($status) {
-                     $q->where('name', $status);
-                 });
+                $query->whereHas('status', function ($q) use ($status) {
+                    $q->where('name', $status);
+                });
             }
         }
     }

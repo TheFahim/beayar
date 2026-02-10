@@ -13,9 +13,6 @@ class InvoiceNumberGenerator
      * Logic:
      * - Base: quotation_no
      * - Suffix: A, B, C... Z, ZA, ZB...
-     *
-     * @param Quotation $quotation
-     * @return string
      */
     public function generate(Quotation $quotation): string
     {
@@ -40,8 +37,8 @@ class InvoiceNumberGenerator
             // If existingInvoices is empty (no bills), suffix "" is checked.
             // If quotation_no is "Q-100", checks "Q-100".
             // If "Q-100" exists, checks "Q-100A".
-            if (!isset($existingInvoices[$suffix])) {
-                return $quotationNo . $suffix;
+            if (! isset($existingInvoices[$suffix])) {
+                return $quotationNo.$suffix;
             }
             $index++;
         }
@@ -55,9 +52,6 @@ class InvoiceNumberGenerator
      * 26 -> "Z"
      * 27 -> "ZA"
      * ...
-     *
-     * @param int $n
-     * @return string
      */
     private function getSuffix(int $n): string
     {
@@ -72,6 +66,6 @@ class InvoiceNumberGenerator
         // For n > 26:
         // 27 -> ZA.
         // We want 'Z' + suffix(n - 26).
-        return 'Z' . $this->getSuffix($n - 26);
+        return 'Z'.$this->getSuffix($n - 26);
     }
 }

@@ -3,15 +3,15 @@
 namespace App\Services\Subscription;
 
 use App\Models\User;
-use App\Models\SubscriptionUsage;
 
 class SubscriptionService
 {
     public function checkLimit(User $user, string $metric): bool
     {
-        if (!$user->subscription) {
+        if (! $user->subscription) {
             return false;
         }
+
         return $user->subscription->checkLimit($metric);
     }
 
@@ -24,9 +24,10 @@ class SubscriptionService
 
     public function getUsage(User $user, string $metric): int
     {
-        if (!$user->subscription) {
+        if (! $user->subscription) {
             return 0;
         }
+
         return $user->subscription->usages()->where('metric', $metric)->value('used') ?? 0;
     }
 }

@@ -32,16 +32,17 @@ class CouponController extends Controller
             $request->validated(),
             ['type' => 'unique'] // Tenants create unique coupons usually
         ));
+
         return response()->json($coupon, 201);
     }
 
     public function validateCoupon(Request $request): JsonResponse
     {
         $request->validate(['code' => 'required|string']);
-        
+
         $coupon = $this->couponService->validateCoupon($request->code, $request->user());
-        
-        if (!$coupon) {
+
+        if (! $coupon) {
             return response()->json(['message' => 'Invalid or expired coupon'], 422);
         }
 

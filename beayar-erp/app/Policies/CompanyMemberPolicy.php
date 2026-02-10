@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\UserCompany;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Session;
 
 class CompanyMemberPolicy
@@ -22,7 +21,7 @@ class CompanyMemberPolicy
      */
     public function create(User $user): bool
     {
-        if (!Session::has('tenant_id')) {
+        if (! Session::has('tenant_id')) {
             return false;
         }
 

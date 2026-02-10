@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Bill;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Session;
 
 class BillPolicy
@@ -31,7 +30,7 @@ class BillPolicy
      */
     public function create(User $user): bool
     {
-        if (!Session::has('tenant_id')) {
+        if (! Session::has('tenant_id')) {
             return false;
         }
 
@@ -51,7 +50,7 @@ class BillPolicy
         }
 
         $role = $user->roleInCompany($bill->user_company_id);
-        
+
         return $user->isOwnerOf($bill->user_company_id) || in_array($role, ['admin', 'editor']);
     }
 

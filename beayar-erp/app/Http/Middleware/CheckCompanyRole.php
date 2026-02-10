@@ -18,7 +18,7 @@ class CheckCompanyRole
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             abort(401);
         }
 
@@ -26,13 +26,13 @@ class CheckCompanyRole
         // Priority: Session -> User's Default -> Abort
         $companyId = session('tenant_id') ?? $user->current_user_company_id;
 
-        if (!$companyId) {
+        if (! $companyId) {
             abort(403, 'No company context selected.');
         }
 
         $userRole = $user->roleInCompany($companyId);
 
-        if (!$userRole) {
+        if (! $userRole) {
             abort(403, 'You are not a member of this company.');
         }
 

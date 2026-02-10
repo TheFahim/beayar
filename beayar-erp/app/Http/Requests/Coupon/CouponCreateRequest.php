@@ -10,7 +10,7 @@ class CouponCreateRequest extends FormRequest
     {
         // Only allow if user can create coupons (e.g. platform admin or feature flag)
         // For now, assume tenant admins can create coupons for their customers if feature enabled
-        return true; 
+        return true;
     }
 
     public function rules(): array

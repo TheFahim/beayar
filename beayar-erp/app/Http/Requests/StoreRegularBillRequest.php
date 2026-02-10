@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\ChallanProduct;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class StoreRegularBillRequest extends FormRequest

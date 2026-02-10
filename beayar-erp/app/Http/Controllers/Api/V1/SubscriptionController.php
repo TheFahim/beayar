@@ -26,6 +26,7 @@ class SubscriptionController extends Controller
     public function current(Request $request): JsonResponse
     {
         $subscription = $request->user()->subscription()->with('plan')->first();
+
         return response()->json($subscription);
     }
 
@@ -38,7 +39,7 @@ class SubscriptionController extends Controller
         // For now, we simulate success and upgrade the plan
 
         // Assuming payment success...
-        
+
         if ($user->subscription) {
             $this->planManager->changePlan($user->subscription, $plan);
         } else {

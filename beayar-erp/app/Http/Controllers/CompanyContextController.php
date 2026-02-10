@@ -19,13 +19,13 @@ class CompanyContextController extends Controller
         $isMember = $user->companies()->where('user_companies.id', $companyId)->exists();
         $isOwner = $user->ownedCompanies()->where('id', $companyId)->exists();
 
-        if (!$isMember && !$isOwner) {
+        if (! $isMember && ! $isOwner) {
             abort(403, 'You do not have access to this company.');
         }
 
         // Set the session
         Session::put('tenant_id', $companyId);
-        
+
         // Update user's default company for next login
         $user->update(['current_user_company_id' => $companyId]);
 

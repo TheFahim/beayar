@@ -26,7 +26,7 @@ class AdminAuthController extends Controller
             return response()->json([
                 'message' => 'Login successful',
                 'token' => $token,
-                'admin' => $admin
+                'admin' => $admin,
             ]);
         }
 
@@ -36,6 +36,7 @@ class AdminAuthController extends Controller
     public function logout(): JsonResponse
     {
         Auth::guard('admin')->user()->currentAccessToken()->delete();
+
         return response()->json(['message' => 'Logged out successfully']);
     }
 

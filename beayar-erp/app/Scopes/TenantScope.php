@@ -15,7 +15,7 @@ class TenantScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         if (Session::has('tenant_id')) {
-            $builder->where($model->getTable() . '.user_company_id', Session::get('tenant_id'));
+            $builder->where($model->getTable().'.user_company_id', Session::get('tenant_id'));
         }
     }
 }

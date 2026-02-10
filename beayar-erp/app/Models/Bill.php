@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bill extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     /**
      * The attributes that are mass assignable.

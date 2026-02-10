@@ -19,28 +19,32 @@ class CriticalWorkflowTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $company;
+
     protected $customer;
+
     protected $quotationService;
+
     protected $billingService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->quotationService = new QuotationService();
-        $this->billingService = new TenantBillingService();
+
+        $this->quotationService = new QuotationService;
+        $this->billingService = new TenantBillingService;
 
         // 1. Setup User and Company
         $this->user = User::factory()->create([
             'current_user_company_id' => null,
-            'current_scope' => 'company'
+            'current_scope' => 'company',
         ]);
-        
+
         $this->company = UserCompany::create([
             'name' => 'Workflow Test Company',
             'owner_id' => $this->user->id,
-            'email' => 'workflow@test.com'
+            'email' => 'workflow@test.com',
         ]);
 
         $this->user->update(['current_user_company_id' => $this->company->id]);
@@ -48,14 +52,14 @@ class CriticalWorkflowTest extends TestCase
         // 2. Setup Customer
         $customerCompany = CustomerCompany::create([
             'user_company_id' => $this->company->id,
-            'name' => 'Client Corp'
+            'name' => 'Client Corp',
         ]);
-        
+
         $this->customer = Customer::create([
             'user_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'John Client',
-            'email' => 'john@client.com'
+            'email' => 'john@client.com',
         ]);
     }
 
@@ -63,8 +67,8 @@ class CriticalWorkflowTest extends TestCase
     {
         // Step 1: Create Quotation
         $status = QuotationStatus::create([
-            'name' => 'Draft', 
-            'user_company_id' => $this->company->id
+            'name' => 'Draft',
+            'user_company_id' => $this->company->id,
         ]);
 
         $quoteData = [
@@ -78,13 +82,13 @@ class CriticalWorkflowTest extends TestCase
                     'product_name' => 'Consulting Service',
                     'quantity' => 10,
                     'unit_price' => 500,
-                    'total' => 5000
-                ]
-            ]
+                    'total' => 5000,
+                ],
+            ],
         ];
 
         $quotation = $this->quotationService->createQuotation($this->user, $quoteData);
-        
+
         $this->assertDatabaseHas('quotations', ['id' => $quotation->id]);
         $this->assertEquals(5250, $quotation->activeRevision->total);
 
@@ -103,10 +107,10 @@ class CriticalWorkflowTest extends TestCase
             'user_company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'bill_id' => $bill->id,
-            'payment_no' => 'PAY-' . uniqid(),
+            'payment_no' => 'PAY-'.uniqid(),
             'date' => now(),
             'amount' => $paymentAmount,
-            'method' => 'bank_transfer'
+            'method' => 'bank_transfer',
         ]);
 
         // Verify Payment
@@ -124,10 +128,10 @@ class CriticalWorkflowTest extends TestCase
             'user_company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'bill_id' => $bill->id,
-            'payment_no' => 'PAY-' . uniqid(),
+            'payment_no' => 'PAY-'.uniqid(),
             'date' => now(),
             'amount' => $remainingAmount,
-            'method' => 'cash'
+            'method' => 'cash',
         ]);
 
         $bill->due = $bill->total_amount - $bill->payments()->sum('amount');

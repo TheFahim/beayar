@@ -3,8 +3,8 @@
 namespace App\Services\Tenant;
 
 use App\Models\Coupon;
-use App\Models\PlatformInvoice;
 use App\Models\CouponUsage;
+use App\Models\PlatformInvoice;
 use App\Models\User;
 
 class CouponService
@@ -13,7 +13,7 @@ class CouponService
     {
         $coupon = Coupon::where('code', $code)->first();
 
-        if (!$coupon) {
+        if (! $coupon) {
             return null; // Invalid
         }
 
@@ -36,7 +36,7 @@ class CouponService
 
         $invoice->update([
             'discount' => $discount,
-            'total' => $invoice->subtotal - $discount
+            'total' => $invoice->subtotal - $discount,
         ]);
 
         CouponUsage::create([

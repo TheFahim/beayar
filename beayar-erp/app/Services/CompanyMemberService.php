@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\UserCompany;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class CompanyMemberService
@@ -16,7 +15,7 @@ class CompanyMemberService
     {
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             throw ValidationException::withMessages(['email' => 'User not found.']);
         }
 

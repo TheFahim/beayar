@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\UserCompany;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\UserCompany;
 
 class EnsureOperationalCompany
 {
@@ -22,9 +22,9 @@ class EnsureOperationalCompany
 
             if ($tenantId) {
                 $company = UserCompany::find($tenantId);
-                
+
                 if ($company && $company->isHolding()) {
-                    abort(403, "Please switch to a subsidiary company to enter data.");
+                    abort(403, 'Please switch to a subsidiary company to enter data.');
                 }
             }
         }

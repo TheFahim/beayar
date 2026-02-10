@@ -2,11 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\UserCompany;
-use Illuminate\Support\Str;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class MigrateUsers extends Command
 {
@@ -34,7 +33,7 @@ class MigrateUsers extends Command
         // 1. Migrate Wesum Users
         $this->info('Migrating Wesum Users...');
         $wesumUsers = DB::connection('wesum_db')->table('users')->get();
-        
+
         foreach ($wesumUsers as $wUser) {
             $this->migrateUser($wUser, 'wesum');
         }
@@ -54,7 +53,7 @@ class MigrateUsers extends Command
     {
         // Check for duplicate email
         $existingUser = User::where('email', $sourceUser->email)->first();
-        
+
         $email = $sourceUser->email;
         if ($existingUser) {
             $this->warn("Duplicate email found: {$email}. Appending source tag.");
@@ -72,14 +71,14 @@ class MigrateUsers extends Command
         // Create Default Company for User
         $company = UserCompany::create([
             'owner_id' => $user->id,
-            'name' => $sourceUser->company_name ?? $user->name . "'s Company",
+            'name' => $sourceUser->company_name ?? $user->name."'s Company",
             'email' => $user->email,
         ]);
 
         // Update User Context
         $user->update([
             'current_user_company_id' => $company->id,
-            'current_scope' => 'company'
+            'current_scope' => 'company',
         ]);
     }
 }

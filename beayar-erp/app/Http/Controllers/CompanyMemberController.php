@@ -24,10 +24,10 @@ class CompanyMemberController extends Controller
     {
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first() 
+        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
-        if (!$company) {
+        if (! $company) {
             abort(403, 'Company context not found.');
         }
 
@@ -55,18 +55,19 @@ class CompanyMemberController extends Controller
 
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first() 
+        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
-        if (!$company) {
+        if (! $company) {
             abort(403);
         }
-        
+
         // Use Policy to check creation rights
         // $this->authorize('create', [User::class, $company]);
 
         try {
             $this->memberService->addMember($company, $request->email, $request->role);
+
             return redirect()->back()->with('success', 'Member added successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
@@ -85,10 +86,10 @@ class CompanyMemberController extends Controller
         $targetUser = User::findOrFail($id);
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first() 
+        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
-        if (!$company) {
+        if (! $company) {
             abort(403);
         }
 
@@ -96,6 +97,7 @@ class CompanyMemberController extends Controller
 
         try {
             $this->memberService->updateRole($company, $targetUser, $request->role);
+
             return redirect()->back()->with('success', 'Member role updated.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
@@ -110,10 +112,10 @@ class CompanyMemberController extends Controller
         $targetUser = User::findOrFail($id);
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first() 
+        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
-        if (!$company) {
+        if (! $company) {
             abort(403);
         }
 
@@ -121,6 +123,7 @@ class CompanyMemberController extends Controller
 
         try {
             $this->memberService->removeMember($company, $targetUser);
+
             return redirect()->back()->with('success', 'Member removed.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());

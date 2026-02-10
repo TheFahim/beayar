@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('user_companies', function (Blueprint $table) {
             $table->enum('organization_type', ['independent', 'holding', 'subsidiary'])
-                  ->default('independent')
-                  ->after('parent_company_id')
-                  ->index();
+                ->default('independent')
+                ->after('parent_company_id')
+                ->index();
         });
     }
 

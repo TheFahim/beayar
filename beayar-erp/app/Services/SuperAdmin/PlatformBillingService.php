@@ -5,18 +5,17 @@ namespace App\Services\SuperAdmin;
 use App\Models\PlatformInvoice;
 use App\Models\PlatformPayment;
 use App\Models\Subscription;
-use App\Models\User;
 
 class PlatformBillingService
 {
     public function generateInvoice(Subscription $subscription): PlatformInvoice
     {
         $plan = $subscription->plan;
-        
+
         $invoice = PlatformInvoice::create([
             'user_id' => $subscription->user_id,
             'subscription_id' => $subscription->id,
-            'invoice_number' => 'INV-' . strtoupper(uniqid()),
+            'invoice_number' => 'INV-'.strtoupper(uniqid()),
             'subtotal' => $plan->base_price,
             'tax' => 0, // Implement tax logic
             'discount' => 0, // Implement discount logic

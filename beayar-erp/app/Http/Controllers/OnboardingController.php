@@ -45,10 +45,10 @@ class OnboardingController extends Controller
             $user = Auth::user();
 
             // Create Tenant if not exists
-            if (!$user->tenant) {
+            if (! $user->tenant) {
                 $tenant = \App\Models\Tenant::create([
                     'user_id' => $user->id,
-                    'name' => $user->name . "'s Account",
+                    'name' => $user->name."'s Account",
                 ]);
             } else {
                 $tenant = $user->tenant;
@@ -61,7 +61,7 @@ class OnboardingController extends Controller
             // Create/Update Subscription
             $plan = \App\Models\Plan::where('slug', $validated['plan_type'])->first();
 
-            if (!$plan) {
+            if (! $plan) {
                 // Fallback: Create a default free plan if missing (e.g. first run)
                 $plan = \App\Models\Plan::firstOrCreate(
                     ['slug' => 'free'],
@@ -73,14 +73,14 @@ class OnboardingController extends Controller
                         'limits' => [
                             'company_limit' => 1,
                             'user_limit_per_company' => 2,
-                            'quotation_limit_per_month' => 5
+                            'quotation_limit_per_month' => 5,
                         ],
-                        'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance']
+                        'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance'],
                     ]
                 );
             }
 
-            $subscription = new Subscription();
+            $subscription = new Subscription;
             $subscription->tenant_id = $tenant->id;
             $subscription->user_id = $user->id;
             $subscription->plan_id = $plan->id;
@@ -110,7 +110,8 @@ class OnboardingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Plan selection failed: ' . $e->getMessage());
+            Log::error('Plan selection failed: '.$e->getMessage());
+
             return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
@@ -121,7 +122,7 @@ class OnboardingController extends Controller
     public function createCompany()
     {
         // Ensure user has a plan
-        if (!Auth::user()->subscription) {
+        if (! Auth::user()->subscription) {
             return redirect()->route('onboarding.plan');
         }
 
@@ -150,10 +151,10 @@ class OnboardingController extends Controller
             $user = Auth::user();
 
             // Ensure Tenant exists (should be created in plan step, but double check)
-            if (!$user->tenant) {
-                 $tenant = \App\Models\Tenant::create([
+            if (! $user->tenant) {
+                $tenant = \App\Models\Tenant::create([
                     'user_id' => $user->id,
-                    'name' => $user->name . "'s Account",
+                    'name' => $user->name."'s Account",
                 ]);
             } else {
                 $tenant = $user->tenant;
@@ -189,7 +190,8 @@ class OnboardingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Company creation failed: ' . $e->getMessage());
+            Log::error('Company creation failed: '.$e->getMessage());
+
             return back()->with('error', 'Failed to create company.');
         }
     }

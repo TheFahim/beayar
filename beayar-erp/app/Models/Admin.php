@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -33,5 +33,10 @@ class Admin extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->role === 'super_admin';
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
     }
 }
