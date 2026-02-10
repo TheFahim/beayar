@@ -53,23 +53,54 @@ class AuthController extends Controller
             'company_name' => ['required', 'string', 'max:255'],
         ]);
 
-        $user = \App\Models\User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-        ]);
-        
-        // Create the company immediately
-        \App\Models\UserCompany::create([
-            'owner_id' => $user->id,
-            'name' => $validated['company_name'],
-            'organization_type' => \App\Models\UserCompany::TYPE_INDEPENDENT,
-            'status' => 'active',
-        ]);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+            // Step 1: Create User
+            $user = \App\Models\User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            ]);
 
-        Auth::login($user);
+            // Step 2: Create Tenant
+            $tenant = \App\Models\Tenant::create([
+                'user_id' => $user->id,
+                'name' => $validated['company_name'] . ' Account',
+            ]);
 
-        return redirect()->route('tenant.dashboard');
+            // Step 2b: Create Subscription (Default 'Free')
+            $plan = \App\Models\Plan::where('slug', 'free')->first() ?? \App\Models\Plan::first();
+            
+            \App\Models\Subscription::create([
+                'tenant_id' => $tenant->id,
+                'user_id' => $user->id, // Optional legacy
+                'plan_id' => $plan ? $plan->id : 1,
+                'status' => 'active',
+                'starts_at' => now(),
+                'plan_type' => 'free',
+            ]);
+            
+            // Step 3: Create Company
+            $company = \App\Models\UserCompany::create([
+                'tenant_id' => $tenant->id,
+                'owner_id' => $user->id,
+                'name' => $validated['company_name'],
+                'organization_type' => \App\Models\UserCompany::TYPE_INDEPENDENT,
+                'status' => 'active',
+            ]);
+
+            // Step 4: Attach User to Company as Super Admin
+            $company->members()->attach($user->id, [
+                'role' => 'company_admin',
+                'is_active' => true,
+            ]);
+
+            // Set context
+            $user->update(['current_user_company_id' => $company->id]);
+
+            Auth::login($user);
+
+            return redirect()->route('tenant.dashboard');
+        });
     }
 
     public function showForgotPassword()

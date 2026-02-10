@@ -10,6 +10,7 @@ class Subscription extends Model
 {
     protected $fillable = [
         'user_id',
+        'tenant_id',
         'plan_id',
         'custom_limits',
         'status',

@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'ensure.operational' => \App\Http\Middleware\EnsureOperationalCompany::class,
+            'company.role' => \App\Http\Middleware\CheckCompanyRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

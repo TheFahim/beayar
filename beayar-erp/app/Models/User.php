@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Permission\Traits\HasRoles;
@@ -37,9 +38,16 @@ class User extends Authenticatable
     }
 
     // Relationships
-    public function subscription(): HasOne
+    public function tenant(): HasOne
     {
-        return $this->hasOne(Subscription::class)->latestOfMany();
+        return $this->hasOne(Tenant::class);
+    }
+
+    public function subscription(): HasOneThrough
+    {
+        // Redirect subscription access through Tenant
+        // Note: This relies on the hasOneThrough relationship
+        return $this->hasOneThrough(Subscription::class, Tenant::class);
     }
 
     public function currentCompany(): BelongsTo
@@ -55,7 +63,7 @@ class User extends Authenticatable
     public function companies()
     {
         return $this->belongsToMany(UserCompany::class, 'company_members', 'user_id', 'user_company_id')
-                    ->withPivot('role')
+                    ->withPivot('role', 'is_active')
                     ->withTimestamps();
     }
 

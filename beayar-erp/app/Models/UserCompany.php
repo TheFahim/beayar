@@ -58,10 +58,15 @@ class UserCompany extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
     public function members()
     {
         return $this->belongsToMany(User::class, 'company_members', 'user_company_id', 'user_id')
-                    ->withPivot('role')
+                    ->withPivot('role', 'is_active')
                     ->withTimestamps();
     }
 
