@@ -16,7 +16,7 @@ class CompanyContextController extends Controller
         $user = Auth::user();
 
         // Check if user belongs to this company (either as owner or member)
-        $isMember = $user->companies()->where('user_companies.id', $companyId)->exists();
+        $isMember = $user->companies()->where('tenant_companies.id', $companyId)->exists();
         $isOwner = $user->ownedCompanies()->where('id', $companyId)->exists();
 
         if (! $isMember && ! $isOwner) {
@@ -27,7 +27,7 @@ class CompanyContextController extends Controller
         Session::put('tenant_id', $companyId);
 
         // Update user's default company for next login
-        $user->update(['current_user_company_id' => $companyId]);
+        $user->update(['current_tenant_company_id' => $companyId]);
 
         return redirect()->back()->with('success', 'Switched company context.');
     }

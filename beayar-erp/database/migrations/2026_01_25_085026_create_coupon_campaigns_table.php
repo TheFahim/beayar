@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('coupon_campaigns', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->timestamps();

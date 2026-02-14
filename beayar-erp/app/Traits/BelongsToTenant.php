@@ -17,7 +17,7 @@ trait BelongsToTenant
 
         static::creating(function (Model $model) {
             if (Session::has('tenant_id')) {
-                $model->user_company_id = Session::get('tenant_id');
+                $model->tenant_company_id = Session::get('tenant_id');
             }
         });
     }
@@ -27,6 +27,6 @@ trait BelongsToTenant
      */
     public function company()
     {
-        return $this->belongsTo(\App\Models\UserCompany::class, 'user_company_id');
+        return $this->belongsTo(\App\Models\TenantCompany::class, 'tenant_company_id');
     }
 }

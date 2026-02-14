@@ -3,7 +3,7 @@
 namespace Tests\Feature\Tenant;
 
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\AbstractPaginator;
 use Tests\TestCase;
@@ -22,12 +22,12 @@ class PaginationTest extends TestCase
 
         // Create a user and company
         $this->user = User::factory()->create();
-        $this->company = UserCompany::factory()->create([
+        $this->company = TenantCompany::factory()->create([
             'owner_id' => $this->user->id,
         ]);
 
         $this->user->update([
-            'current_user_company_id' => $this->company->id,
+            'current_tenant_company_id' => $this->company->id,
         ]);
     }
 

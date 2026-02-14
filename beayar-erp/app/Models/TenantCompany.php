@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class UserCompany extends Model
+class TenantCompany extends Model
 {
     use HasFactory;
 
@@ -68,19 +68,19 @@ class UserCompany extends Model
 
     public function members()
     {
-        return $this->belongsToMany(User::class, 'company_members', 'user_company_id', 'user_id')
+        return $this->belongsToMany(User::class, 'company_members', 'tenant_company_id', 'user_id')
             ->withPivot('role', 'is_active')
             ->withTimestamps();
     }
 
     public function parentCompany(): BelongsTo
     {
-        return $this->belongsTo(UserCompany::class, 'parent_company_id');
+        return $this->belongsTo(TenantCompany::class, 'parent_company_id');
     }
 
     public function subCompanies(): HasMany
     {
-        return $this->hasMany(UserCompany::class, 'parent_company_id');
+        return $this->hasMany(TenantCompany::class, 'parent_company_id');
     }
 
     public function customerCompanies(): HasMany

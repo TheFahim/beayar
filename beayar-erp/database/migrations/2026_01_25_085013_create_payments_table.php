@@ -10,17 +10,18 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('bill_id')->nullable()->constrained('bills');
-            $table->string('payment_no')->unique();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained();
+            $table->foreignId('bill_id')->nullable()->constrained();
+            $table->string('payment_no');
             $table->date('date');
             $table->decimal('amount', 15, 2);
-            $table->string('method')->default('cash'); // cash, bank, cheque, online
-            $table->text('reference')->nullable(); // Cheque No, Transaction ID
-            $table->text('notes')->nullable();
-            $table->timestamps();
+            $table->string('method')->default('cash');
+            $table->text('reference');
+            $table->text('notes');
             $table->softDeletes();
+            $table->timestamps();
+            $table->unique('payment_no');
         });
     }
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subscription;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -161,13 +161,13 @@ class OnboardingController extends Controller
             }
 
             // Create Company
-            $company = UserCompany::create([
+            $company = TenantCompany::create([
                 'tenant_id' => $tenant->id,
                 'owner_id' => $user->id,
                 'name' => $request->name,
                 'address' => $request->address,
                 'phone' => $request->phone,
-                'organization_type' => UserCompany::TYPE_INDEPENDENT,
+                'organization_type' => TenantCompany::TYPE_INDEPENDENT,
                 'status' => 'active',
             ]);
 
@@ -178,7 +178,7 @@ class OnboardingController extends Controller
             ]);
 
             // Set current context
-            $user->current_user_company_id = $company->id;
+            $user->current_tenant_company_id = $company->id;
             $user->save();
 
             // Set session

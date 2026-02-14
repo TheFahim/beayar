@@ -12,7 +12,7 @@ class TenantScope
     {
         $user = $request->user();
 
-        if ($user && $user->current_user_company_id) {
+        if ($user && $user->current_tenant_company_id) {
             // The BelongsToCompany trait will automatically pick this up from the user model
             // But we can also explicitly set a context if needed
         }

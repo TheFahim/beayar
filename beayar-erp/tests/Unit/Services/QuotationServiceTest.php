@@ -6,7 +6,7 @@ use App\Models\Customer;
 use App\Models\Quotation;
 use App\Models\QuotationStatus;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use App\Services\Tenant\QuotationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -32,25 +32,25 @@ class QuotationServiceTest extends TestCase
 
         // Setup Tenant Context
         $this->user = User::factory()->create([
-            'current_user_company_id' => null,
+            'current_tenant_company_id' => null,
             'current_scope' => 'company',
         ]);
 
-        $this->company = UserCompany::create([
+        $this->company = TenantCompany::create([
             'name' => 'Test Company',
             'owner_id' => $this->user->id,
             'email' => 'company@test.com',
         ]);
 
-        $this->user->update(['current_user_company_id' => $this->company->id]);
+        $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
         $customerCompany = \App\Models\CustomerCompany::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Customer Company',
         ]);
 
         $this->customer = Customer::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'Test Customer',
             'email' => 'customer@test.com',
@@ -58,7 +58,7 @@ class QuotationServiceTest extends TestCase
 
         $this->status = QuotationStatus::create([
             'name' => 'Draft',
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
         ]);
     }
 
@@ -83,7 +83,7 @@ class QuotationServiceTest extends TestCase
         $quotation = $this->service->createQuotation($this->user, $data);
 
         $this->assertInstanceOf(Quotation::class, $quotation);
-        $this->assertEquals($this->user->current_user_company_id, $quotation->user_company_id);
+        $this->assertEquals($this->user->current_tenant_company_id, $quotation->tenant_company_id);
         $this->assertEquals($data['po_no'], $quotation->po_no);
 
         // Check Revision

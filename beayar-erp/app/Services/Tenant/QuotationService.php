@@ -13,7 +13,7 @@ class QuotationService
     {
         return DB::transaction(function () use ($user, $data) {
             $quotation = Quotation::create([
-                'user_company_id' => $user->current_user_company_id,
+                'tenant_company_id' => $user->current_tenant_company_id,
                 'customer_id' => $data['customer_id'],
                 'user_id' => $user->id,
                 'status_id' => $data['status_id'],

@@ -31,7 +31,7 @@ class SetTenantContext
                 // Verify access
                 $tenantId = Session::get('tenant_id');
                 // Check if user is owner OR member
-                $isMember = $user->companies()->where('user_companies.id', $tenantId)->exists();
+                $isMember = $user->companies()->where('tenant_companies.id', $tenantId)->exists();
                 $isOwner = $user->ownedCompanies()->where('id', $tenantId)->exists();
 
                 if (! $isMember && ! $isOwner) {

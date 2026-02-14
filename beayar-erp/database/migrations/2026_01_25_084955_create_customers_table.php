@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
             $table->foreignId('customer_company_id')->constrained('customer_companies')->cascadeOnDelete();
             $table->string('customer_no')->nullable();
             $table->string('name');
@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('department')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->text('address')->nullable();
-            $table->string('type')->default('individual'); // individual, company
-            $table->timestamps();
+            $table->text('address');
+            $table->string('type')->default('individual');
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 

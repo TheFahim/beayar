@@ -22,7 +22,7 @@ class CompanyController extends Controller
     {
         $company = CustomerCompany::create(array_merge(
             $request->validated(),
-            ['user_company_id' => $request->user()->current_user_company_id]
+            ['tenant_company_id' => $request->user()->current_tenant_company_id]
         ));
 
         return response()->json($company, 201);

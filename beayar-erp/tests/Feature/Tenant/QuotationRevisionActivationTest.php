@@ -7,7 +7,7 @@ use App\Models\Quotation;
 use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -33,35 +33,35 @@ class QuotationRevisionActivationTest extends TestCase
         parent::setUp();
 
         // Create user and company
-        $this->company = UserCompany::factory()->create();
+        $this->company = TenantCompany::factory()->create();
         $this->user = User::factory()->create([
-            'current_user_company_id' => $this->company->id,
+            'current_tenant_company_id' => $this->company->id,
         ]);
 
         // Authenticate
         $this->actingAs($this->user);
 
         $this->customer = Customer::factory()->create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
         ]);
 
         // Create statuses
         QuotationStatus::create([
             'name' => 'Draft',
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'color' => 'gray',
             'is_default' => true,
         ]);
 
         QuotationStatus::create([
             'name' => 'Active',
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'color' => 'green',
             'is_default' => false,
         ]);
 
         $this->quotation = Quotation::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'user_id' => $this->user->id,
             'customer_id' => $this->customer->id,
             'quotation_no' => 'QT-REV-TEST',

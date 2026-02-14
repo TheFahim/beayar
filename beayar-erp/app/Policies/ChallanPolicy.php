@@ -21,8 +21,8 @@ class ChallanPolicy
      */
     public function view(User $user, Challan $challan): bool
     {
-        return $user->companies()->where('user_company_id', $challan->user_company_id)->exists() ||
-               $user->ownedCompanies()->where('id', $challan->user_company_id)->exists();
+        return $user->companies()->where('tenant_company_id', $challan->tenant_company_id)->exists() ||
+               $user->ownedCompanies()->where('id', $challan->tenant_company_id)->exists();
     }
 
     /**
@@ -45,13 +45,13 @@ class ChallanPolicy
      */
     public function update(User $user, Challan $challan): bool
     {
-        if ($challan->user_company_id != Session::get('tenant_id')) {
+        if ($challan->tenant_company_id != Session::get('tenant_id')) {
             return false;
         }
 
-        $role = $user->roleInCompany($challan->user_company_id);
+        $role = $user->roleInCompany($challan->tenant_company_id);
 
-        return $user->isOwnerOf($challan->user_company_id) || in_array($role, ['admin', 'editor']);
+        return $user->isOwnerOf($challan->tenant_company_id) || in_array($role, ['admin', 'editor']);
     }
 
     /**
@@ -59,12 +59,12 @@ class ChallanPolicy
      */
     public function delete(User $user, Challan $challan): bool
     {
-        if ($challan->user_company_id != Session::get('tenant_id')) {
+        if ($challan->tenant_company_id != Session::get('tenant_id')) {
             return false;
         }
 
-        $role = $user->roleInCompany($challan->user_company_id);
+        $role = $user->roleInCompany($challan->tenant_company_id);
 
-        return $user->isOwnerOf($challan->user_company_id) || $role === 'admin';
+        return $user->isOwnerOf($challan->tenant_company_id) || $role === 'admin';
     }
 }

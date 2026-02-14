@@ -133,20 +133,20 @@ class QuotationController extends Controller
         $hasAnyBill = $quotation->hasBills();
 
         // Load dependencies for edit view
-        $userCompanyId = auth()->user()->current_user_company_id;
-        $customers = Customer::where('user_company_id', $userCompanyId)
+        $tenantCompanyId = auth()->user()->current_tenant_company_id;
+        $customers = Customer::where('tenant_company_id', $tenantCompanyId)
             ->with('customerCompany:id,name')
             ->select('id', 'name', 'customer_company_id', 'customer_no', 'address', 'phone', 'email', 'attention')
             ->orderBy('name')
             ->get();
 
-        $products = Product::where('user_company_id', $userCompanyId)
+        $products = Product::where('tenant_company_id', $tenantCompanyId)
             ->select('id', 'name', 'image_id')
             ->orderBy('name')
             ->get();
 
-        $specifications = Specification::whereHas('product', function ($q) use ($userCompanyId) {
-            $q->where('user_company_id', $userCompanyId);
+        $specifications = Specification::whereHas('product', function ($q) use ($tenantCompanyId) {
+            $q->where('tenant_company_id', $tenantCompanyId);
         })
             ->select('id', 'description')
             ->get();
@@ -398,7 +398,7 @@ class QuotationController extends Controller
         $query = $request->input('q');
         $perPage = (int) ($request->input('per_page') ?? 20);
 
-        $products = Product::where('user_company_id', auth()->user()->current_user_company_id)
+        $products = Product::where('tenant_company_id', auth()->user()->current_tenant_company_id)
             ->where('name', 'like', "%{$query}%")
             ->select('id', 'name', 'image_id')
             ->paginate($perPage);
@@ -417,8 +417,8 @@ class QuotationController extends Controller
      */
     public function getProductSpecifications(Request $request, $productId)
     {
-        $userCompanyId = auth()->user()->current_user_company_id;
-        $product = Product::where('user_company_id', $userCompanyId)->find($productId);
+        $tenantCompanyId = auth()->user()->current_tenant_company_id;
+        $product = Product::where('tenant_company_id', $tenantCompanyId)->find($productId);
 
         if (! $product) {
             return response()->json([
@@ -455,7 +455,7 @@ class QuotationController extends Controller
             'customer_id' => 'required|exists:customers,id',
         ]);
 
-        $customer = Customer::where('user_company_id', auth()->user()->current_user_company_id)
+        $customer = Customer::where('tenant_company_id', auth()->user()->current_tenant_company_id)
             ->findOrFail($request->customer_id);
 
         $quotationNo = $this->quotationService->generateNextQuotationNo($customer);
@@ -481,7 +481,7 @@ class QuotationController extends Controller
         DB::beginTransaction();
         try {
             $product = Product::create([
-                'user_company_id' => auth()->user()->current_user_company_id,
+                'tenant_company_id' => auth()->user()->current_tenant_company_id,
                 'name' => $validated['name'],
                 'image_id' => $validated['image_id'] ?? null,
             ]);
@@ -523,7 +523,7 @@ class QuotationController extends Controller
 
     private function authorizeQuotation(Quotation $quotation)
     {
-        if ($quotation->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($quotation->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
     }

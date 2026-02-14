@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Validation\ValidationException;
 
 class CompanyMemberService
@@ -11,7 +11,7 @@ class CompanyMemberService
     /**
      * Add a member to a company.
      */
-    public function addMember(UserCompany $company, string $email, string $role = 'member'): User
+    public function addMember(TenantCompany $company, string $email, string $role = 'member'): User
     {
         $user = User::where('email', $email)->first();
 
@@ -31,7 +31,7 @@ class CompanyMemberService
     /**
      * Remove a member from a company.
      */
-    public function removeMember(UserCompany $company, User $user): void
+    public function removeMember(TenantCompany $company, User $user): void
     {
         if ($company->owner_id === $user->id) {
             throw ValidationException::withMessages(['user' => 'Cannot remove the company owner.']);
@@ -43,7 +43,7 @@ class CompanyMemberService
     /**
      * Change a member's role.
      */
-    public function updateRole(UserCompany $company, User $user, string $role): void
+    public function updateRole(TenantCompany $company, User $user, string $role): void
     {
         if ($company->owner_id === $user->id) {
             throw ValidationException::withMessages(['user' => 'Cannot change role of the company owner.']);

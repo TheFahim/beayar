@@ -10,35 +10,25 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
-            $table->foreignId('quotation_id')->constrained('quotations')->restrictOnDelete();
-            $table->foreignId('quotation_revision_id')->nullable()->constrained('quotation_revisions')->nullOnDelete();
-
-            // Hierarchy for Running Bills
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
+            $table->foreignId('quotation_id')->constrained()->restrictOnDelete();
+            $table->foreignId('quotation_revision_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('parent_bill_id')->nullable()->constrained('bills')->nullOnDelete();
-
-            $table->enum('bill_type', ['advance', 'regular', 'running'])->default('regular');
-            $table->string('invoice_no')->unique();
+            $table->enum('bill_type', ['advance','regular','running'])->default('regular');
+            $table->string('invoice_no');
             $table->date('bill_date');
             $table->date('payment_received_date')->nullable();
-
-            // Financials
-            $table->decimal('total_amount', 15, 2)->default(0); // Gross
-            $table->decimal('bill_percentage', 5, 2)->default(0); // For partial billing
-            $table->decimal('bill_amount', 15, 2)->default(0); // Net bill
+            $table->decimal('total_amount', 15, 2)->default(0.00);
+            $table->decimal('bill_percentage', 5, 2)->default(0.00);
+            $table->decimal('bill_amount', 15, 2)->default(0.00);
             $table->double('due')->default(0);
             $table->double('shipping')->default(0);
             $table->decimal('discount', 15, 2)->default(0.00);
-
-            $table->enum('status', ['draft', 'issued', 'paid', 'cancelled'])->default('issued');
-            $table->text('notes')->nullable();
-
-            $table->timestamps();
+            $table->enum('status', ['draft','issued','paid','cancelled'])->default('issued');
+            $table->text('notes');
             $table->softDeletes();
-
-            // Indexes
-            $table->index('quotation_id');
-            $table->index('quotation_revision_id');
+            $table->timestamps();
+            $table->unique('invoice_no');
         });
     }
 

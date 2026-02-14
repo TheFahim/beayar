@@ -3,16 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\BrandOrigin;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Database\Seeder;
 
 class BrandOriginSeeder extends Seeder
 {
     public function run(): void
     {
-        $userCompanies = UserCompany::all();
+        $tenantCompanies = TenantCompany::all();
 
-        if ($userCompanies->isEmpty()) {
+        if ($tenantCompanies->isEmpty()) {
             return;
         }
 
@@ -25,16 +25,16 @@ class BrandOriginSeeder extends Seeder
             ['name' => 'Local', 'country' => 'Bangladesh'],
         ];
 
-        foreach ($userCompanies as $company) {
+        foreach ($tenantCompanies as $company) {
             foreach ($origins as $origin) {
                 // Check if already exists for this company
-                $exists = BrandOrigin::where('user_company_id', $company->id)
+                $exists = BrandOrigin::where('tenant_company_id', $company->id)
                     ->where('name', $origin['name'])
                     ->exists();
 
                 if (! $exists) {
                     BrandOrigin::create(array_merge($origin, [
-                        'user_company_id' => $company->id,
+                        'tenant_company_id' => $company->id,
                     ]));
                 }
             }

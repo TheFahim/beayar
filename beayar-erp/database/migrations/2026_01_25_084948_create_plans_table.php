@@ -11,13 +11,15 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
+            $table->string('slug');
+            $table->text('description');
             $table->decimal('base_price', 10, 2);
-            $table->string('billing_cycle')->default('monthly'); // monthly, yearly
+            $table->string('billing_cycle')->default('monthly');
             $table->json('limits')->nullable();
+            $table->json('module_access')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->unique('slug');
         });
     }
 

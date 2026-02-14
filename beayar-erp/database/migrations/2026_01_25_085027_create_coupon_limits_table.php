@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('coupon_limits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('coupon_id')->constrained('coupons')->cascadeOnDelete();
-            $table->decimal('min_expenditure', 15, 2)->default(0);
+            $table->foreignId('coupon_id')->constrained()->cascadeOnDelete();
+            $table->decimal('min_expenditure', 15, 2)->default(0.00);
             $table->decimal('max_expenditure', 15, 2)->nullable();
             $table->timestamps();
         });

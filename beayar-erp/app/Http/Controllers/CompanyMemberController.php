@@ -24,7 +24,7 @@ class CompanyMemberController extends Controller
     {
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
+        $company = $user->companies()->where('tenant_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
         if (! $company) {
@@ -32,7 +32,7 @@ class CompanyMemberController extends Controller
         }
 
         // Authorize via Policy (checking against the company context)
-        // Note: You might want to use a Policy on UserCompany or a custom one.
+        // Note: You might want to use a Policy on TenantCompany or a custom one.
         // For now, simple check or rely on policy if registered.
         // $this->authorize('viewAny', [User::class, $company]);
 
@@ -55,7 +55,7 @@ class CompanyMemberController extends Controller
 
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
+        $company = $user->companies()->where('tenant_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
         if (! $company) {
@@ -86,7 +86,7 @@ class CompanyMemberController extends Controller
         $targetUser = User::findOrFail($id);
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
+        $company = $user->companies()->where('tenant_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
         if (! $company) {
@@ -112,7 +112,7 @@ class CompanyMemberController extends Controller
         $targetUser = User::findOrFail($id);
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('user_companies.id', $tenantId)->first()
+        $company = $user->companies()->where('tenant_companies.id', $tenantId)->first()
                    ?? $user->ownedCompanies()->where('id', $tenantId)->first();
 
         if (! $company) {

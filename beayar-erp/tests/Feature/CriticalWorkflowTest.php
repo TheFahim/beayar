@@ -8,7 +8,7 @@ use App\Models\CustomerCompany;
 use App\Models\Payment;
 use App\Models\QuotationStatus;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use App\Services\Tenant\QuotationService;
 use App\Services\Tenant\TenantBillingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,26 +37,26 @@ class CriticalWorkflowTest extends TestCase
 
         // 1. Setup User and Company
         $this->user = User::factory()->create([
-            'current_user_company_id' => null,
+            'current_tenant_company_id' => null,
             'current_scope' => 'company',
         ]);
 
-        $this->company = UserCompany::create([
+        $this->company = TenantCompany::create([
             'name' => 'Workflow Test Company',
             'owner_id' => $this->user->id,
             'email' => 'workflow@test.com',
         ]);
 
-        $this->user->update(['current_user_company_id' => $this->company->id]);
+        $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
         // 2. Setup Customer
         $customerCompany = CustomerCompany::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Client Corp',
         ]);
 
         $this->customer = Customer::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'John Client',
             'email' => 'john@client.com',
@@ -68,7 +68,7 @@ class CriticalWorkflowTest extends TestCase
         // Step 1: Create Quotation
         $status = QuotationStatus::create([
             'name' => 'Draft',
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
         ]);
 
         $quoteData = [
@@ -104,7 +104,7 @@ class CriticalWorkflowTest extends TestCase
         // Step 3: Record Payment (Partial)
         $paymentAmount = 2000;
         $payment = Payment::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'bill_id' => $bill->id,
             'payment_no' => 'PAY-'.uniqid(),
@@ -125,7 +125,7 @@ class CriticalWorkflowTest extends TestCase
         // Step 5: Full Payment
         $remainingAmount = 3250;
         Payment::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_id' => $this->customer->id,
             'bill_id' => $bill->id,
             'payment_no' => 'PAY-'.uniqid(),

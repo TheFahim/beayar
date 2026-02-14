@@ -14,29 +14,35 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->unsignedBigInteger('current_user_company_id')->nullable()->index();
+            $table->bigInteger('current_tenant_company_id')->nullable();
             $table->string('current_scope')->default('personal');
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
+            $table->unique('email');
+            $table->index('current_tenant_company_id');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+            $table->string('email');
             $table->string('token');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamps();
+            $table->primary('email');
         });
 
         Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
+            $table->string('id');
+            $table->bigInteger('user_id')->nullable();
+            $table->string('ip_address')->nullable();
+            $table->text('user_agent');
             $table->longText('payload');
-            $table->integer('last_activity')->index();
+            $table->integer('last_activity');
+            $table->primary('id');
+            $table->index('user_id');
+            $table->index('last_activity');
         });
     }
 

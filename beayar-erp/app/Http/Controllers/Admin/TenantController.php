@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateSubscriptionRequest;
 use App\Models\Module;
 use App\Models\Plan;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use App\Services\SuperAdmin\AdminService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,12 +18,12 @@ class TenantController extends Controller
 
     public function index(): View
     {
-        $tenants = UserCompany::with(['owner.subscription.plan'])->latest()->paginate(10);
+        $tenants = TenantCompany::with(['owner.subscription.plan'])->latest()->paginate(10);
 
         return view('admin.tenants.index', compact('tenants'));
     }
 
-    public function show(UserCompany $company): View
+    public function show(TenantCompany $company): View
     {
         $company->load(['owner.subscription.plan', 'owner.subscription.usages', 'tenant', 'members']);
 
@@ -34,7 +34,7 @@ class TenantController extends Controller
         return view('admin.tenants.show', compact('company', 'subscription', 'plans', 'modules'));
     }
 
-    public function updateSubscription(UpdateSubscriptionRequest $request, UserCompany $company): RedirectResponse
+    public function updateSubscription(UpdateSubscriptionRequest $request, TenantCompany $company): RedirectResponse
     {
         $subscription = $company->owner?->subscription;
 
@@ -66,7 +66,7 @@ class TenantController extends Controller
         return back()->with('success', 'Subscription updated successfully.');
     }
 
-    public function suspend(Request $request, UserCompany $company): RedirectResponse
+    public function suspend(Request $request, TenantCompany $company): RedirectResponse
     {
         $newStatus = $request->input('status', 'suspended');
         $company->update(['status' => $newStatus]);
@@ -74,7 +74,7 @@ class TenantController extends Controller
         return back()->with('success', 'Tenant status updated successfully.');
     }
 
-    public function impersonate(UserCompany $company): RedirectResponse
+    public function impersonate(TenantCompany $company): RedirectResponse
     {
         $owner = $company->owner;
         $this->adminService->impersonateTenant($owner);

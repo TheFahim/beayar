@@ -2,11 +2,11 @@
 
 namespace App\Services\Tenant;
 
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 
 class FinancialService
 {
-    public function getDashboardStats(UserCompany $company)
+    public function getDashboardStats(TenantCompany $company)
     {
         return [
             'total_revenue' => $company->payments()->sum('amount'),

@@ -10,11 +10,11 @@ return new class extends Migration
     {
         Schema::create('sale_targets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('month'); // YYYY-MM
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained();
+            $table->string('month');
             $table->decimal('target_amount', 15, 2);
-            $table->decimal('achieved_amount', 15, 2)->default(0);
+            $table->decimal('achieved_amount', 15, 2)->default(0.00);
             $table->timestamps();
         });
     }

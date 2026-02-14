@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('subscription_usage', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('subscription_id')->constrained('subscriptions')->cascadeOnDelete();
+            $table->foreignId('subscription_id')->constrained()->cascadeOnDelete();
             $table->string('metric');
             $table->integer('used')->default(0);
             $table->integer('limit')->default(0);

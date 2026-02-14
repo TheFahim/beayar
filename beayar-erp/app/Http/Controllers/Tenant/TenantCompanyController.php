@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class UserCompanyController extends Controller
+class TenantCompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -60,14 +60,14 @@ class UserCompanyController extends Controller
         //     return back()->withErrors(['limit' => 'You have reached your company limit. Upgrade your plan.']);
         // }
 
-        $company = UserCompany::create([
+        $company = TenantCompany::create([
             'tenant_id' => $tenant->id,
             'owner_id' => $user->id,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
-            'organization_type' => UserCompany::TYPE_INDEPENDENT,
+            'organization_type' => TenantCompany::TYPE_INDEPENDENT,
             'status' => 'active',
         ]);
 

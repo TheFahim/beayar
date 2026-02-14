@@ -13,7 +13,7 @@ class TenantBillingService
         $activeRevision = $quotation->activeRevision;
 
         return Bill::create([
-            'user_company_id' => $user->current_user_company_id,
+            'tenant_company_id' => $user->current_tenant_company_id,
             'quotation_id' => $quotation->id,
             'quotation_revision_id' => $activeRevision?->id,
             'bill_type' => $type,

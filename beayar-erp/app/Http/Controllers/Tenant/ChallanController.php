@@ -150,7 +150,7 @@ class ChallanController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('challans', 'challan_no')->where(function ($query) {
-                    return $query->where('user_company_id', auth()->user()->current_user_company_id);
+                    return $query->where('tenant_company_id', auth()->user()->current_tenant_company_id);
                 }),
             ],
             'po_no' => [
@@ -325,7 +325,7 @@ class ChallanController extends Controller
                 Rule::unique('challans', 'challan_no')
                     ->ignore($challan->id)
                     ->where(function ($query) {
-                        return $query->where('user_company_id', auth()->user()->current_user_company_id);
+                        return $query->where('tenant_company_id', auth()->user()->current_tenant_company_id);
                     }),
             ],
             'po_no' => [

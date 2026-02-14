@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -69,7 +69,7 @@ class MigrateUsers extends Command
         ]);
 
         // Create Default Company for User
-        $company = UserCompany::create([
+        $company = TenantCompany::create([
             'owner_id' => $user->id,
             'name' => $sourceUser->company_name ?? $user->name."'s Company",
             'email' => $user->email,
@@ -77,7 +77,7 @@ class MigrateUsers extends Command
 
         // Update User Context
         $user->update([
-            'current_user_company_id' => $company->id,
+            'current_tenant_company_id' => $company->id,
             'current_scope' => 'company',
         ]);
     }

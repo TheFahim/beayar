@@ -21,8 +21,8 @@ class QuotationPolicy
      */
     public function view(User $user, Quotation $quotation): bool
     {
-        return $user->companies()->where('user_company_id', $quotation->user_company_id)->exists() ||
-               $user->ownedCompanies()->where('id', $quotation->user_company_id)->exists();
+        return $user->companies()->where('tenant_company_id', $quotation->tenant_company_id)->exists() ||
+               $user->ownedCompanies()->where('id', $quotation->tenant_company_id)->exists();
     }
 
     /**
@@ -45,13 +45,13 @@ class QuotationPolicy
      */
     public function update(User $user, Quotation $quotation): bool
     {
-        if ($quotation->user_company_id != Session::get('tenant_id')) {
+        if ($quotation->tenant_company_id != Session::get('tenant_id')) {
             return false;
         }
 
-        $role = $user->roleInCompany($quotation->user_company_id);
+        $role = $user->roleInCompany($quotation->tenant_company_id);
 
-        return $user->isOwnerOf($quotation->user_company_id) || in_array($role, ['admin', 'editor']);
+        return $user->isOwnerOf($quotation->tenant_company_id) || in_array($role, ['admin', 'editor']);
     }
 
     /**
@@ -59,12 +59,12 @@ class QuotationPolicy
      */
     public function delete(User $user, Quotation $quotation): bool
     {
-        if ($quotation->user_company_id != Session::get('tenant_id')) {
+        if ($quotation->tenant_company_id != Session::get('tenant_id')) {
             return false;
         }
 
-        $role = $user->roleInCompany($quotation->user_company_id);
+        $role = $user->roleInCompany($quotation->tenant_company_id);
 
-        return $user->isOwnerOf($quotation->user_company_id) || $role === 'admin';
+        return $user->isOwnerOf($quotation->tenant_company_id) || $role === 'admin';
     }
 }

@@ -24,7 +24,7 @@ class CheckCompanyRole
 
         // Determine current company context
         // Priority: Session -> User's Default -> Abort
-        $companyId = session('tenant_id') ?? $user->current_user_company_id;
+        $companyId = session('tenant_id') ?? $user->current_tenant_company_id;
 
         if (! $companyId) {
             abort(403, 'No company context selected.');

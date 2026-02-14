@@ -9,7 +9,7 @@ use App\Models\Quotation;
 use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -37,26 +37,26 @@ class QuotationUpdateSpecificTest extends TestCase
 
         // Setup User and Company
         $this->user = User::factory()->create([
-            'current_user_company_id' => null,
+            'current_tenant_company_id' => null,
             'current_scope' => 'company',
         ]);
 
-        $this->company = UserCompany::create([
+        $this->company = TenantCompany::create([
             'name' => 'Test Company',
             'email' => 'test@company.com',
             'owner_id' => $this->user->id,
         ]);
 
-        $this->user->update(['current_user_company_id' => $this->company->id]);
+        $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
         // Setup Customer
         $customerCompany = CustomerCompany::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Customer Company',
         ]);
 
         $this->customer = Customer::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'customer_no' => 'C-0001',
             'name' => 'Test Customer',
@@ -66,20 +66,20 @@ class QuotationUpdateSpecificTest extends TestCase
         // Setup Status
         $this->status = QuotationStatus::create([
             'name' => 'Draft',
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'is_default' => true,
         ]);
 
         // Setup Product
         $this->product = Product::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Product',
             'unit' => 'pcs',
         ]);
 
         // Setup Quotation with Revision
         $this->quotation = Quotation::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'user_id' => $this->user->id,
             'customer_id' => $this->customer->id,
             'quotation_no' => 'C-0001-0001',

@@ -10,15 +10,15 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('expense_categories');
-            $table->foreignId('user_id')->constrained('users'); // Who spent
+            $table->foreignId('user_id')->constrained();
             $table->date('date');
             $table->decimal('amount', 15, 2);
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->string('receipt')->nullable();
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 

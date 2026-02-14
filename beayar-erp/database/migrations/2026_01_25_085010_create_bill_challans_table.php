@@ -10,12 +10,9 @@ return new class extends Migration
     {
         Schema::create('bill_challans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bill_id')->constrained('bills')->cascadeOnDelete();
-            $table->foreignId('challan_id')->constrained('challans')->cascadeOnDelete();
+            $table->foreignId('bill_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('challan_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
-
-            $table->index('bill_id');
-            $table->index('challan_id');
         });
     }
 

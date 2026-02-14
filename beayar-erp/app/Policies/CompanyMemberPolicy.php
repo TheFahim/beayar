@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Support\Facades\Session;
 
 class CompanyMemberPolicy
@@ -44,7 +44,7 @@ class CompanyMemberPolicy
     /**
      * Determine whether the user can update member roles.
      */
-    public function update(User $user, UserCompany $company): bool
+    public function update(User $user, TenantCompany $company): bool
     {
         // Check Global Role
         if ($user->hasRole('super_admin')) {
@@ -63,7 +63,7 @@ class CompanyMemberPolicy
     /**
      * Determine whether the user can remove members.
      */
-    public function delete(User $user, UserCompany $company): bool
+    public function delete(User $user, TenantCompany $company): bool
     {
         if ($user->hasRole('super_admin')) {
             return true;

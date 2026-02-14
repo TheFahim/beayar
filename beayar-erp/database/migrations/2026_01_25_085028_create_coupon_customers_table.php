@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('coupon_customers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('coupon_id')->constrained('coupons')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+            $table->foreignId('coupon_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

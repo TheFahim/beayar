@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +18,7 @@ class CustomerCompanyFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_company_id' => UserCompany::factory(),
+            'tenant_company_id' => TenantCompany::factory(),
             'company_code' => fake()->unique()->bothify('CC-####'),
             'name' => fake()->company(),
             'email' => fake()->companyEmail(),

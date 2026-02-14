@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +18,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_company_id' => UserCompany::factory(),
+            'tenant_company_id' => TenantCompany::factory(),
             'name' => fake()->words(3, true),
             'unit' => fake()->randomElement(['kg', 'pcs', 'box', 'meter']),
         ];

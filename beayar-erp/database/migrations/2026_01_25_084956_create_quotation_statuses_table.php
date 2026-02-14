@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('quotation_statuses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->nullable()->constrained('user_companies')->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->nullable()->constrained('tenant_companies')->cascadeOnDelete();
             $table->string('name');
             $table->string('color')->default('gray');
             $table->boolean('is_default')->default(false);

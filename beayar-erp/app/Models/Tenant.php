@@ -21,7 +21,7 @@ class Tenant extends Model
 
     public function companies(): HasMany
     {
-        return $this->hasMany(UserCompany::class);
+        return $this->hasMany(TenantCompany::class);
     }
 
     public function subscription(): HasOne

@@ -10,21 +10,20 @@ return new class extends Migration
     {
         Schema::create('quotations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('user_id')->constrained('users'); // Creator
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->foreignId('status_id')->constrained('quotation_statuses');
             $table->boolean('regular_billing_locked')->default(false);
-
-            // Core Quotation Info
-            $table->string('reference_no')->unique(); // QT-2024-001
-            $table->string('quotation_no')->nullable()->unique();
+            $table->string('reference_no');
+            $table->string('quotation_no')->nullable();
             $table->string('po_no')->nullable();
             $table->date('po_date')->nullable();
-            $table->text('ship_to')->nullable();
-
-            $table->timestamps();
+            $table->text('ship_to');
             $table->softDeletes();
+            $table->timestamps();
+            $table->unique('reference_no');
+            $table->unique('quotation_no');
         });
     }
 

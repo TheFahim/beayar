@@ -63,7 +63,7 @@ class ImageController extends Controller
             $originalSize = $file->getSize();
 
             // Get current company ID for folder isolation
-            $companyId = auth()->user()->current_user_company_id;
+            $companyId = auth()->user()->current_tenant_company_id;
 
             $fullDirectoryPath = public_path(self::UPLOAD_DIR.'/'.$companyId);
             $this->ensureDirectoryExists($fullDirectoryPath);
@@ -77,7 +77,7 @@ class ImageController extends Controller
             $relativePath = self::UPLOAD_DIR.'/'.$companyId.'/'.$finalFileName;
 
             $imageModel = Image::create([
-                'user_company_id' => $companyId,
+                'tenant_company_id' => $companyId,
                 'name' => $request->name,
                 'original_name' => $originalName,
                 'file_name' => $finalFileName,
@@ -240,7 +240,7 @@ class ImageController extends Controller
         $image = Image::findOrFail($id);
 
         // Ensure user belongs to the same company
-        if ($image->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($image->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 
@@ -263,7 +263,7 @@ class ImageController extends Controller
                 $mime = $file->getClientMimeType();
 
                 // Reuse company ID
-                $companyId = $image->user_company_id;
+                $companyId = $image->tenant_company_id;
 
                 $fullDirectoryPath = public_path(self::UPLOAD_DIR.'/'.$companyId);
                 $this->ensureDirectoryExists($fullDirectoryPath);
@@ -319,7 +319,7 @@ class ImageController extends Controller
     //     $image = Image::findOrFail($id);
 
     //     // Ensure user belongs to the same company
-    //     if ($image->user_company_id !== auth()->user()->current_user_company_id) {
+    //     if ($image->tenant_company_id !== auth()->user()->current_tenant_company_id) {
     //         abort(403);
     //     }
 

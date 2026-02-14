@@ -11,46 +11,50 @@ return new class extends Migration
         Schema::create('admins', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('password');
-            $table->string('role')->default('super_admin'); // super_admin, support
+            $table->string('role')->default('super_admin');
             $table->rememberToken();
             $table->timestamps();
+            $table->unique('email');
         });
 
         Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->text('value')->nullable();
-            $table->string('group')->default('general'); // payment, email, site
+            $table->string('key');
+            $table->text('value');
+            $table->string('group')->default('general');
             $table->timestamps();
+            $table->unique('key');
         });
 
         Schema::create('platform_invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); // Tenant User
-            $table->foreignId('subscription_id')->nullable()->constrained('subscriptions');
-            $table->string('invoice_number')->unique(); // INV-PLAT-2024-001
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('subscription_id')->nullable()->constrained();
+            $table->string('invoice_number');
             $table->decimal('subtotal', 10, 2);
-            $table->decimal('tax', 10, 2)->default(0);
-            $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('tax', 10, 2)->default(0.00);
+            $table->decimal('discount', 10, 2)->default(0.00);
             $table->decimal('total', 10, 2);
-            $table->string('status')->default('pending'); // pending, paid, void, failed
+            $table->string('status')->default('pending');
             $table->date('due_date');
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
+            $table->unique('invoice_number');
         });
 
         Schema::create('platform_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('platform_invoice_id')->constrained('platform_invoices');
-            $table->string('transaction_id')->unique(); // Stripe/Paddle ID
-            $table->string('provider'); // stripe, paddle
+            $table->foreignId('platform_invoice_id')->constrained();
+            $table->string('transaction_id');
+            $table->string('provider');
             $table->decimal('amount', 10, 2);
             $table->string('currency')->default('USD');
-            $table->string('status'); // succeeded, failed, pending
+            $table->string('status');
             $table->json('payment_method_details')->nullable();
             $table->timestamps();
+            $table->unique('transaction_id');
         });
     }
 

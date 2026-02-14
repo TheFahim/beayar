@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,13 +23,13 @@ class GroupOfIndustriesTest extends TestCase
         $response->assertRedirect(route('tenant.dashboard'));
 
         $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
-        $this->assertDatabaseHas('user_companies', [
+        $this->assertDatabaseHas('tenant_companies', [
             'name' => 'Test Company',
-            'organization_type' => UserCompany::TYPE_INDEPENDENT,
+            'organization_type' => TenantCompany::TYPE_INDEPENDENT,
         ]);
 
         $user = User::where('email', 'test@example.com')->first();
-        $company = UserCompany::where('name', 'Test Company')->first();
+        $company = TenantCompany::where('name', 'Test Company')->first();
 
         $this->assertEquals($user->id, $company->owner_id);
     }
@@ -59,10 +59,10 @@ class GroupOfIndustriesTest extends TestCase
     public function test_holding_company_cannot_create_operational_data()
     {
         $user = $this->setupUserWithSubscription();
-        $holdingCompany = UserCompany::create([
+        $holdingCompany = TenantCompany::create([
             'name' => 'Holding Corp',
             'owner_id' => $user->id,
-            'organization_type' => UserCompany::TYPE_HOLDING,
+            'organization_type' => TenantCompany::TYPE_HOLDING,
         ]);
 
         $this->actingAs($user)
@@ -80,17 +80,17 @@ class GroupOfIndustriesTest extends TestCase
     public function test_subsidiary_can_create_operational_data()
     {
         $user = $this->setupUserWithSubscription();
-        $holdingCompany = UserCompany::create([
+        $holdingCompany = TenantCompany::create([
             'name' => 'Holding Corp',
             'owner_id' => $user->id,
-            'organization_type' => UserCompany::TYPE_HOLDING,
+            'organization_type' => TenantCompany::TYPE_HOLDING,
         ]);
 
-        $subsidiary = UserCompany::create([
+        $subsidiary = TenantCompany::create([
             'name' => 'Subsidiary Inc',
             'owner_id' => $user->id,
             'parent_company_id' => $holdingCompany->id,
-            'organization_type' => UserCompany::TYPE_SUBSIDIARY,
+            'organization_type' => TenantCompany::TYPE_SUBSIDIARY,
         ]);
 
         $this->actingAs($user)
@@ -109,22 +109,22 @@ class GroupOfIndustriesTest extends TestCase
     public function test_aggregation_helper()
     {
         $user = $this->setupUserWithSubscription();
-        $holding = UserCompany::create([
+        $holding = TenantCompany::create([
             'name' => 'Holding',
             'owner_id' => $user->id,
-            'organization_type' => UserCompany::TYPE_HOLDING,
+            'organization_type' => TenantCompany::TYPE_HOLDING,
         ]);
-        $sub1 = UserCompany::create([
+        $sub1 = TenantCompany::create([
             'name' => 'Sub 1',
             'owner_id' => $user->id,
             'parent_company_id' => $holding->id,
-            'organization_type' => UserCompany::TYPE_SUBSIDIARY,
+            'organization_type' => TenantCompany::TYPE_SUBSIDIARY,
         ]);
-        $sub2 = UserCompany::create([
+        $sub2 = TenantCompany::create([
             'name' => 'Sub 2',
             'owner_id' => $user->id,
             'parent_company_id' => $holding->id,
-            'organization_type' => UserCompany::TYPE_SUBSIDIARY,
+            'organization_type' => TenantCompany::TYPE_SUBSIDIARY,
         ]);
 
         $ids = $holding->getGroupIds();

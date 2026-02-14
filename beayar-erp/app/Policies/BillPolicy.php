@@ -21,8 +21,8 @@ class BillPolicy
      */
     public function view(User $user, Bill $bill): bool
     {
-        return $user->companies()->where('user_company_id', $bill->user_company_id)->exists() ||
-               $user->ownedCompanies()->where('id', $bill->user_company_id)->exists();
+        return $user->companies()->where('tenant_company_id', $bill->tenant_company_id)->exists() ||
+               $user->ownedCompanies()->where('id', $bill->tenant_company_id)->exists();
     }
 
     /**
@@ -45,13 +45,13 @@ class BillPolicy
      */
     public function update(User $user, Bill $bill): bool
     {
-        if ($bill->user_company_id != Session::get('tenant_id')) {
+        if ($bill->tenant_company_id != Session::get('tenant_id')) {
             return false;
         }
 
-        $role = $user->roleInCompany($bill->user_company_id);
+        $role = $user->roleInCompany($bill->tenant_company_id);
 
-        return $user->isOwnerOf($bill->user_company_id) || in_array($role, ['admin', 'editor']);
+        return $user->isOwnerOf($bill->tenant_company_id) || in_array($role, ['admin', 'editor']);
     }
 
     /**
@@ -59,12 +59,12 @@ class BillPolicy
      */
     public function delete(User $user, Bill $bill): bool
     {
-        if ($bill->user_company_id != Session::get('tenant_id')) {
+        if ($bill->tenant_company_id != Session::get('tenant_id')) {
             return false;
         }
 
-        $role = $user->roleInCompany($bill->user_company_id);
+        $role = $user->roleInCompany($bill->tenant_company_id);
 
-        return $user->isOwnerOf($bill->user_company_id) || $role === 'admin';
+        return $user->isOwnerOf($bill->tenant_company_id) || $role === 'admin';
     }
 }

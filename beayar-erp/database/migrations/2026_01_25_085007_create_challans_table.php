@@ -10,15 +10,15 @@ return new class extends Migration
     {
         Schema::create('challans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
-            $table->foreignId('quotation_id')->nullable()->constrained('quotations');
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->foreignId('quotation_revision_id')->nullable()->constrained('quotation_revisions')->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
+            $table->foreignId('quotation_id')->nullable()->constrained();
+            $table->foreignId('customer_id')->constrained();
+            $table->foreignId('quotation_revision_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('challan_no');
             $table->date('date');
             $table->date('delivery_date')->nullable();
-            $table->text('delivery_address')->nullable();
-            $table->string('status')->default('pending'); // pending, delivered
+            $table->text('delivery_address');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

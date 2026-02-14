@@ -9,7 +9,7 @@ use App\Models\Quotation;
 use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,11 +34,11 @@ class RunningBillTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->company = UserCompany::factory()->create(['owner_id' => $this->user->id]);
-        $this->user->update(['current_user_company_id' => $this->company->id]);
+        $this->company = TenantCompany::factory()->create(['owner_id' => $this->user->id]);
+        $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
         $customerCompany = CustomerCompany::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Company',
             'email' => 'test@company.com',
             'phone' => '1234567890',
@@ -46,7 +46,7 @@ class RunningBillTest extends TestCase
         ]);
 
         $customer = Customer::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'name' => 'Test Customer',
             'email' => 'customer@test.com',
@@ -56,7 +56,7 @@ class RunningBillTest extends TestCase
 
         // Create QuotationStatus
         $this->status = QuotationStatus::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Approved',
             'color' => '#00FF00',
             'is_default' => true,
@@ -64,7 +64,7 @@ class RunningBillTest extends TestCase
 
         // Create Quotation manually
         $this->quotation = Quotation::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'user_id' => $this->user->id,
             'customer_id' => $customer->id,
             'reference_no' => 'QT-2024-TEST',
@@ -91,7 +91,7 @@ class RunningBillTest extends TestCase
 
         // Create Advance Bill (Parent) manually
         $this->advanceBill = Bill::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'quotation_id' => $this->quotation->id,
             'quotation_revision_id' => $this->revision->id,
             'bill_type' => 'advance',
@@ -149,7 +149,7 @@ class RunningBillTest extends TestCase
     public function test_can_view_edit_running_bill_page()
     {
         $runningBill = Bill::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'quotation_id' => $this->quotation->id,
             'quotation_revision_id' => $this->revision->id,
             'parent_bill_id' => $this->advanceBill->id,
@@ -173,7 +173,7 @@ class RunningBillTest extends TestCase
     public function test_can_update_running_bill()
     {
         $runningBill = Bill::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'quotation_id' => $this->quotation->id,
             'quotation_revision_id' => $this->revision->id,
             'parent_bill_id' => $this->advanceBill->id,

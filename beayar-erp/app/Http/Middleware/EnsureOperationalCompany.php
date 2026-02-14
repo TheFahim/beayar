@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ class EnsureOperationalCompany
             $tenantId = session('tenant_id');
 
             if ($tenantId) {
-                $company = UserCompany::find($tenantId);
+                $company = TenantCompany::find($tenantId);
 
                 if ($company && $company->isHolding()) {
                     abort(403, 'Please switch to a subsidiary company to enter data.');

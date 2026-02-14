@@ -15,7 +15,7 @@ class ProductController extends Controller
         $product = Product::with(['image', 'specifications'])->findOrFail($id);
 
         // Ensure tenant access
-        if ($product->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

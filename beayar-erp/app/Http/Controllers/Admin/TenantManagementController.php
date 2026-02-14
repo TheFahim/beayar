@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TenantSuspendRequest;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use App\Services\SuperAdmin\AdminService;
 use Illuminate\Http\JsonResponse;
 
@@ -19,22 +19,22 @@ class TenantManagementController extends Controller
 
     public function index(): JsonResponse
     {
-        $tenants = UserCompany::with(['owner', 'subscription.plan'])->paginate(20);
+        $tenants = TenantCompany::with(['owner', 'subscription.plan'])->paginate(20);
 
         return response()->json($tenants);
     }
 
-    public function show(UserCompany $company): JsonResponse
+    public function show(TenantCompany $company): JsonResponse
     {
         $company->load(['owner', 'subscription.plan', 'users']);
 
         return response()->json($company);
     }
 
-    public function suspend(TenantSuspendRequest $request, UserCompany $company): JsonResponse
+    public function suspend(TenantSuspendRequest $request, TenantCompany $company): JsonResponse
     {
         // Implementation for suspending tenant
-        // This would likely update a status field on UserCompany or User
+        // This would likely update a status field on TenantCompany or User
         $company->update(['status' => 'suspended']);
 
         // Log the suspension reason...
@@ -42,7 +42,7 @@ class TenantManagementController extends Controller
         return response()->json(['message' => 'Tenant suspended successfully']);
     }
 
-    public function impersonate(UserCompany $company): JsonResponse
+    public function impersonate(TenantCompany $company): JsonResponse
     {
         $owner = $company->owner;
         $this->adminService->impersonateTenant($owner);

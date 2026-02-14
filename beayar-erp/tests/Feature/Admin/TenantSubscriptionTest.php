@@ -6,7 +6,7 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +27,7 @@ beforeEach(function () {
 
     $this->user = User::factory()->create();
     $this->tenant = Tenant::create(['user_id' => $this->user->id, 'name' => 'Test Tenant']);
-    $this->company = UserCompany::create([
+    $this->company = TenantCompany::create([
         'owner_id' => $this->user->id,
         'tenant_id' => $this->tenant->id,
         'name' => 'Test Company',

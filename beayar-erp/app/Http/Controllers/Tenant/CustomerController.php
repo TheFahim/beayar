@@ -30,7 +30,7 @@ class CustomerController extends Controller
     public function create()
     {
         // Generate a customer number
-        $count = Customer::where('user_company_id', auth()->user()->current_user_company_id)->count();
+        $count = Customer::where('tenant_company_id', auth()->user()->current_tenant_company_id)->count();
         $customerNo = '';
 
         return view('tenant.customers.create', compact('customerNo'));
@@ -52,7 +52,7 @@ class CustomerController extends Controller
 
         // Map customer_name to name
         $data = [
-            'user_company_id' => auth()->user()->current_user_company_id,
+            'tenant_company_id' => auth()->user()->current_tenant_company_id,
             'customer_company_id' => $validated['customer_company_id'],
             'name' => $validated['customer_name'],
             'customer_no' => $validated['customer_no'],
@@ -80,7 +80,7 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
-        if ($customer->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 
@@ -93,7 +93,7 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         // return $request;
-        if ($customer->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 
@@ -129,7 +129,7 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
-        if ($customer->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 
@@ -158,17 +158,17 @@ class CustomerController extends Controller
     public function searchCompanies(Request $request)
     {
         $user = auth()->user();
-        // Fallback to first owned company if current_user_company_id is not set
-        $companyId = $user->current_user_company_id ?? $user->ownedCompanies()->first()?->id;
+        // Fallback to first owned company if current_tenant_company_id is not set
+        $companyId = $user->current_tenant_company_id ?? $user->ownedCompanies()->first()?->id;
 
         if (! $companyId) {
             return response()->json([]);
         }
 
         // Use withoutGlobalScope to ensure we query based on the resolved $companyId
-        // This handles cases where the global scope might fail if current_user_company_id is null
-        $query = CustomerCompany::withoutGlobalScope('user_company_id')
-            ->where('user_company_id', $companyId);
+        // This handles cases where the global scope might fail if current_tenant_company_id is null
+        $query = CustomerCompany::withoutGlobalScope('tenant_company_id')
+            ->where('tenant_company_id', $companyId);
 
         if ($request->has('query') && $request->get('query')) {
             $search = $request->get('query');
@@ -186,7 +186,7 @@ class CustomerController extends Controller
     // API for searching customers
     public function searchCustomers(Request $request)
     {
-        $query = Customer::where('user_company_id', auth()->user()->current_user_company_id)
+        $query = Customer::where('tenant_company_id', auth()->user()->current_tenant_company_id)
             ->with('customerCompany:id,name');
 
         if ($request->has('query') && $request->get('query')) {

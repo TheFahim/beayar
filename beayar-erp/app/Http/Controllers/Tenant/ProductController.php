@@ -51,11 +51,11 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $createdCount = 0;
-            $userCompanyId = auth()->user()->current_user_company_id;
+            $tenantCompanyId = auth()->user()->current_tenant_company_id;
 
             foreach ($validated['products'] as $prodData) {
                 $product = Product::create([
-                    'user_company_id' => $userCompanyId,
+                    'tenant_company_id' => $tenantCompanyId,
                     'name' => $prodData['name'],
                     'image_id' => $prodData['image_id'] ?? null,
                 ]);
@@ -105,7 +105,7 @@ class ProductController extends Controller
         $product = Product::with(['image', 'specifications'])->findOrFail($id);
 
         // Ensure tenant access
-        if ($product->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 
@@ -120,7 +120,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         // Ensure tenant access
-        if ($product->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 
@@ -184,7 +184,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         // Ensure tenant access
-        if ($product->user_company_id !== auth()->user()->current_user_company_id) {
+        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
             abort(403);
         }
 

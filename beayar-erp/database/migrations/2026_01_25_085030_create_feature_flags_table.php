@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('feature_flags', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->boolean('is_enabled')->default(true);
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->timestamps();
+            $table->unique('name');
         });
     }
 

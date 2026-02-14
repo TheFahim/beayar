@@ -20,7 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'current_user_company_id',
+        'current_tenant_company_id',
         'current_scope',
     ];
 
@@ -52,24 +52,24 @@ class User extends Authenticatable
 
     public function currentCompany(): BelongsTo
     {
-        return $this->belongsTo(UserCompany::class, 'current_user_company_id');
+        return $this->belongsTo(TenantCompany::class, 'current_tenant_company_id');
     }
 
     public function ownedCompanies(): HasMany
     {
-        return $this->hasMany(UserCompany::class, 'owner_id');
+        return $this->hasMany(TenantCompany::class, 'owner_id');
     }
 
     public function companies()
     {
-        return $this->belongsToMany(UserCompany::class, 'company_members', 'user_id', 'user_company_id')
+        return $this->belongsToMany(TenantCompany::class, 'company_members', 'user_id', 'tenant_company_id')
             ->withPivot('role', 'is_active')
             ->withTimestamps();
     }
 
     public function roleInCompany($companyId)
     {
-        $company = $this->companies()->where('user_company_id', $companyId)->first();
+        $company = $this->companies()->where('tenant_company_id', $companyId)->first();
 
         return $company ? $company->pivot->role : null;
     }

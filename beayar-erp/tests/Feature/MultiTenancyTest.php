@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\Plan;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -60,7 +60,7 @@ class MultiTenancyTest extends TestCase
         ]);
 
         // Create initial company to pass onboarding middleware
-        UserCompany::create([
+        TenantCompany::create([
             'tenant_id' => $tenant->id,
             'owner_id' => $user->id,
             'name' => 'Initial Company',
@@ -79,7 +79,7 @@ class MultiTenancyTest extends TestCase
 
         $response->assertRedirect(route('tenant.user-companies.index'));
 
-        $company = UserCompany::where('name', 'New Workspace')->first();
+        $company = TenantCompany::where('name', 'New Workspace')->first();
         $this->assertNotNull($company);
         $this->assertEquals($tenant->id, $company->tenant_id);
         $this->assertEquals('company_admin', $user->roleInCompany($company->id));
@@ -99,7 +99,7 @@ class MultiTenancyTest extends TestCase
             'price' => 0,
         ]);
 
-        $company1 = UserCompany::create([
+        $company1 = TenantCompany::create([
             'tenant_id' => $tenant->id,
             'owner_id' => $user->id,
             'name' => 'Company 1',
@@ -107,7 +107,7 @@ class MultiTenancyTest extends TestCase
         ]);
         $company1->members()->attach($user->id, ['role' => 'company_admin', 'is_active' => true]);
 
-        $company2 = UserCompany::create([
+        $company2 = TenantCompany::create([
             'tenant_id' => $tenant->id,
             'owner_id' => $user->id,
             'name' => 'Company 2',
@@ -122,7 +122,7 @@ class MultiTenancyTest extends TestCase
 
         $response->assertRedirect();
         $this->assertEquals($company2->id, session('tenant_id'));
-        $this->assertEquals($company2->id, $user->fresh()->current_user_company_id);
+        $this->assertEquals($company2->id, $user->fresh()->current_tenant_company_id);
     }
 
     public function test_access_control_middleware()
@@ -143,7 +143,7 @@ class MultiTenancyTest extends TestCase
         ]);
 
         // Company owned by OTHER user
-        $company1 = UserCompany::create([
+        $company1 = TenantCompany::create([
             'tenant_id' => $otherTenant->id,
             'owner_id' => $otherUser->id,
             'name' => 'Company 1',

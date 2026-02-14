@@ -22,7 +22,7 @@ class QuotationQueryService
     public function buildIndexQuery(Request $request): Builder
     {
         $query = Quotation::with([
-            'customer:id,name,customer_no,user_company_id',
+            'customer:id,name,customer_no,tenant_company_id',
             'customer.customerCompany:id,name', // beayar uses customerCompany relationship
             'bills',
             'revisions' => function ($q) {
@@ -35,7 +35,7 @@ class QuotationQueryService
         ])->withCount('revisions');
 
         // Apply tenant scope if not already applied by global scope
-        // $query->where('user_company_id', Auth::user()->current_user_company_id);
+        // $query->where('tenant_company_id', Auth::user()->current_tenant_company_id);
 
         // Apply filters
         $this->applyStatusFilter($query, $request->status);
@@ -214,7 +214,7 @@ class QuotationQueryService
         $perPage = min(max($perPage, 1), 50);
 
         $customerQuery = Customer::with('customerCompany:id,name')
-            ->where('user_company_id', Auth::user()->current_user_company_id)
+            ->where('tenant_company_id', Auth::user()->current_tenant_company_id)
             ->select('id', 'name', 'customer_no', 'customer_company_id', 'address', 'phone', 'email', 'attention')
             ->orderBy('name');
 
@@ -248,7 +248,7 @@ class QuotationQueryService
             'specifications:id,product_id,description',
             'image:id,path',
         ])
-            ->where('user_company_id', Auth::user()->current_user_company_id)
+            ->where('tenant_company_id', Auth::user()->current_tenant_company_id)
             ->select('id', 'name', 'image_id')
             ->orderBy('name');
 

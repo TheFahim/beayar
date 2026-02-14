@@ -8,7 +8,7 @@ use App\Models\CustomerCompany;
 use App\Models\Product;
 use App\Models\QuotationStatus;
 use App\Models\User;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,26 +32,26 @@ class QuotationCreateTest extends TestCase
 
         // Setup User and Company
         $this->user = User::factory()->create([
-            'current_user_company_id' => null,
+            'current_tenant_company_id' => null,
             'current_scope' => 'company',
         ]);
 
-        $this->company = UserCompany::create([
+        $this->company = TenantCompany::create([
             'name' => 'Test Company',
             'email' => 'test@company.com',
             'owner_id' => $this->user->id,
         ]);
 
-        $this->user->update(['current_user_company_id' => $this->company->id]);
+        $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
         // Setup Customer
         $customerCompany = CustomerCompany::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Customer Company',
         ]);
 
         $this->customer = Customer::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'customer_company_id' => $customerCompany->id,
             'customer_no' => 'C-0001',
             'name' => 'Test Customer',
@@ -61,20 +61,20 @@ class QuotationCreateTest extends TestCase
         // Setup Status
         $this->status = QuotationStatus::create([
             'name' => 'Draft',
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'is_default' => true,
         ]);
 
         // Setup Product
         $this->product = Product::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Product',
             'unit' => 'pcs',
         ]);
 
         // Setup Brand Origin
         BrandOrigin::create([
-            'user_company_id' => $this->company->id,
+            'tenant_company_id' => $this->company->id,
             'name' => 'Test Origin',
             'country' => 'Test Country',
         ]);

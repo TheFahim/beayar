@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
             $table->string('name');
             $table->string('original_name');
             $table->string('file_name');
@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('mime_type')->nullable();
             $table->bigInteger('size')->nullable();
             $table->timestamps();
-
             $table->index('name');
         });
     }

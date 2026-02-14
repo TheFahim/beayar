@@ -8,24 +8,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('user_companies', function (Blueprint $table) {
+        Schema::create('tenant_companies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('parent_company_id')->nullable()->constrained('user_companies')->nullOnDelete();
+            $table->foreignId('parent_company_id')->nullable()->constrained('tenant_companies')->nullOnDelete();
+            $table->enum('organization_type', ['independent','holding','subsidiary'])->default('independent');
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->text('address')->nullable();
+            $table->text('address');
             $table->string('bin_no')->nullable();
             $table->string('logo')->nullable();
             $table->string('status')->default('active');
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
+            $table->index('organization_type');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('user_companies');
+        Schema::dropIfExists('tenant_companies');
     }
 };

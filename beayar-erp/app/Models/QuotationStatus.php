@@ -16,19 +16,19 @@ class QuotationStatus extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(UserCompany::class, 'user_company_id');
+        return $this->belongsTo(TenantCompany::class, 'tenant_company_id');
     }
 
     // Custom Scope to get global + company specific
     public function scopeForCurrentCompany(Builder $query)
     {
-        if (auth()->check() && auth()->user()->current_user_company_id) {
+        if (auth()->check() && auth()->user()->current_tenant_company_id) {
             return $query->where(function ($q) {
-                $q->where('user_company_id', auth()->user()->current_user_company_id)
-                    ->orWhereNull('user_company_id');
+                $q->where('tenant_company_id', auth()->user()->current_tenant_company_id)
+                    ->orWhereNull('tenant_company_id');
             });
         }
 
-        return $query->whereNull('user_company_id');
+        return $query->whereNull('tenant_company_id');
     }
 }

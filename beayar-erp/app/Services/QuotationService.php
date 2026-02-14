@@ -31,14 +31,14 @@ class QuotationService
             if (! $status) {
                 // Fallback or create default
                 $status = QuotationStatus::firstOrCreate(
-                    ['name' => 'Draft', 'user_company_id' => Auth::user()->current_user_company_id],
+                    ['name' => 'Draft', 'tenant_company_id' => Auth::user()->current_tenant_company_id],
                     ['color' => 'gray', 'is_default' => true]
                 );
             }
 
             // Create parent quotation
             $quotation = Quotation::create([
-                'user_company_id' => Auth::user()->current_user_company_id,
+                'tenant_company_id' => Auth::user()->current_tenant_company_id,
                 'user_id' => Auth::id(),
                 'customer_id' => $quotationData['customer_id'],
                 'quotation_no' => $quotationData['quotation_no'],
@@ -372,7 +372,7 @@ class QuotationService
         $customerNo = $customer->customer_no;
 
         // Beayar: filter by company
-        $latestQuotation = Quotation::where('user_company_id', Auth::user()->current_user_company_id)
+        $latestQuotation = Quotation::where('tenant_company_id', Auth::user()->current_tenant_company_id)
             ->where('customer_id', $customer->id)
             ->where('quotation_no', 'LIKE', $customerNo.'-%')
             ->orderBy('quotation_no', 'desc')

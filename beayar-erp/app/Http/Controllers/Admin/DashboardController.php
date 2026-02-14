@@ -7,7 +7,7 @@ use App\Models\Plan;
 use App\Models\PlatformInvoice;
 use App\Models\PlatformPayment;
 use App\Models\Subscription;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -19,8 +19,8 @@ class DashboardController extends Controller
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->sum('total'),
-            'total_tenants' => UserCompany::count(),
-            'new_tenants' => UserCompany::whereMonth('created_at', now()->month)
+            'total_tenants' => TenantCompany::count(),
+            'new_tenants' => TenantCompany::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
             'active_subscriptions' => Subscription::where('status', 'active')->count(),

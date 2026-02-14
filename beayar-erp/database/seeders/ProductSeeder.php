@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
-use App\Models\UserCompany;
+use App\Models\TenantCompany;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
@@ -13,15 +13,15 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $userCompanies = UserCompany::all();
+        $tenantCompanies = TenantCompany::all();
 
-        if ($userCompanies->isEmpty()) {
-            $userCompanies = UserCompany::factory(5)->create();
+        if ($tenantCompanies->isEmpty()) {
+            $tenantCompanies = TenantCompany::factory(5)->create();
         }
 
-        foreach ($userCompanies as $company) {
+        foreach ($tenantCompanies as $company) {
             Product::factory(10)->create([
-                'user_company_id' => $company->id,
+                'tenant_company_id' => $company->id,
             ]);
         }
 

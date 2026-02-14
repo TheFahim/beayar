@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::create('challan_products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('challan_id')->constrained('challans')->cascadeOnDelete();
-            $table->foreignId('quotation_product_id')->constrained('quotation_products')->cascadeOnDelete();
+            $table->foreignId('challan_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('quotation_product_id')->constrained()->cascadeOnDelete();
             $table->integer('quantity');
-            $table->text('remarks')->nullable();
+            $table->text('remarks');
             $table->timestamps();
         });
     }

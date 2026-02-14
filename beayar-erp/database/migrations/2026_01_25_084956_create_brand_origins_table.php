@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('brand_origins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_company_id')->constrained('user_companies')->cascadeOnDelete();
+            $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
             $table->string('name');
             $table->string('country')->nullable();
             $table->timestamps();
