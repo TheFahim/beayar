@@ -43,9 +43,12 @@ class OnboardingFlowTest extends TestCase
 
     public function test_store_plan_uses_existing_plan()
     {
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+
         $plan = Plan::create([
             'name' => 'Existing Free',
             'slug' => 'free',
+            'description' => 'Description',
             'base_price' => 0,
             'billing_cycle' => 'monthly',
         ]);

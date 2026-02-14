@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
+use App\Models\Module;
 use App\Models\Subscription;
 use App\Models\TenantCompany;
 use Illuminate\Http\Request;
@@ -59,14 +61,15 @@ class OnboardingController extends Controller
             $price = $this->calculatePrice($validated);
 
             // Create/Update Subscription
-            $plan = \App\Models\Plan::where('slug', $validated['plan_type'])->first();
+            $plan = Plan::where('slug', $validated['plan_type'])->first();
 
             if (! $plan) {
                 // Fallback: Create a default free plan if missing (e.g. first run)
-                $plan = \App\Models\Plan::firstOrCreate(
+                $plan = Plan::firstOrCreate(
                     ['slug' => 'free'],
                     [
                         'name' => 'Free Plan',
+                        'description' => 'Default free plan',
                         'base_price' => 0,
                         'billing_cycle' => 'monthly',
                         'is_active' => true,
@@ -75,7 +78,7 @@ class OnboardingController extends Controller
                             'user_limit_per_company' => 2,
                             'quotation_limit_per_month' => 5,
                         ],
-                        'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance'],
+                        'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance', 'products'],
                     ]
                 );
             }
@@ -177,6 +180,11 @@ class OnboardingController extends Controller
                 'is_active' => true,
             ]);
 
+            // Assign Spatie Role
+            if (! $user->hasRole('tenant_admin')) {
+                $user->assignRole('tenant_admin');
+            }
+
             // Set current context
             $user->current_tenant_company_id = $company->id;
             $user->save();
@@ -203,8 +211,16 @@ class OnboardingController extends Controller
     {
         if ($data['plan_type'] === 'free') {
             // Fetch module access from the Plan model if available
-            $plan = \App\Models\Plan::where('slug', 'free')->first();
-            $modules = $plan->module_access ?? ['basic_crm', 'quotations', 'challans', 'billing', 'finance'];
+            $plan = Plan::where('slug', 'free')->first();
+
+            // Get all available modules from database
+            $allModules = Module::pluck('slug')->toArray();
+
+            // Default core modules
+            $coreModules = ['basic_crm', 'quotations', 'challans', 'billing', 'finance', 'products'];
+
+            // Combine all modules
+            $modules = array_unique(array_merge($coreModules, $allModules));
 
             return [
                 'company_limit' => 1,

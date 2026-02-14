@@ -44,7 +44,7 @@
         @endrole
 
         {{-- Tenant Section --}}
-        @role('tenant|user')
+        @role('tenant_admin|company_admin|employee')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                 <x-ui.svg.dashboard class="h-5 w-5" />
@@ -118,7 +118,7 @@
         @endrole
 
         {{-- Fallback for development if no roles set --}}
-        @unlessrole('admin|tenant|user')
+        @unlessrole('super_admin|tenant_admin|company_admin|employee')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                 <x-ui.svg.dashboard class="h-5 w-5" />
