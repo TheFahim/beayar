@@ -102,7 +102,9 @@ export default {
     if (currency && currency !== 'BDT') {
       if (bdtAmount && exchangeRate) {
         row.foreign_currency_buying = parseFloat((bdtAmount / exchangeRate).toFixed(2));
-        this.addFieldFeedback('foreign_currency_buying', index);
+        if (typeof this.addFieldFeedback === 'function') {
+          this.addFieldFeedback('foreign_currency_buying', index);
+        }
       } else {
         row.foreign_currency_buying = 0;
       }

@@ -1215,16 +1215,22 @@ function initQuotationForm(config = {}) {
         },
 
         // --- Add Visual Feedback ---
-        addVisualFeedback(elementId, classes, duration) {
-            const el = document.getElementById(elementId);
-            if (el) {
-                const originalClasses = el.className;
-                el.className = `${originalClasses} ${classes}`;
-                setTimeout(() => {
-                    el.className = originalClasses;
-                }, duration);
-            }
-        },
+    addVisualFeedback(elementId, classes, duration) {
+        const el = document.getElementById(elementId);
+        if (el) {
+            const originalClasses = el.className;
+            el.className = `${originalClasses} ${classes}`;
+            setTimeout(() => {
+                el.className = originalClasses;
+            }, duration);
+        }
+    },
+
+    // Field feedback wrapper for calculations
+    addFieldFeedback(fieldName, index) {
+        // Implement feedback logic if needed, or leave empty to satisfy the call
+        // This is called from calculations.js
+    },
 
         // --- Reset Upload Modal ---
         resetUploadModal() {

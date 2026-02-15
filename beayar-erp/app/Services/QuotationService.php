@@ -370,11 +370,13 @@ class QuotationService
     public function generateNextQuotationNo(Customer $customer): string
     {
         $customerNo = $customer->customer_no;
+        $currentYear = date('y'); // 2-digit year, e.g., "25"
 
-        // Beayar: filter by company
+        // Beayar: filter by company and customer, matching format {customerNo}-{YY}-{sequence}
         $latestQuotation = Quotation::where('tenant_company_id', Auth::user()->current_tenant_company_id)
             ->where('customer_id', $customer->id)
-            ->where('quotation_no', 'LIKE', $customerNo.'-%')
+            ->where('quotation_no', 'LIKE', $customerNo . '-' . $currentYear . '-%')
+            ->orderByRaw('LENGTH(quotation_no) DESC') // Order by length first to handle variable digits
             ->orderBy('quotation_no', 'desc')
             ->first();
 
@@ -389,9 +391,9 @@ class QuotationService
             }
         }
 
-        $sequence = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $sequence = str_pad($nextNumber, 3, '0', STR_PAD_LEFT); // 3 digits padding
 
-        return $customerNo.'-'.$sequence;
+        return $customerNo . '-' . $currentYear . '-' . $sequence;
     }
 
     /**
