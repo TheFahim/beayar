@@ -15,7 +15,6 @@ return new class extends Migration
             $table->foreignId('brand_origin_id')->nullable()->constrained()->nullOnDelete();
             $table->string('reference_no')->nullable();
             $table->string('product_name');
-            $table->text('description');
             $table->string('size')->nullable();
             $table->foreignId('specification_id')->nullable()->constrained();
             $table->string('add_spec')->nullable();

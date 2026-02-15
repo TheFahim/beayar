@@ -27,7 +27,6 @@ return new class extends Migration
             $table->decimal('vat_amount', 15, 2)->default(0.00);
             $table->decimal('total', 15, 2)->default(0.00);
             $table->text('terms_conditions');
-            $table->text('notes');
             $table->enum('status', ['draft','sent','approved','rejected'])->default('draft');
             $table->boolean('is_active')->default(true);
             $table->enum('saved_as', ['draft','quotation'])->default('draft');
