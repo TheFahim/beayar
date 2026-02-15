@@ -7,6 +7,7 @@ export function brandOriginSearchableSelect(config) {
         open: false,
         loading: false,
         filteredOptions: [],
+        componentId: null,
 
         init() {
             // If there's an initial value, we might want to fetch the name
@@ -18,6 +19,17 @@ export function brandOriginSearchableSelect(config) {
             this.$watch('selectedValue', (val) => {
                 // Update hidden input if needed (handled by x-model/x-bind in blade)
             });
+
+            this.componentId = Math.random().toString(36).substr(2, 9);
+
+            // Auto-select newly added brand origin if this dropdown initiated the add
+            window.addEventListener('brand-origin-added', (e) => {
+                const origin = e.detail;
+                if (window.activeBrandOriginSelectId === this.componentId && origin && origin.id) {
+                    this.selectOption(origin);
+                    window.activeBrandOriginSelectId = null;
+                }
+            });
         },
 
         async filterOptions() {
@@ -28,7 +40,7 @@ export function brandOriginSearchableSelect(config) {
 
             this.loading = true;
             try {
-                const response = await fetch(`${this.endpoint}?q=${encodeURIComponent(this.searchTerm)}`);
+                const response = await fetch(`${this.endpoint}?query=${encodeURIComponent(this.searchTerm)}`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 this.filteredOptions = data;
@@ -38,6 +50,12 @@ export function brandOriginSearchableSelect(config) {
             } finally {
                 this.loading = false;
             }
+        },
+
+        openModal() {
+            this.open = false;
+            window.activeBrandOriginSelectId = this.componentId;
+            this.$dispatch('open-brand-origin-modal');
         },
 
         selectOption(option) {
@@ -50,7 +68,7 @@ export function brandOriginSearchableSelect(config) {
             // The parent blade uses: x-model="row.brand_origin_id" (Wait, no)
             // Blade: x-bind:value="selectedValue" on hidden input :name="'quotation_products[' + index + '][brand_origin_id]'"
             // And also: value: row.brand_origin_id passed to config.
-            
+
             // To update the parent Alpine data 'row.brand_origin_id', we need to emit or use x-modelable if supported (Alpine v3).
             // Or since we passed 'value: row.brand_origin_id', it's just an initial value.
             // The hidden input ensures form submission works.
@@ -65,7 +83,7 @@ export function brandOriginSearchableSelect(config) {
             // We should update `row.brand_origin_id` so that if we save/restore or do other logic it works.
             // We can dispatch an event caught by the parent.
             this.$dispatch('brand-origin-selected', { id: option.id, name: option.name });
-            
+
             // Or better: The parent can listen to input on the hidden field if we trigger it.
         },
 
@@ -142,10 +160,10 @@ export function brandOriginModal() {
             this.errors = {};
 
             try {
-                const url = this.isEditing 
+                const url = this.isEditing
                     ? `/brand-origins/${this.brandOriginForm.id}`
                     : '/brand-origins';
-                
+
                 const method = this.isEditing ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -162,8 +180,11 @@ export function brandOriginModal() {
 
                 if (response.ok) {
                     this.closeModal();
-                    // Dispatch global event to refresh lists if needed
-                    window.dispatchEvent(new CustomEvent('brand-origin-saved'));
+                    if (this.isEditing) {
+                        window.dispatchEvent(new CustomEvent('brand-origin-updated', { detail: data.brandOrigin }));
+                    } else {
+                        window.dispatchEvent(new CustomEvent('brand-origin-added', { detail: data.brandOrigin }));
+                    }
                 } else {
                     if (data.errors) {
                         this.errors = data.errors;

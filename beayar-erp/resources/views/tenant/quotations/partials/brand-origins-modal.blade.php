@@ -364,13 +364,13 @@
                 // Add to the beginning of the array if not already present
                 if (!this.allOptions.find(o => o.id === brandOrigin.id)) {
                     this.allOptions.unshift(brandOrigin);
-                    
+
                     // Only select if this was the component that initiated the add
                     if (window.activeBrandOriginSelectId === this.componentId) {
                         this.selectOption(brandOrigin);
                         window.activeBrandOriginSelectId = null;
                     }
-                    
+
                     this.filterOptions();
                 }
             },
