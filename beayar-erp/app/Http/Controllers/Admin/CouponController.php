@@ -37,13 +37,23 @@ class CouponController extends Controller
             $data['discount_percentage'] = 0;
         }
 
-        Coupon::create($data);
+        $coupon = Coupon::create($data);
+        
+        activity()
+           ->performedOn($coupon)
+           ->causedBy(auth()->guard('admin')->user())
+           ->log('created coupon');
 
         return back()->with('success', 'Coupon created successfully.');
     }
 
     public function destroy(Coupon $coupon): RedirectResponse
     {
+        activity()
+           ->performedOn($coupon)
+           ->causedBy(auth()->guard('admin')->user())
+           ->log('deleted coupon');
+           
         $coupon->delete();
 
         return back()->with('success', 'Coupon deleted successfully.');

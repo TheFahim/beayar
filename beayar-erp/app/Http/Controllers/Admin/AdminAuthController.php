@@ -4,44 +4,55 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\AdminLoginRequest;
-use App\Services\SuperAdmin\AdminService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class AdminAuthController extends Controller
 {
-    protected $adminService;
-
-    public function __construct(AdminService $adminService)
+    public function showLogin(): View|RedirectResponse
     {
-        $this->adminService = $adminService;
+        if (Auth::guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('admin.auth.login');
     }
 
-    public function login(AdminLoginRequest $request): JsonResponse
+    public function login(AdminLoginRequest $request): RedirectResponse
     {
-        if ($this->adminService->authenticate($request->validated())) {
-            $admin = Auth::guard('admin')->user();
-            $token = $admin->createToken('admin-token')->plainTextToken;
+        $credentials = $request->validated();
 
-            return response()->json([
-                'message' => 'Login successful',
-                'token' => $token,
-                'admin' => $admin,
-            ]);
+        Log::info('Admin login attempt', ['email' => $credentials['email']]);
+
+        if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            Log::info('Admin login successful', ['email' => $credentials['email']]);
+
+            return redirect()->intended(route('admin.dashboard'));
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        Log::warning('Admin login failed', ['email' => $credentials['email']]);
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): RedirectResponse
     {
-        Auth::guard('admin')->user()->currentAccessToken()->delete();
+        $email = Auth::guard('admin')->user()->email ?? 'unknown';
 
-        return response()->json(['message' => 'Logged out successfully']);
-    }
+        Auth::guard('admin')->logout();
 
-    public function me(): JsonResponse
-    {
-        return response()->json(Auth::guard('admin')->user());
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        Log::info('Admin logout', ['email' => $email]);
+
+        return redirect()->route('admin.login');
     }
 }

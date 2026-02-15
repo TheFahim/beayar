@@ -1,4 +1,4 @@
-<x-dashboard.layout.default title="Manage Plans">
+<x-admin.layout.default title="Manage Plans">
     <div class="p-4" x-data="{
         editModalOpen: false,
         createModalOpen: false,

@@ -24,7 +24,7 @@ class PlanController extends Controller
     {
         $validated = $request->validated();
 
-        Plan::create([
+        $plan = Plan::create([
             'name' => $validated['name'],
             'slug' => $validated['slug'],
             'description' => $validated['description'] ?? null,
@@ -34,6 +34,11 @@ class PlanController extends Controller
             'limits' => $validated['limits'] ?? null,
             'module_access' => $validated['module_access'] ?? [],
         ]);
+        
+        activity()
+           ->performedOn($plan)
+           ->causedBy(auth()->guard('admin')->user())
+           ->log('created plan');
 
         return back()->with('success', 'Plan created successfully.');
     }
@@ -51,6 +56,11 @@ class PlanController extends Controller
             'limits' => $validated['limits'] ?? null,
             'module_access' => $validated['module_access'] ?? [],
         ]);
+        
+        activity()
+           ->performedOn($plan)
+           ->causedBy(auth()->guard('admin')->user())
+           ->log('updated plan');
 
         return back()->with('success', 'Plan updated successfully.');
     }
@@ -62,6 +72,11 @@ class PlanController extends Controller
         }
 
         $plan->update(['is_active' => false]);
+        
+        activity()
+           ->performedOn($plan)
+           ->causedBy(auth()->guard('admin')->user())
+           ->log('deactivated plan');
 
         return back()->with('success', 'Plan deactivated successfully.');
     }

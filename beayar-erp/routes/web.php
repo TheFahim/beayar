@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
@@ -123,16 +124,26 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     Route::resource('challans', ChallanController::class)->names('tenant.challans');
 });
 
+// Admin Auth Routes
+Route::prefix('admin')->middleware(['web'])->name('admin.')->group(function () {
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login']);
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+});
+
 // Admin Routes
 Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Tenants
     Route::get('/tenants', [AdminTenantController::class, 'index'])->name('tenants.index');
+    Route::get('/tenants/create', [AdminTenantController::class, 'create'])->name('tenants.create');
+    Route::post('/tenants', [AdminTenantController::class, 'store'])->name('tenants.store');
     Route::get('/tenants/{company}', [AdminTenantController::class, 'show'])->name('tenants.show');
     Route::put('/tenants/{company}/subscription', [AdminTenantController::class, 'updateSubscription'])->name('tenants.subscription.update');
     Route::post('/tenants/{company}/suspend', [AdminTenantController::class, 'suspend'])->name('tenants.suspend');
     Route::post('/tenants/{company}/impersonate', [AdminTenantController::class, 'impersonate'])->name('tenants.impersonate');
+    Route::delete('/tenants/{company}', [AdminTenantController::class, 'destroy'])->name('tenants.destroy');
 
     // Plans
     Route::get('/plans', [AdminPlanController::class, 'index'])->name('plans.index');

@@ -336,4 +336,4 @@
             </div>
         </div>
     </div>
-</x-dashboard.layout.default>
+</x-admin.layout.default>

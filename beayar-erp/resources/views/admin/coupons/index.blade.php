@@ -1,5 +1,5 @@
-<x-dashboard.layout.default title="Global Coupons">
-    <div x-data="{ 
+<x-admin.layout.default title="Coupons Management">
+    <div x-data="{
         createModalOpen: false,
         toggleModal() {
             this.createModalOpen = !this.createModalOpen;
@@ -8,7 +8,7 @@
         <div class="mb-4">
             <button @click="toggleModal()" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create Campaign</button>
         </div>
-        
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -34,8 +34,8 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            {{ $coupon->start_date ? \Carbon\Carbon::parse($coupon->start_date)->format('M d') : 'Any' }} 
-                            - 
+                            {{ $coupon->start_date ? \Carbon\Carbon::parse($coupon->start_date)->format('M d') : 'Any' }}
+                            -
                             {{ $coupon->end_date ? \Carbon\Carbon::parse($coupon->end_date)->format('M d, Y') : 'Forever' }}
                         </td>
                         <td class="px-6 py-4">

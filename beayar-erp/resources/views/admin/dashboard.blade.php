@@ -1,4 +1,4 @@
-<x-dashboard.layout.default title="Admin Dashboard">
+<x-admin.layout.default title="Admin Dashboard">
     <div class="p-4">
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -97,4 +97,4 @@
             </div>
         </div>
     </div>
-</x-dashboard.layout.default>
+</x-admin.layout.default>

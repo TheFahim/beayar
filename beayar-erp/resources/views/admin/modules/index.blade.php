@@ -1,4 +1,4 @@
-<x-dashboard.layout.default title="Manage Modules">
+<x-admin.layout.default title="Manage Modules">
     <div class="p-4" x-data="{
         createModalOpen: false,
         editModalOpen: false,
