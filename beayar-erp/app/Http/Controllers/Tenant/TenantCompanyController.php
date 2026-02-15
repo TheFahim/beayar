@@ -55,10 +55,12 @@ class TenantCompanyController extends Controller
         }
 
         // Check subscription limits (company limit)
-        // $limit = $tenant->subscription->plan->company_limit ?? 1;
-        // if ($tenant->companies()->count() >= $limit) {
-        //     return back()->withErrors(['limit' => 'You have reached your company limit. Upgrade your plan.']);
-        // }
+        if ($tenant->subscription) {
+            $limit = $tenant->subscription->getLimit('sub_companies');
+            if ($limit !== -1 && $tenant->companies()->count() >= $limit) {
+                return back()->withErrors(['limit' => 'You have reached your company limit. Upgrade your plan.']);
+            }
+        }
 
         $company = TenantCompany::create([
             'tenant_id' => $tenant->id,

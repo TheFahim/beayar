@@ -68,6 +68,11 @@ class PlansSeeder extends Seeder
             ],
         ];
 
-        DB::table('plans')->insert($plans);
+        foreach ($plans as $plan) {
+            DB::table('plans')->updateOrInsert(
+                ['slug' => $plan['slug']],
+                $plan
+            );
+        }
     }
 }

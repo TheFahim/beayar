@@ -41,28 +41,29 @@ class OnboardingFlowTest extends TestCase
         ]);
     }
 
-    public function test_store_plan_uses_existing_plan()
+    public function test_plan_page_displays_all_plans()
     {
-        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
-
-        $plan = Plan::create([
-            'name' => 'Existing Free',
-            'slug' => 'free',
-            'description' => 'Description',
-            'base_price' => 0,
-            'billing_cycle' => 'monthly',
-        ]);
-
+        $this->seed(\Database\Seeders\PlansSeeder::class);
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $response = $this->actingAs($user)->get(route('onboarding.plan'));
+        $response->assertStatus(200);
+        $response->assertSee('Free');
+        $response->assertSee('Pro');
+        $response->assertSee('Pro Plus');
+        $response->assertSee('Custom');
+    }
 
-        $response = $this->post(route('onboarding.plan.store'), [
-            'plan_type' => 'free',
+    public function test_user_can_select_pro_plan()
+    {
+        $this->seed(\Database\Seeders\PlansSeeder::class);
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->post(route('onboarding.plan.store'), [
+            'plan_type' => 'pro',
         ]);
-
         $response->assertRedirect(route('onboarding.company'));
-
-        $this->assertDatabaseCount('plans', 1);
-        $this->assertEquals($plan->id, $user->fresh()->tenant->subscription->plan_id);
+        $this->assertDatabaseHas('subscriptions', [
+            'user_id' => $user->id,
+            'plan_type' => 'pro',
+        ]);
     }
 }

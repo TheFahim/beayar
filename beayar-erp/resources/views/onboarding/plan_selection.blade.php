@@ -28,66 +28,80 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-                <!-- Free Plan -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all">
-                    <div class="px-6 py-8">
-                        <h3 class="text-2xl font-bold text-gray-900 text-center">Free Plan</h3>
-                        <p class="mt-4 text-center text-gray-500">Perfect for getting started.</p>
-                        <p class="mt-8 text-center text-5xl font-extrabold text-gray-900">$0</p>
-                        <p class="mt-2 text-center text-sm text-gray-500">forever</p>
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                @foreach($plans as $plan)
+                    @if($plan->slug === 'custom')
+                        <!-- Custom Plan -->
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all" onclick="showCustomForm()">
+                            <div class="px-6 py-8">
+                                <h3 class="text-2xl font-bold text-gray-900 text-center">{{ $plan->name }}</h3>
+                                <p class="mt-4 text-center text-gray-500">{{ $plan->description }}</p>
+                                <p class="mt-8 text-center text-5xl font-extrabold text-gray-900">Custom</p>
+                                <p class="mt-2 text-center text-sm text-gray-500">pricing based on usage</p>
 
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center">
-                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="ml-3 text-gray-700">1 Company</span>
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="ml-3 text-gray-700">2 Users</span>
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="ml-3 text-gray-700">5 Quotations/mo</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="px-6 py-4 bg-gray-50">
-                        <form id="free-plan-form" action="{{ route('onboarding.plan.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="plan_type" value="free">
-                            <button type="button" onclick="confirmFreePlan()" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition">Select Free</button>
-                        </form>
-                    </div>
-                </div>
+                                <ul class="mt-8 space-y-4">
+                                    <li class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="ml-3 text-gray-700">Unlimited Companies</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="ml-3 text-gray-700">Unlimited Users</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="ml-3 text-gray-700">Custom Modules</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="px-6 py-4 bg-gray-50">
+                                <button type="button" class="w-full bg-indigo-600 text-white rounded-md py-2 hover:bg-indigo-700 transition">Configure Now</button>
+                            </div>
+                        </div>
+                    @else
+                        <!-- Standard Plan -->
+                        <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all flex flex-col">
+                            <div class="px-6 py-8 flex-1">
+                                <h3 class="text-2xl font-bold text-gray-900 text-center">{{ $plan->name }}</h3>
+                                <p class="mt-4 text-center text-gray-500">{{ $plan->description }}</p>
+                                <p class="mt-8 text-center text-5xl font-extrabold text-gray-900">${{ number_format($plan->base_price, 0) }}</p>
+                                <p class="mt-2 text-center text-sm text-gray-500">per {{ $plan->billing_cycle }}</p>
 
-                <!-- Custom Plan -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all" onclick="showCustomForm()">
-                    <div class="px-6 py-8">
-                        <h3 class="text-2xl font-bold text-gray-900 text-center">Custom Plan</h3>
-                        <p class="mt-4 text-center text-gray-500">Tailored to your scale.</p>
-                        <p class="mt-8 text-center text-5xl font-extrabold text-gray-900">Custom</p>
-                        <p class="mt-2 text-center text-sm text-gray-500">pricing based on usage</p>
-
-                        <ul class="mt-8 space-y-4">
-                            <li class="flex items-center">
-                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="ml-3 text-gray-700">Unlimited Companies</span>
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="ml-3 text-gray-700">Unlimited Users</span>
-                            </li>
-                            <li class="flex items-center">
-                                <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span class="ml-3 text-gray-700">Custom Modules</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="px-6 py-4 bg-gray-50">
-                        <button type="button" class="w-full bg-indigo-600 text-white rounded-md py-2 hover:bg-indigo-700 transition">Configure Now</button>
-                    </div>
-                </div>
+                                <ul class="mt-8 space-y-4">
+                                    <li class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="ml-3 text-gray-700">{{ $plan->limits['sub_companies'] ?? 1 }} Company/ies</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="ml-3 text-gray-700">{{ $plan->limits['employees'] ?? 1 }} User/s</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="ml-3 text-gray-700">
+                                            @if(($plan->limits['quotations'] ?? 0) == -1)
+                                                Unlimited Quotations
+                                            @else
+                                                {{ $plan->limits['quotations'] ?? 0 }} Quotations/mo
+                                            @endif
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="px-6 py-4 bg-gray-50">
+                                <form id="plan-form-{{ $plan->slug }}" action="{{ route('onboarding.plan.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="plan_type" value="{{ $plan->slug }}">
+                                    <button type="button" onclick="confirmStandardPlan('{{ $plan->name }}', '${{ number_format($plan->base_price, 0) }}', '{{ ucfirst($plan->billing_cycle) }}', {{ json_encode([
+                                        ($plan->limits['sub_companies'] ?? 1) . ' Company/ies',
+                                        ($plan->limits['employees'] ?? 1) . ' User/s',
+                                        (($plan->limits['quotations'] ?? 0) == -1 ? 'Unlimited' : ($plan->limits['quotations'] ?? 0)) . ' Quotations/mo'
+                                    ]) }}, 'plan-form-{{ $plan->slug }}')" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition">Select {{ $plan->name }}</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
             </div>
 
             <!-- Custom Plan Questionnaire Modal/Section -->
@@ -224,13 +238,13 @@
             trackEvent('modal_close', {});
         }
 
-        function confirmFreePlan() {
+        function confirmStandardPlan(name, price, billing, features, formId) {
             openModal(
-                'Free Plan',
-                '$0',
-                'Forever',
-                ['1 Company', '2 Users', '5 Quotations/mo'],
-                'free-plan-form'
+                name,
+                price,
+                billing,
+                features,
+                formId
             );
         }
 

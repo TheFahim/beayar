@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 
 class OnboardingController extends Controller
 {
@@ -23,7 +24,13 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.company');
         }
 
-        return view('onboarding.plan_selection');
+        if (Plan::count() === 0) {
+            Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\PlansSeeder']);
+        }
+
+        $plans = Plan::where('is_active', true)->get();
+
+        return view('onboarding.plan_selection', compact('plans'));
     }
 
     /**
@@ -31,8 +38,13 @@ class OnboardingController extends Controller
      */
     public function storePlan(Request $request)
     {
+        // Get all active plan slugs
+        $planSlugs = Plan::where('is_active', true)->pluck('slug')->toArray();
+        // Allow 'custom' and 'free' (for fallback creation)
+        $allowedSlugs = implode(',', array_unique(array_merge($planSlugs, ['custom', 'free'])));
+
         $validated = $request->validate([
-            'plan_type' => 'required|in:free,custom',
+            'plan_type' => 'required|in:' . $allowedSlugs,
             // Custom plan fields
             'company_count' => 'required_if:plan_type,custom|integer|min:1',
             'separate_modules' => 'nullable|boolean',
@@ -56,38 +68,79 @@ class OnboardingController extends Controller
                 $tenant = $user->tenant;
             }
 
-            // Calculate limits based on input
-            $limits = $this->calculateLimits($validated);
-            $price = $this->calculatePrice($validated);
+            $planType = $validated['plan_type'];
 
-            // Create/Update Subscription
-            $plan = Plan::where('slug', $validated['plan_type'])->first();
+            if ($planType === 'custom') {
+                 // Calculate limits based on input for Custom Plan
+                $limits = $this->calculateLimits($validated);
+                $price = $this->calculatePrice($validated);
+                $plan = Plan::where('slug', 'custom')->first(); // Ensure custom plan exists in DB
 
-            if (! $plan) {
-                // Fallback: Create a default free plan if missing (e.g. first run)
-                $plan = Plan::firstOrCreate(
-                    ['slug' => 'free'],
-                    [
+                // If custom plan doesn't exist in DB, fallback or create it (optional)
+                 if (!$plan) {
+                     // Log warning or handle error
+                 }
+
+                 $moduleAccess = $limits['module_access'];
+
+            } else {
+                // Standard Plan
+                $plan = Plan::where('slug', $planType)->first();
+
+                if (! $plan && $planType === 'free') {
+                    // Fallback: Create a default free plan if missing (e.g. first run)
+                    $plan = Plan::create([
+                        'slug' => 'free',
                         'name' => 'Free Plan',
                         'description' => 'Default free plan',
                         'base_price' => 0,
                         'billing_cycle' => 'monthly',
                         'is_active' => true,
                         'limits' => [
-                            'company_limit' => 1,
-                            'user_limit_per_company' => 2,
-                            'quotation_limit_per_month' => 5,
+                            'sub_companies' => 1,
+                            'employees' => 2,
+                            'quotations' => 5,
                         ],
                         'module_access' => ['basic_crm', 'quotations', 'challans', 'billing', 'finance', 'products'],
-                    ]
-                );
+                    ]);
+                }
+
+                if (! $plan) {
+                    abort(404, 'Plan not found.');
+                }
+
+                $price = $plan->base_price;
+
+                // Use plan limits
+                // Map Plan limits structure to Subscription limits structure if needed
+                // Plan limits: ['sub_companies' => X, 'employees' => Y, 'quotations' => Z]
+                // Subscription/Controller limits keys: 'company_limit', 'user_limit_per_company', 'quotation_limit_per_month'
+
+                $planLimits = $plan->limits ?? [];
+
+                $limits = [
+                    'company_limit' => $planLimits['sub_companies'] ?? 1,
+                    'user_limit_per_company' => $planLimits['employees'] ?? 1, // Note: 'employees' might mean total users? Seeder says 'employees'
+                    'quotation_limit_per_month' => $planLimits['quotations'] ?? 0,
+                ];
+
+                // For standard plans, assume they get access to all modules or defined modules
+                // If Plan has module_access, use it. Otherwise default to all/core.
+                if (!empty($plan->module_access)) {
+                    $moduleAccess = $plan->module_access;
+                } else {
+                     // Fallback to core + all (like free plan logic was)
+                     $allModules = Module::pluck('slug')->toArray();
+                     $coreModules = ['basic_crm', 'quotations', 'challans', 'billing', 'finance', 'products'];
+                     $moduleAccess = array_unique(array_merge($coreModules, $allModules));
+                }
             }
 
             $subscription = new Subscription;
             $subscription->tenant_id = $tenant->id;
             $subscription->user_id = $user->id;
             $subscription->plan_id = $plan->id;
-            $subscription->plan_type = $validated['plan_type'];
+            $subscription->plan_type = $planType;
             $subscription->status = 'active';
             $subscription->starts_at = now();
             $subscription->price = $price;
@@ -96,13 +149,20 @@ class OnboardingController extends Controller
             $subscription->company_limit = $limits['company_limit'];
             $subscription->user_limit_per_company = $limits['user_limit_per_company'];
             $subscription->quotation_limit_per_month = $limits['quotation_limit_per_month'];
-            $subscription->module_access = $limits['module_access'];
+            $subscription->module_access = $moduleAccess;
 
             // Populate custom_limits JSON for backward compatibility / existing logic
             $subscription->custom_limits = [
-                'companies' => $limits['company_limit'],
-                'users_per_company' => $limits['user_limit_per_company'],
-                'quotations_monthly' => $limits['quotation_limit_per_month'],
+                'sub_companies' => $limits['company_limit'], // Updated key to match CheckSubscriptionLimits usage?
+                // Wait, CheckSubscriptionLimits checks keys like 'sub_companies' (from PlanSeeder) or 'companies' (old code)?
+                // Let's stick to what Subscription model uses.
+                // Subscription::getLimit checks custom_limits first, then plan limits.
+                // PlanSeeder uses: sub_companies, quotations, employees.
+                // So custom_limits should use these keys to override plan limits if needed.
+
+                'sub_companies' => $limits['company_limit'],
+                'employees' => $limits['user_limit_per_company'],
+                'quotations' => $limits['quotation_limit_per_month'],
             ];
 
             $subscription->save();
@@ -115,7 +175,7 @@ class OnboardingController extends Controller
             DB::rollBack();
             Log::error('Plan selection failed: '.$e->getMessage());
 
-            return back()->with('error', 'Something went wrong. Please try again.');
+            return back()->with('error', 'Something went wrong. Please try again: ' . $e->getMessage());
         }
     }
 
