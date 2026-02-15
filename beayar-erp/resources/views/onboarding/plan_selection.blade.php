@@ -30,7 +30,7 @@
 
             <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <!-- Free Plan -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all" onclick="selectPlan('free')">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all">
                     <div class="px-6 py-8">
                         <h3 class="text-2xl font-bold text-gray-900 text-center">Free Plan</h3>
                         <p class="mt-4 text-center text-gray-500">Perfect for getting started.</p>
@@ -53,10 +53,10 @@
                         </ul>
                     </div>
                     <div class="px-6 py-4 bg-gray-50">
-                        <form action="{{ route('onboarding.plan.store') }}" method="POST">
+                        <form id="free-plan-form" action="{{ route('onboarding.plan.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="plan_type" value="free">
-                            <button type="submit" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition">Select Free</button>
+                            <button type="button" onclick="confirmFreePlan()" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition">Select Free</button>
                         </form>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
             <!-- Custom Plan Questionnaire Modal/Section -->
             <div id="custom-form-container" class="hidden mt-12 bg-white rounded-lg shadow-xl p-8 border border-gray-200">
                 <h3 class="text-xl font-bold text-gray-900 mb-6">Configure Your Custom Plan</h3>
-                <form action="{{ route('onboarding.plan.store') }}" method="POST">
+                <form id="custom-plan-form" action="{{ route('onboarding.plan.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="plan_type" value="custom">
 
@@ -149,22 +149,149 @@
                     </div>
 
                     <div class="mt-8">
-                        <button type="submit" class="w-full bg-indigo-600 text-white text-lg font-semibold rounded-md py-3 hover:bg-indigo-700 transition">Confirm Custom Plan</button>
+                        <button type="button" onclick="confirmCustomPlan()" class="w-full bg-indigo-600 text-white text-lg font-semibold rounded-md py-3 hover:bg-indigo-700 transition">Confirm Custom Plan</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="relative mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Confirm Plan Selection</h3>
+                    <div class="mt-2 px-2 py-3">
+                        <p class="text-sm text-gray-500 mb-4">You are about to select the <span id="modal-plan-name" class="font-bold text-gray-800"></span>.</p>
+                        <div class="text-left bg-gray-50 p-4 rounded-md mb-4 border border-gray-100">
+                            <div class="flex justify-between items-baseline mb-2">
+                                <p class="text-2xl font-bold text-gray-900" id="modal-plan-price"></p>
+                                <p class="text-xs text-gray-500" id="modal-billing-cycle"></p>
+                            </div>
+                            <ul class="text-sm text-gray-600 list-disc list-inside space-y-1" id="modal-features">
+                                <!-- Features will be injected here -->
+                            </ul>
+                        </div>
+                        <p class="text-xs text-gray-400">By confirming, you agree to our terms of service and billing policy.</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 px-2 py-3">
+                        <button onclick="closeModal()" class="flex-1 px-4 py-2 bg-white text-gray-700 text-base font-medium rounded-md shadow-sm border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                            Cancel
+                        </button>
+                        <button id="confirm-btn" class="flex-1 px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors">
+                            Confirm Selection
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        let selectedPlanFormId = null;
+
         function showCustomForm() {
             document.getElementById('custom-form-container').classList.remove('hidden');
             document.getElementById('custom-form-container').scrollIntoView({ behavior: 'smooth' });
         }
+
         function selectPlan(type) {
             if (type === 'custom') {
                 showCustomForm();
             }
         }
+
+        function openModal(planName, price, billing, features, formId) {
+            document.getElementById('modal-plan-name').innerText = planName;
+            document.getElementById('modal-plan-price').innerText = price;
+            document.getElementById('modal-billing-cycle').innerText = billing;
+
+            const featuresList = document.getElementById('modal-features');
+            featuresList.innerHTML = '';
+            features.forEach(feature => {
+                const li = document.createElement('li');
+                li.innerText = feature;
+                featuresList.appendChild(li);
+            });
+
+            selectedPlanFormId = formId;
+            document.getElementById('confirmation-modal').classList.remove('hidden');
+            trackEvent('modal_open', { plan: planName });
+        }
+
+        function closeModal() {
+            document.getElementById('confirmation-modal').classList.add('hidden');
+            selectedPlanFormId = null;
+            trackEvent('modal_close', {});
+        }
+
+        function confirmFreePlan() {
+            openModal(
+                'Free Plan',
+                '$0',
+                'Forever',
+                ['1 Company', '2 Users', '5 Quotations/mo'],
+                'free-plan-form'
+            );
+        }
+
+        function confirmCustomPlan() {
+            const form = document.getElementById('custom-plan-form');
+            // Get checked modules names
+            const modules = Array.from(form.querySelectorAll('input[name="modules[]"]:checked'))
+                .map(cb => cb.parentElement.querySelector('span').innerText.trim());
+
+            // Add separate modules info if checked
+            const separateModules = form.querySelector('input[name="separate_modules"]:checked');
+            if (separateModules) {
+                modules.push('Separate Accounts & HR per company');
+            }
+
+            const companyCount = form.querySelector('input[name="company_count"]').value;
+            // total_employees is input, but let's just list it
+            const employees = form.querySelector('input[name="total_employees"]').value;
+
+            const features = [
+                `${companyCount} Company${companyCount > 1 ? 's' : ''}`,
+                `${employees} Total Employees`,
+                ...modules
+            ];
+
+            openModal(
+                'Custom Plan',
+                'Custom Pricing',
+                'Billed Monthly',
+                features,
+                'custom-plan-form'
+            );
+        }
+
+        document.getElementById('confirm-btn').addEventListener('click', function() {
+            if (selectedPlanFormId) {
+                const form = document.getElementById(selectedPlanFormId);
+                if(form) {
+                    trackEvent('plan_confirmed', { formId: selectedPlanFormId });
+                    form.submit();
+                }
+            }
+        });
+
+        function trackEvent(eventName, data) {
+            // Placeholder for analytics
+            console.log('Analytics Event:', eventName, data);
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('confirmation-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
     </script>
 </x-layouts.app>
