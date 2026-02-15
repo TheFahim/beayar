@@ -55,9 +55,13 @@ class Subscription extends Model
     // Check if subscription has access to a module
     public function hasModuleAccess(string $module): bool
     {
+        if ($this->plan_type === 'custom' || ($this->plan && $this->plan->slug === 'custom')) {
+            return true;
+        }
+
         $access = $this->module_access ?? [];
 
-        return in_array($module, $access);
+        return in_array($module, $access, true);
     }
 
     // Check limit for a metric
