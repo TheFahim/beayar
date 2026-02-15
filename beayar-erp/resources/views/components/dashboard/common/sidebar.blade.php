@@ -52,12 +52,14 @@
             </x-dashboard.common.sidebar-link>
         </li>
 
+        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
                 <x-ui.svg.customer class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @endif
 
         @if(Auth::user()->hasModuleAccess('quotations'))
             <li>
@@ -102,12 +104,14 @@
             </li>
         @endif
 
+        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
                 <x-ui.svg.image class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @endif
 
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.subscription.index') }}">
@@ -125,24 +129,30 @@
                 <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
                 <x-ui.svg.customer class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @endif
+        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
                 <x-ui.svg.image class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @endif
+        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('admin.dashboard') }}">
                 <x-ui.svg.admin-settings class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Admin Dashboard</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @endif
         @endunlessrole
 
     </ul>
