@@ -20,7 +20,6 @@
         <div>
             <x-dashboard.common.sidebar />
             <div class="min-h-screen mt-20" :class="{ 'sm:ml-64': sidebarOpen }">
-                <x-dashboard.common.navbar />
                 
                 <div class="p-4">
                     @if (session('success'))
