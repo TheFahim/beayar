@@ -22,14 +22,21 @@ class AdminService
 
     public function impersonateTenant(User $user)
     {
-        $adminId = Auth::guard('admin')->id() ?? Auth::id();
-        Auth::login($user);
+        $adminId = Auth::guard('admin')->id();
+
+        // Ensure we are logged in as admin before impersonating
+        if (!$adminId) {
+             // Fallback or error handling if needed
+             // But usually this is called from protected route
+        }
+
+        Auth::guard('web')->login($user);
         session()->put('impersonated_by_admin_id', $adminId);
     }
 
     public function stopImpersonation()
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
         if (session()->has('impersonated_by_admin_id')) {
             // Logic to restore admin session if needed, though usually admin and web are different guards
             session()->forget('impersonated_by_admin_id');

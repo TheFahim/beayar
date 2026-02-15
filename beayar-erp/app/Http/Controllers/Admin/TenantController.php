@@ -165,6 +165,13 @@ class TenantController extends Controller
         return redirect()->route('tenant.dashboard')->with('success', 'Impersonating '.$company->name);
     }
     
+    public function stopImpersonation(): RedirectResponse
+    {
+        $this->adminService->stopImpersonation();
+        
+        return redirect()->route('admin.tenants.index')->with('success', 'Impersonation stopped.');
+    }
+    
     public function destroy(TenantCompany $company): RedirectResponse
     {
         activity()

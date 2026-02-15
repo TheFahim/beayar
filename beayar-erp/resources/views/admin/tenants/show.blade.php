@@ -1,4 +1,4 @@
-<x-dashboard.layout.default title="Tenant Details">
+<x-admin.layout.default title="Tenant Details">
     <div class="p-4" x-data="{
         showBoundaryForm: false,
         moduleAccess: {{ json_encode($subscription?->module_access ?? []) }},

@@ -37,7 +37,7 @@ class SetTenantContext
                 if (! $isMember && ! $isOwner) {
                     Session::forget('tenant_id');
 
-                    return redirect()->route('dashboard')->with('error', 'You do not have access to this company context.');
+                    return redirect()->route('tenant.dashboard')->with('error', 'You do not have access to this company context.');
                 }
             }
         }

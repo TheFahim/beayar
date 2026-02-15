@@ -133,6 +133,8 @@ Route::prefix('admin')->middleware(['web'])->name('admin.')->group(function () {
 
 // Admin Routes
 Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('admin.')->group(function () {
+    Route::post('/tenants/stop-impersonation', [AdminTenantController::class, 'stopImpersonation'])->name('tenants.stop-impersonation');
+    
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Tenants

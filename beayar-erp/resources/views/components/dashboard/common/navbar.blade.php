@@ -67,6 +67,18 @@
                     @endif
                 @endauth
 
+                {{-- Admin Impersonation Banner --}}
+                @if(session()->has('impersonated_by_admin_id'))
+                    <div class="mr-4 hidden md:block">
+                        <form action="{{ route('admin.tenants.stop-impersonation') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                                Stop Impersonating
+                            </button>
+                        </form>
+                    </div>
+                @endif
+
                 <div>
                     <button id="theme-toggle" type="button"
                         class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
