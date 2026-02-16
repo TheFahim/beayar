@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Artisan;
+use Spatie\Permission\Models\Role;
 
 class OnboardingController extends Controller
 {
@@ -242,6 +243,8 @@ class OnboardingController extends Controller
             ]);
 
             // Assign Spatie Role
+            $guardName = config('auth.defaults.guard');
+            Role::findOrCreate('tenant_admin', $guardName);
             if (! $user->hasRole('tenant_admin')) {
                 $user->assignRole('tenant_admin');
             }

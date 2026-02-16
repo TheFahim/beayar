@@ -23,8 +23,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'employee',     // Regular user within a company
         ];
 
+        $guardName = config('auth.defaults.guard');
+
         foreach ($roles as $roleName) {
-            Role::firstOrCreate(['name' => $roleName]);
+            Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guardName]);
         }
     }
 }
