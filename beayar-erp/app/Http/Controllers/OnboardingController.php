@@ -194,7 +194,8 @@ class OnboardingController extends Controller
             return redirect()->route('tenant.dashboard');
         }
 
-        return view('onboarding.create_company');
+        $subscription = Auth::user()->subscription;
+        return view('onboarding.create_company', compact('subscription'));
     }
 
     /**
