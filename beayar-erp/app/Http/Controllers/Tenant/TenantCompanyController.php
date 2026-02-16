@@ -95,7 +95,19 @@ class TenantCompanyController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $company = TenantCompany::findOrFail($id);
+        $user = Auth::user();
+
+        // Check if user is owner or admin of the company
+        if ($company->owner_id !== $user->id) {
+             // Or check if user is an admin member
+             $member = $company->members()->where('user_id', $user->id)->first();
+             if (!$member || $member->pivot->role !== 'company_admin') {
+                 abort(403, 'Unauthorized action.');
+             }
+        }
+
+        return view('tenant.companies.edit', compact('company'));
     }
 
     /**
@@ -103,7 +115,32 @@ class TenantCompanyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $company = TenantCompany::findOrFail($id);
+        $user = Auth::user();
+
+        // Check permission
+        if ($company->owner_id !== $user->id) {
+             $member = $company->members()->where('user_id', $user->id)->first();
+             if (!$member || $member->pivot->role !== 'company_admin') {
+                 abort(403, 'Unauthorized action.');
+             }
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'phone' => 'nullable|string',
+            'address' => 'nullable|string',
+        ]);
+
+        $company->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
+
+        return redirect()->route('tenant.user-companies.index')->with('success', 'Company updated successfully.');
     }
 
     /**
@@ -111,6 +148,29 @@ class TenantCompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $company = TenantCompany::findOrFail($id);
+        $user = Auth::user();
+
+        // Only owner should be able to delete the company
+        if ($company->owner_id !== $user->id) {
+            abort(403, 'Unauthorized action. Only the owner can delete the company.');
+        }
+        
+        $company->delete();
+        
+        // If the user was currently in this company, handle session/context
+        if (session('tenant_id') == $id) {
+            session()->forget('tenant_id');
+            // Find another company
+            $otherCompany = $user->companies()->where('tenant_companies.id', '!=', $id)->first();
+            if ($otherCompany) {
+                session(['tenant_id' => $otherCompany->id]);
+                $user->update(['current_tenant_company_id' => $otherCompany->id]);
+            } else {
+                $user->update(['current_tenant_company_id' => null]);
+            }
+        }
+
+        return redirect()->route('tenant.user-companies.index')->with('success', 'Company deleted successfully.');
     }
 }

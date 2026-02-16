@@ -66,6 +66,24 @@
                         @else
                             {{-- Optional: Add logic to switch then redirect --}}
                         @endif
+
+                        <div class="flex gap-2 mt-2">
+                            @if($company->owner_id == Auth::id() || $company->pivot->role === 'company_admin')
+                                <a href="{{ route('tenant.user-companies.edit', $company->id) }}" class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                                    Edit
+                                </a>
+                            @endif
+
+                            @if($company->owner_id == Auth::id())
+                                <form action="{{ route('tenant.user-companies.destroy', $company->id) }}" method="POST" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this company? This action cannot be undone.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                                        Delete
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </div>
                 </div>
             @endforeach

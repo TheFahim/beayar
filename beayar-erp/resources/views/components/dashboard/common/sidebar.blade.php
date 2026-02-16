@@ -52,6 +52,15 @@
             </x-dashboard.common.sidebar-link>
         </li>
 
+        @if(Auth::user()->current_tenant_company_id && Auth::user()->isOwnerOf(Auth::user()->current_tenant_company_id))
+        <li>
+            <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.edit') }}">
+                <x-ui.svg.company class="h-5 w-5" />
+                <span class="flex-1 ms-3 whitespace-nowrap">Tenant Profile</span>
+            </x-dashboard.common.sidebar-link>
+        </li>
+        @endif
+
         <li>
             <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="sidebar-dropdown-org" data-collapse-toggle="sidebar-dropdown-org">
                 <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
