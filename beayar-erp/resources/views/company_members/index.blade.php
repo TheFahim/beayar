@@ -15,7 +15,7 @@
             <h3 class="text-xl font-bold text-gray-900 dark:text-white">
                 Members of {{ $company->name }}
             </h3>
-            
+
             @if(Auth::user()->roleInCompany($company->id) === 'company_admin')
                 <button data-modal-target="addMemberModal" data-modal-toggle="addMemberModal" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                     Invite Member
@@ -78,11 +78,13 @@
                                     <span class="text-red-600 font-semibold">Inactive</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4">{{ $member->pivot->created_at->format('M d, Y') }}</td>
+                            <td class="px-6 py-4">
+                                {{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('M d, Y') : $member->pivot->created_at->format('M d, Y') }}
+                            </td>
                             <td class="px-6 py-4">
                                 @if(Auth::user()->roleInCompany($company->id) === 'company_admin' && $member->id !== $owner->id)
                                     <button data-modal-target="editMemberModal{{ $member->id }}" data-modal-toggle="editMemberModal{{ $member->id }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3">Edit</button>
-                                    
+
                                     <form action="{{ route('company-members.destroy', $member->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to remove this member?');">
                                         @csrf
                                         @method('DELETE')
@@ -95,7 +97,7 @@
                                             <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
                                                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                                        Edit Role: {{ $member->name }}
+                                                        Edit Member: {{ $member->name }}
                                                     </h3>
                                                     <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="editMemberModal{{ $member->id }}">
                                                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -109,15 +111,38 @@
                                                     @method('PUT')
                                                     <div class="grid gap-4 mb-4 grid-cols-2">
                                                         <div class="col-span-2">
+                                                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                                                            <input type="text" name="name" value="{{ $member->name }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                                                        </div>
+                                                        <div class="col-span-2">
+                                                            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                                            <input type="email" name="email" value="{{ $member->email }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                                                        </div>
+                                                        <div class="col-span-2">
+                                                            <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone</label>
+                                                            <input type="text" name="phone" value="{{ $member->phone }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                        </div>
+                                                        <div class="col-span-2 sm:col-span-1">
                                                             <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
                                                             <select name="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                                                 <option value="employee" {{ $member->pivot->role === 'employee' ? 'selected' : '' }}>Employee</option>
                                                                 <option value="company_admin" {{ $member->pivot->role === 'company_admin' ? 'selected' : '' }}>Company Admin</option>
                                                             </select>
                                                         </div>
+                                                        <div class="col-span-2 sm:col-span-1">
+                                                            <label for="is_active" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+                                                            <select name="is_active" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                                <option value="1" {{ $member->pivot->is_active ? 'selected' : '' }}>Active</option>
+                                                                <option value="0" {{ !$member->pivot->is_active ? 'selected' : '' }}>Inactive</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-span-2">
+                                                            <label for="joined_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Joining Date</label>
+                                                            <input type="date" name="joined_at" value="{{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('Y-m-d') : ($member->pivot->created_at ? $member->pivot->created_at->format('Y-m-d') : '') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                        </div>
                                                     </div>
                                                     <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                        Update Role
+                                                        Update Member
                                                     </button>
                                                 </form>
                                             </div>
@@ -150,6 +175,34 @@
                 <form action="{{ route('company-members.store') }}" method="POST" class="p-4 md:p-5">
                     @csrf
                     <div class="grid gap-4 mb-4 grid-cols-2">
+                        @if(isset($availableUsers) && $availableUsers->count() > 0)
+                        <div class="col-span-2">
+                            <label for="existing_user" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Add Existing Employee</label>
+                            <select id="existing_user" onchange="
+                                const selectedOption = this.options[this.selectedIndex];
+                                if (selectedOption.value) {
+                                    document.getElementById('email').value = selectedOption.dataset.email;
+                                    document.getElementById('name').value = selectedOption.dataset.name;
+                                    document.getElementById('email').readOnly = true;
+                                    document.getElementById('name').readOnly = true;
+                                } else {
+                                    document.getElementById('email').value = '';
+                                    document.getElementById('name').value = '';
+                                    document.getElementById('email').readOnly = false;
+                                    document.getElementById('name').readOnly = false;
+                                }
+                            " class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                <option value="">-- Select from your team --</option>
+                                @foreach($availableUsers as $u)
+                                    <option value="{{ $u->id }}" data-email="{{ $u->email }}" data-name="{{ $u->name }}">
+                                        {{ $u->name }} ({{ $u->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select a user from your other companies, or leave blank to invite a new user.</p>
+                        </div>
+                        @endif
+
                         <div class="col-span-2">
                             <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Full Name (Optional)</label>
                             <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="John Doe">

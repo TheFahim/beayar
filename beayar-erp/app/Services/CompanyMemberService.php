@@ -68,13 +68,51 @@ class CompanyMemberService
 
     /**
      * Change a member's role.
+     * @deprecated Use updateMember instead.
      */
     public function updateRole(TenantCompany $company, User $user, string $role): void
     {
-        if ($company->owner_id === $user->id) {
-            throw ValidationException::withMessages(['user' => 'Cannot change role of the company owner.']);
+        $this->updateMember($company, $user, ['role' => $role]);
+    }
+
+    /**
+     * Update member details.
+     */
+    public function updateMember(TenantCompany $company, User $user, array $data): void
+    {
+        // 1. Update User info (name, phone)
+        // Only allow updating basic info if the user belongs to this tenant/company context
+        // OR if the editor is the owner.
+        // For now, let's assume the company admin can update the user's name/phone if they are a member.
+
+        $userUpdates = [];
+        if (array_key_exists('name', $data)) $userUpdates['name'] = $data['name'];
+        if (array_key_exists('email', $data)) $userUpdates['email'] = $data['email'];
+        if (array_key_exists('phone', $data)) $userUpdates['phone'] = $data['phone'];
+
+        if (!empty($userUpdates)) {
+            $user->update($userUpdates);
         }
 
-        $company->members()->updateExistingPivot($user->id, ['role' => $role]);
+        // 2. Update Membership info (role, is_active, joined_at)
+        // Check if updating owner
+        if ($company->owner_id === $user->id) {
+            // Cannot change role or status of owner
+            if (isset($data['role']) && $data['role'] !== 'company_admin') {
+                throw ValidationException::withMessages(['user' => 'Cannot change role of the company owner.']);
+            }
+            if (isset($data['is_active']) && !$data['is_active']) {
+                throw ValidationException::withMessages(['user' => 'Cannot deactivate the company owner.']);
+            }
+        }
+
+        $pivotUpdates = [];
+        if (array_key_exists('role', $data)) $pivotUpdates['role'] = $data['role'];
+        if (array_key_exists('is_active', $data)) $pivotUpdates['is_active'] = $data['is_active'];
+        if (array_key_exists('joined_at', $data)) $pivotUpdates['joined_at'] = $data['joined_at'];
+
+        if (!empty($pivotUpdates)) {
+            $company->members()->updateExistingPivot($user->id, $pivotUpdates);
+        }
     }
 }

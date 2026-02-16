@@ -40,7 +40,20 @@ class CompanyMemberController extends Controller
         // Include owner in the list for display if needed, or separate.
         $owner = $company->owner;
 
-        return view('company_members.index', compact('company', 'members', 'owner'));
+        // Get potential users to add (members of other owned companies who are not in this company)
+        $availableUsers = collect();
+        if ($user->ownedCompanies->count() > 0) {
+            $ownedCompanyIds = $user->ownedCompanies->pluck('id');
+            $currentMemberIds = $members->pluck('id')->push($owner->id); // Exclude current members and owner
+
+            $availableUsers = User::whereHas('companies', function($q) use ($ownedCompanyIds) {
+                $q->whereIn('tenant_companies.id', $ownedCompanyIds);
+            })
+            ->whereNotIn('id', $currentMemberIds)
+            ->get();
+        }
+
+        return view('company_members.index', compact('company', 'members', 'owner', 'availableUsers'));
     }
 
     /**
@@ -84,6 +97,11 @@ class CompanyMemberController extends Controller
     {
         $request->validate([
             'role' => 'required|in:company_admin,employee',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'phone' => 'nullable|string|max:20',
+            'is_active' => 'required|boolean',
+            'joined_at' => 'nullable|date',
         ]);
 
         $targetUser = User::findOrFail($id);
@@ -99,9 +117,9 @@ class CompanyMemberController extends Controller
         // $this->authorize('update', [User::class, $company]);
 
         try {
-            $this->memberService->updateRole($company, $targetUser, $request->role);
+            $this->memberService->updateMember($company, $targetUser, $request->only(['role', 'name', 'email', 'phone', 'is_active', 'joined_at']));
 
-            return redirect()->back()->with('success', 'Member role updated.');
+            return redirect()->back()->with('success', 'Member details updated.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
         }
