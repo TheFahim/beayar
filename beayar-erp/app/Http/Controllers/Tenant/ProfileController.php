@@ -9,23 +9,26 @@ use Illuminate\Support\Facades\Auth;
 class ProfileController extends Controller
 {
     /**
+     * Show the tenant profile.
+     */
+    public function show()
+    {
+        $user = Auth::user();
+        return view('tenant.profile.show', compact('user'));
+    }
+
+    /**
      * Show the form for editing the tenant profile.
      */
     public function edit()
     {
         $user = Auth::user();
-        $company = $user->currentCompany;
 
-        if (! $company) {
-            return redirect()->route('tenant.dashboard')->with('error', 'No active company found.');
-        }
+        // Authorization check: Ideally, any user should be able to edit their own profile,
+        // but if this is strictly for the "Tenant" entity (the owner), we can keep checks.
+        // However, given the request "info of that user who loged in", we simply pass the user.
 
-        // Authorization check: Only owner (tenant admin) can edit
-        if (! $user->isOwnerOf($company->id)) {
-            abort(403, 'Unauthorized action. Only the company owner can edit the profile.');
-        }
-
-        return view('tenant.profile.edit', compact('company'));
+        return view('tenant.profile.edit', compact('user'));
     }
 
     /**
@@ -34,24 +37,15 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        $company = $user->currentCompany;
-
-        if (! $company) {
-            return redirect()->route('tenant.dashboard')->with('error', 'No active company found.');
-        }
-
-        if (! $user->isOwnerOf($company->id)) {
-            abort(403, 'Unauthorized action. Only the company owner can edit the profile.');
-        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
         ]);
 
-        $company->update($validated);
+        $user->update($validated);
 
-        return redirect()->route('tenant.profile.edit')->with('success', 'Tenant profile updated successfully.');
+        return redirect()->route('tenant.profile.edit')->with('success', 'Profile updated successfully.');
     }
 }

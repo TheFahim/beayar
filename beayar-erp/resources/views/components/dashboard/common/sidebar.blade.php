@@ -54,7 +54,7 @@
 
         @if(Auth::user()->current_tenant_company_id && Auth::user()->isOwnerOf(Auth::user()->current_tenant_company_id))
         <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.edit') }}">
+            <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.show') }}">
                 <x-ui.svg.company class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Tenant Profile</span>
             </x-dashboard.common.sidebar-link>

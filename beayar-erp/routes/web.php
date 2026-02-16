@@ -57,7 +57,8 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     })->name('tenant.dashboard');
 
     // Tenant Profile (Only for Tenant Admin/Owner)
-    Route::get('/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'edit'])->name('tenant.profile.edit');
+    Route::get('/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'show'])->name('tenant.profile.show');
+    Route::get('/profile/edit', [\App\Http\Controllers\Tenant\ProfileController::class, 'edit'])->name('tenant.profile.edit');
     Route::put('/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'update'])->name('tenant.profile.update');
 
     // Company Members
