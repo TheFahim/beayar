@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'avatar',
         'password',
         'current_tenant_company_id',
         'current_scope',
