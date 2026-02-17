@@ -69,7 +69,7 @@ class TenantCompany extends Model
     public function members()
     {
         return $this->belongsToMany(User::class, 'company_members', 'tenant_company_id', 'user_id')
-            ->withPivot('role', 'is_active', 'joined_at')
+            ->withPivot('role', 'is_active', 'joined_at', 'employee_id')
             ->withTimestamps();
     }
 

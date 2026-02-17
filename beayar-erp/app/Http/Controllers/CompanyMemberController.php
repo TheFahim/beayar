@@ -7,6 +7,7 @@ use App\Services\CompanyMemberService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyMemberController extends Controller
 {
@@ -66,6 +67,8 @@ class CompanyMemberController extends Controller
             'name' => 'nullable|string|max:255',
             'role' => 'required|in:company_admin,employee',
             'password' => 'nullable|string|min:8',
+            'employee_id' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
         $user = Auth::user();
@@ -80,8 +83,16 @@ class CompanyMemberController extends Controller
         // Use Policy to check creation rights
         // $this->authorize('create', [User::class, $company]);
 
+        $extraData = [];
+        if ($request->filled('employee_id')) {
+            $extraData['employee_id'] = $request->employee_id;
+        }
+        if ($request->hasFile('avatar')) {
+            $extraData['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
         try {
-            $this->memberService->addMember($company, $request->email, $request->role, $request->name, $request->password);
+            $this->memberService->addMember($company, $request->email, $request->role, $request->name, $request->password, $extraData);
 
             return redirect()->back()->with('success', 'Member added successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -103,6 +114,9 @@ class CompanyMemberController extends Controller
             'phone' => 'nullable|string|max:20',
             'is_active' => 'required|boolean',
             'joined_at' => 'nullable|date',
+            'employee_id' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|max:2048',
+            'password' => 'nullable|string|min:8',
         ]);
 
         $targetUser = User::findOrFail($id);
@@ -117,8 +131,21 @@ class CompanyMemberController extends Controller
 
         // $this->authorize('update', [User::class, $company]);
 
+        $data = $request->only(['role', 'name', 'email', 'phone', 'is_active', 'joined_at', 'employee_id']);
+        if ($request->filled('password')) {
+            $data['password'] = $request->password;
+        }
+
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($targetUser->avatar) {
+                Storage::disk('public')->delete($targetUser->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
         try {
-            $this->memberService->updateMember($company, $targetUser, $request->only(['role', 'name', 'email', 'phone', 'is_active', 'joined_at']));
+            $this->memberService->updateMember($company, $targetUser, $data);
 
             return redirect()->back()->with('success', 'Member details updated.');
         } catch (\Exception $e) {

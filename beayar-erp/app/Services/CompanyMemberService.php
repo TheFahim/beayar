@@ -13,7 +13,7 @@ class CompanyMemberService
     /**
      * Add a member to a company.
      */
-    public function addMember(TenantCompany $company, string $email, string $role = 'member', ?string $name = null, ?string $password = null): User
+    public function addMember(TenantCompany $company, string $email, string $role = 'member', ?string $name = null, ?string $password = null, array $extraData = []): User
     {
         // Check member limit
         if ($company->owner && $company->owner->subscription) {
@@ -41,15 +41,27 @@ class CompanyMemberService
                 'name' => $name ?? explode('@', $email)[0],
                 'email' => $email,
                 'password' => Hash::make($password ?? Str::random(16)),
+                'avatar' => $extraData['avatar'] ?? null,
                 // We might want to mark them as 'invited' or send an email here
             ]);
+        } else {
+            // If user exists, optionally update avatar if provided
+            if (isset($extraData['avatar'])) {
+                $user->update(['avatar' => $extraData['avatar']]);
+            }
         }
 
         if ($company->members()->where('user_id', $user->id)->exists()) {
             throw ValidationException::withMessages(['email' => 'User is already a member of this company.']);
         }
 
-        $company->members()->attach($user->id, ['role' => $role, 'is_active' => true]);
+        $pivotData = [
+            'role' => $role,
+            'is_active' => true,
+            'employee_id' => $extraData['employee_id'] ?? null,
+        ];
+
+        $company->members()->attach($user->id, $pivotData);
 
         return $user;
     }
@@ -89,12 +101,14 @@ class CompanyMemberService
         if (array_key_exists('name', $data)) $userUpdates['name'] = $data['name'];
         if (array_key_exists('email', $data)) $userUpdates['email'] = $data['email'];
         if (array_key_exists('phone', $data)) $userUpdates['phone'] = $data['phone'];
+        if (array_key_exists('avatar', $data)) $userUpdates['avatar'] = $data['avatar'];
+        if (array_key_exists('password', $data)) $userUpdates['password'] = Hash::make($data['password']);
 
         if (!empty($userUpdates)) {
             $user->update($userUpdates);
         }
 
-        // 2. Update Membership info (role, is_active, joined_at)
+        // 2. Update Membership info (role, is_active, joined_at, employee_id)
         // Check if updating owner
         if ($company->owner_id === $user->id) {
             // Cannot change role or status of owner
@@ -110,6 +124,7 @@ class CompanyMemberService
         if (array_key_exists('role', $data)) $pivotUpdates['role'] = $data['role'];
         if (array_key_exists('is_active', $data)) $pivotUpdates['is_active'] = $data['is_active'];
         if (array_key_exists('joined_at', $data)) $pivotUpdates['joined_at'] = $data['joined_at'];
+        if (array_key_exists('employee_id', $data)) $pivotUpdates['employee_id'] = $data['employee_id'];
 
         if (!empty($pivotUpdates)) {
             $company->members()->updateExistingPivot($user->id, $pivotUpdates);
