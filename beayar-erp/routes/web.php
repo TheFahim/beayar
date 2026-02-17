@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FeatureController as AdminFeatureController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\TenantController as AdminTenantController;
@@ -139,7 +140,7 @@ Route::prefix('admin')->middleware(['web'])->name('admin.')->group(function () {
 // Admin Routes
 Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('admin.')->group(function () {
     Route::post('/tenants/stop-impersonation', [AdminTenantController::class, 'stopImpersonation'])->name('tenants.stop-impersonation');
-    
+
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Tenants
@@ -163,6 +164,15 @@ Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('a
     Route::post('/modules', [AdminModuleController::class, 'store'])->name('modules.store');
     Route::put('/modules/{module}', [AdminModuleController::class, 'update'])->name('modules.update');
     Route::delete('/modules/{module}', [AdminModuleController::class, 'destroy'])->name('modules.destroy');
+
+    // Features
+    Route::get('/features', [AdminFeatureController::class, 'index'])->name('features.index');
+    Route::post('/features', [AdminFeatureController::class, 'store'])->name('features.store');
+    Route::put('/features/{feature}', [AdminFeatureController::class, 'update'])->name('features.update');
+    Route::delete('/features/{feature}', [AdminFeatureController::class, 'destroy'])->name('features.destroy');
+
+    // Plan Feature Sync
+    Route::put('/plans/{plan}/features', [AdminPlanController::class, 'syncFeatures'])->name('plans.features.sync');
 
     // Coupons
     Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');

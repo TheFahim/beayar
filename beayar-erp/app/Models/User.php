@@ -105,4 +105,13 @@ class User extends Authenticatable
             $this->subscription->recordUsage($metric, $quantity);
         }
     }
+
+    public function hasFeatureAccess(string $feature): bool
+    {
+        if (! $this->subscription) {
+            return false;
+        }
+
+        return $this->subscription->hasFeatureAccess($feature);
+    }
 }

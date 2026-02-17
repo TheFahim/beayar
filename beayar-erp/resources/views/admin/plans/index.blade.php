@@ -7,6 +7,8 @@
             this.currentPlan = JSON.parse(JSON.stringify(plan));
             if (!this.currentPlan.limits) this.currentPlan.limits = {};
             if (!this.currentPlan.module_access) this.currentPlan.module_access = [];
+            if (!this.currentPlan.features) this.currentPlan.features = [];
+            this.currentPlan.feature_ids = this.currentPlan.features.map(f => f.id);
             this.editModalOpen = true;
         },
         isModuleSelected(slug) {
@@ -19,6 +21,18 @@
                 this.currentPlan.module_access.splice(idx, 1);
             } else {
                 this.currentPlan.module_access.push(slug);
+            }
+        },
+        isFeatureSelected(id) {
+            return this.currentPlan.feature_ids && this.currentPlan.feature_ids.includes(id);
+        },
+        toggleFeature(id) {
+            if (!this.currentPlan.feature_ids) this.currentPlan.feature_ids = [];
+            const idx = this.currentPlan.feature_ids.indexOf(id);
+            if (idx > -1) {
+                this.currentPlan.feature_ids.splice(idx, 1);
+            } else {
+                this.currentPlan.feature_ids.push(id);
             }
         }
     }">
@@ -69,7 +83,7 @@
                     </div>
 
                     {{-- Module Access Summary --}}
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <p class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Modules</p>
                         @if($plan->module_access && count($plan->module_access) > 0)
                             <div class="flex flex-wrap gap-1">
@@ -77,6 +91,24 @@
                                     <span
                                         class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{{ $mod }}</span>
                                 @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-400 italic">None</p>
+                        @endif
+                    </div>
+
+                    {{-- Features Summary --}}
+                    <div class="mb-4">
+                        <p class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1">Features</p>
+                        @if($plan->features->count() > 0)
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($plan->features->take(5) as $feat)
+                                    <span
+                                        class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">{{ $feat->name }}</span>
+                                @endforeach
+                                @if($plan->features->count() > 5)
+                                    <span class="text-xs text-gray-500">+{{ $plan->features->count() - 5 }} more</span>
+                                @endif
                             </div>
                         @else
                             <p class="text-sm text-gray-400 italic">None</p>
@@ -220,6 +252,55 @@
                             </div>
                         </div>
 
+                        {{-- Feature Access Section --}}
+                        <div class="mb-6">
+                            <h4
+                                class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wider">
+                                Feature Access</h4>
+                            <div class="max-h-64 overflow-y-auto space-y-4">
+                                @php $coreFeatures = $features->whereNull('module_id'); @endphp
+                                @if($coreFeatures->count())
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase">Core</p>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            @foreach($coreFeatures as $feature)
+                                                <label
+                                                    class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
+                                                    :class="isFeatureSelected({{ $feature->id }}) ? 'bg-purple-50 border-purple-300 dark:bg-purple-900/30 dark:border-purple-600' : ''">
+                                                    <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
+                                                        :checked="isFeatureSelected({{ $feature->id }})"
+                                                        @change="toggleFeature({{ $feature->id }})"
+                                                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                    <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                                @foreach($modules as $mod)
+                                    @php $modFeatures = $features->where('module_id', $mod->id); @endphp
+                                    @if($modFeatures->count())
+                                        <div>
+                                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase">{{ $mod->name }}</p>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                @foreach($modFeatures as $feature)
+                                                    <label
+                                                        class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
+                                                        :class="isFeatureSelected({{ $feature->id }}) ? 'bg-purple-50 border-purple-300 dark:bg-purple-900/30 dark:border-purple-600' : ''">
+                                                        <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
+                                                            :checked="isFeatureSelected({{ $feature->id }})"
+                                                            @change="toggleFeature({{ $feature->id }})"
+                                                            class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                        <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+
                         <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <button type="button" @click="editModalOpen = false"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">Cancel</button>
@@ -334,6 +415,49 @@
                             </div>
                         </div>
 
+                        {{-- Feature Access --}}
+                        <div class="mb-6">
+                            <h4
+                                class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wider">
+                                Feature Access</h4>
+                            <div class="max-h-64 overflow-y-auto space-y-4">
+                                @php $coreFeaturesCreate = $features->whereNull('module_id'); @endphp
+                                @if($coreFeaturesCreate->count())
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase">Core</p>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            @foreach($coreFeaturesCreate as $feature)
+                                                <label
+                                                    class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
+                                                    <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
+                                                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                    <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                                @foreach($modules as $mod)
+                                    @php $modFeaturesCreate = $features->where('module_id', $mod->id); @endphp
+                                    @if($modFeaturesCreate->count())
+                                        <div>
+                                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2 uppercase">{{ $mod->name }}</p>
+                                            <div class="grid grid-cols-2 gap-2">
+                                                @foreach($modFeaturesCreate as $feature)
+                                                    <label
+                                                        class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
+                                                        <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
+                                                            class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                        <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+
                         <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <button type="button" @click="createModalOpen = false"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">Cancel</button>
@@ -346,4 +470,4 @@
             </div>
         </div>
     </div>
-</x-dashboard.layout.default>
+    </x-dashboard.layout.default>

@@ -25,6 +25,12 @@
             </x-dashboard.common.sidebar-link>
         </li>
         <li>
+            <x-dashboard.common.sidebar-link url="{{ route('admin.features.index') }}">
+                <x-ui.svg.dashboard class="h-5 w-5" />
+                <span class="flex-1 ms-3 whitespace-nowrap">Features</span>
+            </x-dashboard.common.sidebar-link>
+        </li>
+        <li>
             <x-dashboard.common.sidebar-link url="{{ route('admin.coupons.index') }}">
                 <x-ui.svg.bill class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Coupons</span>

@@ -20,11 +20,13 @@ class Subscription extends Model
         'plan_type',
         'price',
         'module_access',
+        'feature_access',
     ];
 
     protected $casts = [
         'custom_limits' => 'array',
         'module_access' => 'array',
+        'feature_access' => 'array',
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'trial_ends_at' => 'datetime',
@@ -49,7 +51,7 @@ class Subscription extends Model
     public function isActive(): bool
     {
         return $this->status === 'active' &&
-               ($this->ends_at === null || $this->ends_at->isFuture());
+            ($this->ends_at === null || $this->ends_at->isFuture());
     }
 
     // Check if subscription has access to a module
@@ -92,7 +94,9 @@ class Subscription extends Model
         return $planLimits[$metric] ?? 0;
     }
 
-    // Record usage
+    /**
+     * Record usage for a metric.
+     */
     public function recordUsage(string $metric, int $quantity = 1): void
     {
         $usage = $this->usages()->firstOrCreate(
@@ -101,5 +105,32 @@ class Subscription extends Model
         );
 
         $usage->increment('used', $quantity);
+    }
+
+    /**
+     * Check if subscription has access to a feature.
+     */
+    public function hasFeatureAccess(string $featureSlug): bool
+    {
+        // Custom plan gets everything
+        if ($this->plan_type === 'custom' || ($this->plan && $this->plan->slug === 'custom')) {
+            return true;
+        }
+
+        // Check subscription-level override first
+        $featureAccess = $this->feature_access ?? [];
+        if (in_array($featureSlug, $featureAccess, true)) {
+            return true;
+        }
+
+        // Fall back to plan's features
+        if ($this->plan) {
+            return $this->plan->features()
+                ->where('slug', $featureSlug)
+                ->where('is_active', true)
+                ->exists();
+        }
+
+        return false;
     }
 }
