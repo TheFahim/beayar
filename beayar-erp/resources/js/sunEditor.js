@@ -167,6 +167,77 @@ const minimalEditorConfig = {
     }
 };
 
+// Configuration for SunEditor for Specifications (Clean, Minimal, Reduced Height)
+const specificationsEditorConfig = {
+    allowedClassNames: [
+        'bg-blue-900',
+        'text-white',
+        'font-bold',
+        'p-2',
+        'mb-4',
+        'list-disc',
+        'list-inside',
+        'text-sm',
+        'space-y-2',
+        'text-gray-700'
+    ].join('|'),
+    attributesWhitelist: {
+        all: 'style,class'
+    },
+    minWidth: '100%',
+    minHeight: '80px', // Reduced height (approx 1-2 rows)
+    plugins: plugins,
+    buttonList: [
+        ['undo', 'redo'],
+        ['bold', 'underline', 'italic'],
+        ['fontColor', 'hiliteColor'],
+        ['removeFormat'],
+        ['list'],
+        ['link'],
+        ['preview']
+    ],
+    fontSize: [8, 9, 10, 11, 12, 14, 16, 18, 20], // Limit font sizes to max 20px
+    defaultStyle: 'font-size: 14px;', // Default font size for pasted content
+    pasteTagsWhitelist: 'p|div|br|span|strong|b|em|i|u|s|a|ul|ol|li',
+    onPaste: function (e, cleanData, maxCharCount, core) {
+        // Prevent default paste behavior
+        e.preventDefault();
+
+        // Get clipboard data
+        const clipboardData = e.clipboardData || window.clipboardData;
+        let pastedData = clipboardData.getData('text/html') || clipboardData.getData('text/plain');
+
+        // Clean and normalize the pasted content
+        if (pastedData) {
+            // Remove all existing font-size styles and replace with 14px
+            pastedData = pastedData.replace(/font-size:\s*[^;]+;?/gi, '');
+            pastedData = pastedData.replace(/style\s*=\s*["']([^"']*?)["']/gi, function (match, styles) {
+                const cleanStyles = styles.replace(/font-size:\s*[^;]+;?/gi, '').trim();
+                const newStyles = cleanStyles ? `font-size: 14px; ${cleanStyles}` : 'font-size: 14px;';
+                return `style="${newStyles}"`;
+            });
+
+            // Add font-size to elements that don't have style attribute
+            pastedData = pastedData.replace(/<(p|div|span|h[1-6]|li)([^>]*?)>/gi, function (match, tag, attrs) {
+                if (!attrs.includes('style=')) {
+                    return `<${tag}${attrs} style="font-size: 14px;">`;
+                }
+                return match;
+            });
+
+            // If no HTML tags, wrap in paragraph with 14px font
+            if (!/<[^>]+>/.test(pastedData)) {
+                pastedData = `<p style="font-size: 14px;">${pastedData}</p>`;
+            }
+
+            // Insert the cleaned content
+            core.insertHTML(pastedData);
+        }
+
+        return false; // Prevent default paste
+    }
+};
+
 // Function to initialize editors for textareas
 function initializeEditors() {
     // Find all textareas that start with 'text-area'
@@ -175,9 +246,16 @@ function initializeEditors() {
     textareas.forEach(textarea => {
         if (!textarea.dataset.suneditorInitialized) {
             try {
+                let config = fullEditorConfig;
+
                 // Check if this is a terms and conditions textarea (quotations)
-                const isTermsAndConditions = textarea.name && textarea.name.includes('terms_conditions');
-                const config = isTermsAndConditions ? minimalEditorConfig : fullEditorConfig;
+                if (textarea.name && textarea.name.includes('terms_conditions')) {
+                    config = minimalEditorConfig;
+                }
+                // Check if this is a specifications textarea
+                else if (textarea.name && textarea.name.includes('specifications')) {
+                    config = specificationsEditorConfig;
+                }
 
                 const editor = suneditor.create(textarea, config);
 
