@@ -52,125 +52,113 @@
                         </button>
                     </div>
 
-                    {{-- Product name --}}
-                    <div x-data="{ isFocused: false }">
-                        <label :for="`product_name_${index}`"
-                            class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200"
-                            :class="{ 'text-blue-600 dark:text-blue-400': isFocused }">
-                            Product Name
-                        </label>
-                        <div class="relative">
-                            <input :id="`product_name_${index}`" :name="`products[${index}][name]`" type="text"
-                                x-model="product.name" required @focus="isFocused = true" @blur="isFocused = false"
-                                class="mt-1 block w-full rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-all duration-200"
-                                placeholder="Enter product name">
-                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-0 -z-10 blur transition-opacity duration-200"
-                                :class="{ 'opacity-20': isFocused }"></div>
-                        </div>
-                        @error('products.*.name')
-                            <p class="mt-2 text-sm text-red-600 flex items-center gap-1 animate-shake">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
-                    {{-- Image Selection --}}
-                    <div x-data="{ imageHovered: false }">
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                            Product Image
-                        </label>
-
-                        <div class="flex items-start gap-4">
-                            {{-- Image Preview --}}
-                            <div @mouseenter="imageHovered = true" @mouseleave="imageHovered = false"
-                                class="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-2xl overflow-hidden border-2 border-gray-300 dark:border-gray-600 flex-shrink-0 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 relative group">
-                                <template x-if="product.imageUrl">
-                                    <img :src="product.imageUrl"
-                                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                        alt="Selected image">
-                                </template>
-                                <template x-if="!product.imageUrl">
-                                    <div
-                                        class="w-full h-full flex flex-col items-center justify-center text-center text-sm text-gray-500 dark:text-gray-400 p-3">
-                                        <svg class="w-10 h-10 mb-2 text-gray-400 transition-transform duration-300"
-                                            :class="{ 'scale-125': imageHovered }" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                        <span>No image</span>
-                                    </div>
-                                </template>
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                </div>
+                    <div class="flex flex-col md:flex-row gap-6 items-start">
+                        {{-- Product Name Section --}}
+                        <div class="flex-1 w-full" x-data="{ isFocused: false }">
+                            <label :for="`product_name_${index}`"
+                                class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200"
+                                :class="{ 'text-blue-600 dark:text-blue-400': isFocused }">
+                                Product Name
+                            </label>
+                            <div class="relative group">
+                                <input :id="`product_name_${index}`" :name="`products[${index}][name]`" type="text"
+                                    x-model="product.name" required @focus="isFocused = true" @blur="isFocused = false"
+                                    class="block w-full rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-all duration-200"
+                                    placeholder="Enter product name">
+                                <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-0 -z-10 blur transition-opacity duration-200"
+                                    :class="{ 'opacity-20': isFocused }"></div>
                             </div>
+                            @error('products.*.name')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1 animate-shake">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
 
-                            <div class="flex-1 space-y-4">
-                                {{-- Hidden input for image_id --}}
-                                <input type="hidden" :name="`products[${index}][image_id]`"
-                                    :value="product.imageId">
+                        {{-- Product Image Section --}}
+                        <div class="w-full md:w-auto flex-shrink-0" x-data="{ imageHovered: false }">
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                Product Image
+                            </label>
 
-                                {{-- Library Selection Buttons --}}
-                                <div class="flex items-center gap-3 flex-wrap">
-                                    <button type="button" @click="openImageLibrary(index)"
-                                        class="group relative px-5 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden">
-                                        <span
-                                            class="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
-                                        <span class="relative flex items-center gap-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                            <div
+                                class="flex items-center gap-3 p-2 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-blue-400 dark:hover:border-blue-500 transition-colors duration-200">
+                                {{-- Image Preview (Compact) --}}
+                                <div @mouseenter="imageHovered = true" @mouseleave="imageHovered = false"
+                                    class="w-16 h-16 bg-white dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600 flex-shrink-0 shadow-sm relative group cursor-pointer"
+                                    @click="openImageLibrary(index)">
+                                    <template x-if="product.imageUrl">
+                                        <img :src="product.imageUrl"
+                                            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                            alt="Selected image">
+                                    </template>
+                                    <template x-if="!product.imageUrl">
+                                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                                 </path>
                                             </svg>
-                                            Choose from library
-                                        </span>
-                                    </button>
-                                    <button type="button" @click="clearSelectedImage(index)"
-                                        class="px-5 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-500 text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-lg">
-                                        Clear
-                                    </button>
+                                        </div>
+                                    </template>
+
+                                    {{-- Overlay with edit icon --}}
+                                    <div
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                            </path>
+                                        </svg>
+                                    </div>
                                 </div>
 
-                                {{-- Upload New Image Section --}}
-                                <div class="border-t-2 border-dashed border-gray-300 dark:border-gray-600 pt-4">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Or upload a
-                                            new one:</h4>
-                                        <button type="button"
-                                            @click="openUploadModal(index)"
-                                            class="group relative px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center gap-2 overflow-hidden">
-                                            <span
-                                                class="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
-                                            <svg class="w-5 h-5 relative transition-transform duration-300 group-hover:rotate-90"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {{-- Actions --}}
+                                <div class="flex-1 flex flex-col gap-1.5 min-w-0">
+                                    <input type="hidden" :name="`products[${index}][image_id]`" :value="product.imageId">
+
+                                    <div class="flex flex-col gap-1 w-fit">
+                                        <div class="flex gap-2">
+                                            <button type="button" @click="openImageLibrary(index)"
+                                                class="px-2 py-1 text-[10px] font-medium bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 transition-colors truncate">
+                                                Choose
+                                            </button>
+                                            <button type="button" @click="openUploadModal(index)"
+                                                class="px-2 py-1 text-[10px] font-medium bg-green-50 text-green-600 rounded-lg hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50 transition-colors truncate">
+                                                Upload
+                                            </button>
+                                        </div>
+                                        <button type="button" @click="clearSelectedImage(index)" x-show="product.imageUrl"
+                                            class="w-full px-2 py-1 text-[10px] font-medium text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex items-center justify-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 4v16m8-8H4"></path>
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
                                             </svg>
-                                            <span class="relative font-semibold">Upload Image</span>
+                                            Remove
                                         </button>
+                                    </div>
+                                    <div x-show="!product.imageUrl" class="text-[10px] text-gray-400 italic px-1">
+                                        No image
                                     </div>
                                 </div>
                             </div>
+                            @error('products.*.image_id')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
                         </div>
-
-                        @error('products.*.image_id')
-                            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
                     {{-- Specifications --}}
