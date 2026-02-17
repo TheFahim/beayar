@@ -19,14 +19,16 @@ class EnsureOnboardingComplete
         if (Auth::check()) {
             $user = Auth::user();
 
-            // Step 1: Check Subscription
-            if (! $user->subscription) {
+            // Step 1: Check Subscription or Membership
+            // If the user has a subscription (Owner) OR is a member of at least one company (Employee)
+            if (! $user->subscription && ! $user->companies()->exists()) {
                 if (! $request->routeIs('onboarding.plan') && ! $request->routeIs('onboarding.plan.store')) {
                     return redirect()->route('onboarding.plan');
                 }
             }
-            // Step 2: Check Company (only if subscription exists)
-            elseif (! $user->ownedCompanies()->exists() && ! $user->companies()->exists()) {
+            // Step 2: Check Company (only if subscription exists or skipped)
+            // If user has subscription but no owned company AND no member company
+            elseif ($user->subscription && ! $user->ownedCompanies()->exists() && ! $user->companies()->exists()) {
                 // Check if user is already attempting to create company
                 if (! $request->routeIs('onboarding.company') && ! $request->routeIs('onboarding.company.store')) {
                     return redirect()->route('onboarding.company');

@@ -13,7 +13,7 @@ class CompanyMemberService
     /**
      * Add a member to a company.
      */
-    public function addMember(TenantCompany $company, string $email, string $role = 'member', ?string $name = null): User
+    public function addMember(TenantCompany $company, string $email, string $role = 'member', ?string $name = null, ?string $password = null): User
     {
         // Check member limit
         if ($company->owner && $company->owner->subscription) {
@@ -40,7 +40,7 @@ class CompanyMemberService
             $user = User::create([
                 'name' => $name ?? explode('@', $email)[0],
                 'email' => $email,
-                'password' => Hash::make(Str::random(16)), // Random password
+                'password' => Hash::make($password ?? Str::random(16)),
                 // We might want to mark them as 'invited' or send an email here
             ]);
         }

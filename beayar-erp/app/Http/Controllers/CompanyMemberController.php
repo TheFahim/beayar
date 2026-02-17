@@ -65,6 +65,7 @@ class CompanyMemberController extends Controller
             'email' => 'required|email',
             'name' => 'nullable|string|max:255',
             'role' => 'required|in:company_admin,employee',
+            'password' => 'nullable|string|min:8',
         ]);
 
         $user = Auth::user();
@@ -80,7 +81,7 @@ class CompanyMemberController extends Controller
         // $this->authorize('create', [User::class, $company]);
 
         try {
-            $this->memberService->addMember($company, $request->email, $request->role, $request->name);
+            $this->memberService->addMember($company, $request->email, $request->role, $request->name, $request->password);
 
             return redirect()->back()->with('success', 'Member added successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {

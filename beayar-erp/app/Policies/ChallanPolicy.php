@@ -37,7 +37,7 @@ class ChallanPolicy
         $tenantId = Session::get('tenant_id');
         $role = $user->roleInCompany($tenantId);
 
-        return $user->isOwnerOf($tenantId) || in_array($role, ['admin', 'editor', 'member']);
+        return $user->isOwnerOf($tenantId) || in_array($role, ['company_admin', 'employee']);
     }
 
     /**
@@ -51,7 +51,7 @@ class ChallanPolicy
 
         $role = $user->roleInCompany($challan->tenant_company_id);
 
-        return $user->isOwnerOf($challan->tenant_company_id) || in_array($role, ['admin', 'editor']);
+        return $user->isOwnerOf($challan->tenant_company_id) || in_array($role, ['company_admin', 'employee']);
     }
 
     /**
@@ -65,6 +65,6 @@ class ChallanPolicy
 
         $role = $user->roleInCompany($challan->tenant_company_id);
 
-        return $user->isOwnerOf($challan->tenant_company_id) || $role === 'admin';
+        return $user->isOwnerOf($challan->tenant_company_id) || $role === 'company_admin';
     }
 }

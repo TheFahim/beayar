@@ -41,10 +41,10 @@
                 </li>
             </ul>
         </li>
-        @endrole
+        @endif
 
         {{-- Tenant Section --}}
-        @role('tenant_admin|company_admin|employee')
+        @if(Auth::user()->getCurrentCompanyId())
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                 <x-ui.svg.dashboard class="h-5 w-5" />
@@ -52,7 +52,7 @@
             </x-dashboard.common.sidebar-link>
         </li>
 
-        @if(Auth::user()->current_tenant_company_id && Auth::user()->isOwnerOf(Auth::user()->current_tenant_company_id))
+        @if(Auth::user()->getCurrentCompanyId() && Auth::user()->isOwnerOf(Auth::user()->getCurrentCompanyId()))
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.show') }}">
                     <x-ui.svg.company class="h-5 w-5" />
@@ -90,7 +90,7 @@
             </ul>
         </li>
 
-        @if(Auth::user()->current_tenant_company_id)
+        @if(Auth::user()->getCurrentCompanyId())
         @feature('customers.manage')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
@@ -146,7 +146,7 @@
         </li>
         @endfeature
 
-        @if(Auth::user()->current_tenant_company_id)
+        @if(Auth::user()->getCurrentCompanyId())
         @feature('images.library')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
@@ -163,17 +163,17 @@
                 <span class="flex-1 ms-3 whitespace-nowrap">Subscription</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        @endrole
+        @endif
 
         {{-- Fallback for development if no roles set --}}
-        @unlessrole('super_admin|tenant_admin|company_admin|employee')
+        @if(!Auth::user()->getCurrentCompanyId() && !Auth::user()->hasRole('super_admin'))
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                 <x-ui.svg.dashboard class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
+        @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
                     <x-ui.svg.customer class="h-5 w-5" />
@@ -181,7 +181,7 @@
                 </x-dashboard.common.sidebar-link>
             </li>
         @endif
-        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
+        @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
                     <x-ui.svg.image class="h-5 w-5" />
@@ -189,7 +189,7 @@
                 </x-dashboard.common.sidebar-link>
             </li>
         @endif
-        @if(Auth::user()->subscription && Auth::user()->current_tenant_company_id)
+        @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('admin.dashboard') }}">
                     <x-ui.svg.admin-settings class="h-5 w-5" />
@@ -197,7 +197,7 @@
                 </x-dashboard.common.sidebar-link>
             </li>
         @endif
-        @endunlessrole
+        @endif
 
     </ul>
 </x-dashboard.common.sidebar-wrapper>

@@ -37,7 +37,7 @@ class QuotationPolicy
         $tenantId = Session::get('tenant_id');
         $role = $user->roleInCompany($tenantId);
 
-        return $user->isOwnerOf($tenantId) || in_array($role, ['admin', 'editor', 'member']);
+        return $user->isOwnerOf($tenantId) || in_array($role, ['company_admin', 'employee']);
     }
 
     /**
@@ -51,7 +51,7 @@ class QuotationPolicy
 
         $role = $user->roleInCompany($quotation->tenant_company_id);
 
-        return $user->isOwnerOf($quotation->tenant_company_id) || in_array($role, ['admin', 'editor']);
+        return $user->isOwnerOf($quotation->tenant_company_id) || in_array($role, ['company_admin', 'employee']);
     }
 
     /**
@@ -65,6 +65,6 @@ class QuotationPolicy
 
         $role = $user->roleInCompany($quotation->tenant_company_id);
 
-        return $user->isOwnerOf($quotation->tenant_company_id) || $role === 'admin';
+        return $user->isOwnerOf($quotation->tenant_company_id) || $role === 'company_admin';
     }
 }

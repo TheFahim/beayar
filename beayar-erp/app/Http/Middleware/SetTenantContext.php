@@ -27,7 +27,9 @@ class SetTenantContext
                 if ($company) {
                     Session::put('tenant_id', $company->id);
                 }
-            } else {
+            }
+
+            if (Session::has('tenant_id')) {
                 // Verify access
                 $tenantId = Session::get('tenant_id');
                 // Check if user is owner OR member
@@ -39,6 +41,9 @@ class SetTenantContext
 
                     return redirect()->route('tenant.dashboard')->with('error', 'You do not have access to this company context.');
                 }
+
+                // Sync session context to user instance for consistent access
+                $user->current_tenant_company_id = $tenantId;
             }
         }
 

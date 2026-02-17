@@ -81,37 +81,70 @@ class User extends Authenticatable
     }
 
     // Subscription Helpers
+    public function getCurrentCompanyId()
+    {
+        return $this->current_tenant_company_id ?? session('tenant_id');
+    }
+
+    public function getEffectiveSubscription()
+    {
+        // 1. If user is owner, they have subscription directly (via Tenant)
+        if ($this->subscription) {
+            return $this->subscription;
+        }
+
+        // 2. If user is employee, use current company's owner's subscription
+        $companyId = $this->getCurrentCompanyId();
+
+        if ($companyId) {
+            $company = TenantCompany::find($companyId);
+            if ($company && $company->owner && $company->owner->subscription) {
+                return $company->owner->subscription;
+            }
+        }
+
+        return null;
+    }
+
     public function canPerformAction(string $metric): bool
     {
-        if (! $this->subscription) {
+        $subscription = $this->getEffectiveSubscription();
+
+        if (! $subscription) {
             return false;
         }
 
-        return $this->subscription->isActive() && $this->subscription->checkLimit($metric);
+        return $subscription->isActive() && $subscription->checkLimit($metric);
     }
 
     public function hasModuleAccess(string $module): bool
     {
-        if (! $this->subscription) {
+        $subscription = $this->getEffectiveSubscription();
+
+        if (! $subscription) {
             return false;
         }
 
-        return $this->subscription->hasModuleAccess($module);
+        return $subscription->hasModuleAccess($module);
     }
 
     public function recordActionUsage(string $metric, int $quantity = 1): void
     {
-        if ($this->subscription) {
-            $this->subscription->recordUsage($metric, $quantity);
+        $subscription = $this->getEffectiveSubscription();
+
+        if ($subscription) {
+            $subscription->recordUsage($metric, $quantity);
         }
     }
 
     public function hasFeatureAccess(string $feature): bool
     {
-        if (! $this->subscription) {
+        $subscription = $this->getEffectiveSubscription();
+
+        if (! $subscription) {
             return false;
         }
 
-        return $this->subscription->hasFeatureAccess($feature);
+        return $subscription->hasFeatureAccess($feature);
     }
 }
