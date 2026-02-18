@@ -386,8 +386,8 @@
                                     :name="'quotation_products[' + index + '][foreign_currency_buying]'"
                                     x-model.number="row.foreign_currency_buying" placeholder="0.0000"
                                     x-bind:id="'foreign-currency-buying-' + index"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white {{ $disabledClass }}"
-                                    @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" />
                                 <div x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'"
                                     class="text-xs text-gray-500 mt-1">
                                     <span
@@ -405,8 +405,8 @@
                                     :name="'quotation_products[' + index + '][bdt_buying]'"
                                     x-model.number="row.bdt_buying" placeholder="0.00"
                                     x-bind:id="'bdt-buying-' + index"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white {{ $disabledClass }}"
-                                    @input="calculateBdtToForeignEquivalent(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    @input="calculateBdtToForeignEquivalent(index); calculateTotals()" />
                                 <div class="absolute top-0 right-0 -mt-1 -mr-1"
                                     x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'">
                                     <span
@@ -425,7 +425,7 @@
                             </div>
 
                             {{-- Weight Field (Relocated) --}}
-                            <div>
+                            <div class="{{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Weight (kg)
                                 </label>
@@ -440,7 +440,7 @@
                             </div>
 
                             {{-- Air/Sea Freight Rate --}}
-                            <div>
+                            <div class="{{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Air/Sea Freight Rate
                                     <span x-show="quotation_revision.type === 'via'">
@@ -455,7 +455,7 @@
                             </div>
 
                             {{-- Air/Sea Freight Total --}}
-                            <div class="relative">
+                            <div class="relative {{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Air/Sea Freight Total
                                     <span class="text-blue-500 cursor-help">ⓘ</span>
@@ -480,7 +480,7 @@
                             </div>
 
                             {{-- Tax Percentage --}}
-                            <div>
+                            <div class="{{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Tax (%) / VAT-TAX
                                 </label>
@@ -492,7 +492,7 @@
                             </div>
 
                             {{-- Tax Amount (Auto-calculated) --}}
-                            <div class="relative">
+                            <div class="relative {{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Tax Amount
                                     <span class="text-blue-500 cursor-help">ⓘ</span>
@@ -510,7 +510,7 @@
                             </div>
 
                             {{-- ATT Percentage --}}
-                            <div>
+                            <div class="{{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     AIT (%)
                                 </label>
@@ -522,7 +522,7 @@
                             </div>
 
                             {{-- ATT Amount (Auto-calculated) --}}
-                            <div class="relative">
+                            <div class="relative {{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     AIT Amount
                                     <span class="text-blue-500 cursor-help">ⓘ</span>
@@ -540,7 +540,7 @@
                             </div>
 
                             {{-- Margin Percentage --}}
-                            <div>
+                            <div class="{{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Margin (%)
                                 </label>
@@ -552,7 +552,7 @@
                             </div>
 
                             {{-- Margin Value (Auto-calculated) --}}
-                            <div class="relative">
+                            <div class="relative {{ $disabledClass }}">
                                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Margin Value
                                     <span class="text-blue-500 cursor-help">ⓘ</span>

@@ -56,6 +56,7 @@
     // Pass configuration to Alpine component
     window.quotationFormConfig = {
         mode: 'create',
+        hasPriceCalculator: {{ auth()->user()->currentCompany->hasFeature('module_price_calculator') ? 'true' : 'false' }},
         // Old values from Laravel
         oldQuotation: {
             quotation_no: @json(old('quotation.quotation_no', '')),

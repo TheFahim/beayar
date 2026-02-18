@@ -227,6 +227,12 @@ class QuotationService
      */
     public function syncRevisionProducts(QuotationRevision $revision, array $productsData): void
     {
+        $hasPriceCalculator = true;
+        $user = Auth::user();
+        if ($user && $user->currentCompany) {
+             $hasPriceCalculator = $user->currentCompany->hasFeature('module_price_calculator');
+        }
+
         // Collect existing product IDs from payload
         $payloadIds = collect($productsData)
             ->map(fn ($p) => $p['id'] ?? null)
@@ -242,6 +248,20 @@ class QuotationService
         }
 
         foreach ($productsData as $productData) {
+            if (!$hasPriceCalculator) {
+                // Keep Foreign/BDT and Final Price (unit_price)
+                // Zero out restricted calculation fields
+                $productData['weight'] = 0;
+                $productData['air_sea_freight_rate'] = 0;
+                $productData['air_sea_freight'] = 0;
+                $productData['tax_percentage'] = 0;
+                $productData['tax'] = 0;
+                $productData['att_percentage'] = 0;
+                $productData['att'] = 0;
+                $productData['margin'] = 0;
+                $productData['margin_value'] = 0;
+            }
+
             $fillable = $this->buildProductFillable($productData);
 
             if (isset($productData['id'])) {
