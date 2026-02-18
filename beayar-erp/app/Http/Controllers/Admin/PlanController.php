@@ -38,9 +38,7 @@ class PlanController extends Controller
             'module_access' => $validated['module_access'] ?? [],
         ]);
 
-        if ($request->has('feature_ids')) {
-            $plan->features()->sync($request->input('feature_ids', []));
-        }
+        $this->syncPlanFeatures($plan, $request);
 
         activity()
             ->performedOn($plan)
@@ -64,9 +62,7 @@ class PlanController extends Controller
             'module_access' => $validated['module_access'] ?? [],
         ]);
 
-        if ($request->has('feature_ids')) {
-            $plan->features()->sync($request->input('feature_ids', []));
-        }
+        $this->syncPlanFeatures($plan, $request);
 
         activity()
             ->performedOn($plan)
@@ -81,9 +77,10 @@ class PlanController extends Controller
         $request->validate([
             'feature_ids' => 'nullable|array',
             'feature_ids.*' => 'exists:features,id',
+            'feature_limits' => 'nullable|array',
         ]);
 
-        $plan->features()->sync($request->input('feature_ids', []));
+        $this->syncPlanFeatures($plan, $request);
 
         activity()
             ->performedOn($plan)
@@ -91,6 +88,27 @@ class PlanController extends Controller
             ->log('synced plan features');
 
         return back()->with('success', 'Plan features updated successfully.');
+    }
+
+    private function syncPlanFeatures(Plan $plan, Request $request): void
+    {
+        $features = $request->input('feature_ids', []);
+        $limits = $request->input('feature_limits', []);
+        $syncData = [];
+
+        foreach ($features as $featureId) {
+            $config = null;
+            // Check if there is a limit for this feature
+            if (isset($limits[$featureId]) && $limits[$featureId] !== null) {
+                // Ensure limit is an integer
+                $config = ['limit' => (int) $limits[$featureId]];
+            }
+            
+            // We store the config as an array, which will be cast to JSON by the PlanFeature pivot model
+            $syncData[$featureId] = ['config' => $config];
+        }
+
+        $plan->features()->sync($syncData);
     }
 
     public function destroy(Plan $plan): RedirectResponse

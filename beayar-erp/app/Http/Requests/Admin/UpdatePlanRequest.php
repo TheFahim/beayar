@@ -28,6 +28,10 @@ class UpdatePlanRequest extends FormRequest
             'limits.employees' => 'nullable|integer|min:-1',
             'module_access' => 'nullable|array',
             'module_access.*' => 'string|exists:modules,slug',
+            'feature_ids' => 'nullable|array',
+            'feature_ids.*' => 'exists:features,id',
+            'feature_limits' => 'nullable|array',
+            'feature_limits.*' => 'nullable|integer|min:-1',
         ];
     }
 

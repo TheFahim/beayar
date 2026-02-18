@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,7 +22,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::if('feature', function (string $feature) {
-            return auth()->check() && auth()->user()->hasFeatureAccess($feature);
+            $user = Auth::user();
+            if (!$user) {
+                return false;
+            }
+
+            // Use currentCompany if available and it has the trait method
+            if ($user->currentCompany && method_exists($user->currentCompany, 'hasFeature')) {
+                return $user->currentCompany->hasFeature($feature);
+            }
+
+            // Fallback to user method if available (legacy support)
+            if (method_exists($user, 'hasFeatureAccess')) {
+                return $user->hasFeatureAccess($feature);
+            }
+
+            return false;
         });
     }
 }
