@@ -369,185 +369,243 @@
                             </button>
                         </div>
 
-                        {{-- Basic Price Fields (Always Visible) --}}
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            {{-- Foreign Currency Buying --}}
-                            <div class="relative">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                    <span x-text="getForeignCurrencyLabel()"></span>
-                                </label>
+                        {{-- Basic Price Fields (Shown when NOT advanced) --}}
+                        <template x-if="!showAdvanced">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                {{-- Foreign Currency Buying --}}
                                 <div class="relative">
-                                    <input type="number" step="0.0001"
-                                        :name="'quotation_products[' + index + '][foreign_currency_buying]'"
-                                        x-model.number="row.foreign_currency_buying" placeholder="0.0000"
-                                        class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
-                                        @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" />
-                                    <div x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'"
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                                        <span x-text="quotation_revision.currency"></span>
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <span x-text="getForeignCurrencyLabel()"></span>
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" step="0.0001"
+                                            :name="'quotation_products[' + index + '][foreign_currency_buying]'"
+                                            x-model.number="row.foreign_currency_buying" placeholder="0.0000"
+                                            class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
+                                            @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" />
+                                        <div x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'"
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                                            <span x-text="quotation_revision.currency"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- BDT Equivalent --}}
+                                <div class="relative">
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        BDT Equivalent
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][bdt_buying]'"
+                                            x-model.number="row.bdt_buying" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
+                                            @input="calculateBdtToForeignEquivalent(index); calculateTotals()" />
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                                            BDT
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Final Unit Price --}}
+                                <div class="relative">
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        Final Unit Price
+                                    </label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][unit_price]'"
+                                            @if($hasPriceCalculator)
+                                                x-bind:value="format2(row.unit_price)"
+                                                readonly
+                                            @else
+                                                x-model.number="row.unit_price"
+                                            @endif
+                                            placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 dark:bg-green-900/20 dark:border-green-800 dark:text-green-100 font-semibold text-green-700 transition-colors"
+                                            @input="calculateTotals()" />
                                     </div>
                                 </div>
                             </div>
+                        </template>
 
-                            {{-- BDT Equivalent --}}
-                            <div class="relative">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                    BDT Equivalent
-                                </label>
-                                <div class="relative">
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][bdt_buying]'"
-                                        x-model.number="row.bdt_buying" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
-                                        @input="calculateBdtToForeignEquivalent(index); calculateTotals()" />
-                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                                        BDT
+                        {{-- Advanced Fields (Shown when advanced) --}}
+                        <template x-if="showAdvanced">
+                            <div x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 -translate-y-2"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-2"
+                                class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-4 mb-4">
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {{-- 1. USD (Foreign Currency) --}}
+                                    <div class="relative">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            <span x-text="getForeignCurrencyLabel()"></span>
+                                        </label>
+                                        <div class="relative">
+                                            <input type="number" step="0.0001"
+                                                :name="'quotation_products[' + index + '][foreign_currency_buying]'"
+                                                x-model.number="row.foreign_currency_buying" placeholder="0.0000"
+                                                class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
+                                                @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" />
+                                            <div x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'"
+                                                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                                                <span x-text="quotation_revision.currency"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- 2. BDT Equivalent --}}
+                                    <div class="relative">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            BDT Equivalent
+                                        </label>
+                                        <div class="relative">
+                                            <input type="number" step="0.01"
+                                                :name="'quotation_products[' + index + '][bdt_buying]'"
+                                                x-model.number="row.bdt_buying" placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
+                                                @input="calculateBdtToForeignEquivalent(index); calculateTotals()" />
+                                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                                                BDT
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- 3. Weight Field --}}
+                                    <div class="{{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Weight (kg)
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][weight]'" x-model.number="row.weight"
+                                            placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateAirSeaFreight(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 4. Air/Sea Freight Rate --}}
+                                    <div class="{{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Freight Rate
+                                            <span x-show="quotation_revision.type === 'via'" class="normal-case">
+                                                (<span x-text="getForeignCurrencyLabel()"></span>)
+                                            </span>
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][air_sea_freight_rate]'"
+                                            x-model.number="row.air_sea_freight_rate" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateAirSeaFreight(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 5. Air/Sea Freight Total --}}
+                                    <div class="relative {{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Freight Total
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][air_sea_freight]'"
+                                            x-bind:value="format2(row.air_sea_freight)" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-colors {{ $disabledClass }}"
+                                            readonly />
+                                    </div>
+
+                                    {{-- 6. Tax Percentage --}}
+                                    <div class="{{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Tax (%) / VAT
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][tax_percentage]'"
+                                            x-model.number="row.tax_percentage" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateTaxAmount(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 7. Tax Amount --}}
+                                    <div class="relative {{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Tax Amount
+                                        </label>
+                                        <input type="number" step="0.01" :name="'quotation_products[' + index + '][tax]'"
+                                            x-model.number="row.tax" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateTaxPercentage(index); calculateUnitPrice(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 8. AIT Percentage --}}
+                                    <div class="{{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            AIT (%)
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][att_percentage]'"
+                                            x-model.number="row.att_percentage" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateAttAmount(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 9. AIT Amount --}}
+                                    <div class="relative {{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            AIT Amount
+                                        </label>
+                                        <input type="number" step="0.01" :name="'quotation_products[' + index + '][att]'"
+                                            x-model.number="row.att" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateAttPercentage(index); calculateUnitPrice(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 10. Margin Percentage --}}
+                                    <div class="{{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Margin (%)
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][margin]'" x-model.number="row.margin"
+                                            placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateMarginValue(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 11. Margin Value --}}
+                                    <div class="relative {{ $disabledClass }}">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Margin Value
+                                        </label>
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][margin_value]'"
+                                            x-model.number="row.margin_value" placeholder="0.00"
+                                            class="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-colors {{ $disabledClass }}"
+                                            @input="calculateMarginPercentage(index); calculateTotals()" {{ $readonlyAttr }} />
+                                    </div>
+
+                                    {{-- 12. Final Unit Price --}}
+                                    <div class="relative">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Final Unit Price (BDT)
+                                        </label>
+                                        <div class="relative">
+                                            <input type="number" step="0.01"
+                                                :name="'quotation_products[' + index + '][unit_price]'"
+                                                @if($hasPriceCalculator)
+                                                    x-bind:value="format2(row.unit_price)"
+                                                    readonly
+                                                @else
+                                                    x-model.number="row.unit_price"
+                                                @endif
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 dark:bg-green-900/20 dark:border-green-800 dark:text-green-100 font-semibold text-green-700 transition-colors"
+                                                @input="calculateTotals()" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- Final Unit Price --}}
-                            <div class="relative">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                    Final Unit Price
-                                </label>
-                                <div class="relative">
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][unit_price]'"
-                                        @if($hasPriceCalculator)
-                                            x-bind:value="format2(row.unit_price)"
-                                            readonly
-                                        @else
-                                            x-model.number="row.unit_price"
-                                        @endif
-                                        placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 dark:bg-green-900/20 dark:border-green-800 dark:text-green-100 font-semibold text-green-700 transition-colors"
-                                        @input="calculateTotals()" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Advanced Fields (Collapsible) --}}
-                        <div x-show="showAdvanced"
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 -translate-y-2"
-                            x-transition:enter-end="opacity-100 translate-y-0"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 translate-y-0"
-                            x-transition:leave-end="opacity-0 -translate-y-2"
-                            class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-4 mb-4">
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                {{-- Weight Field --}}
-                                <div class="{{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Weight (kg)
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][weight]'" x-model.number="row.weight"
-                                        placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateAirSeaFreight(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- Air/Sea Freight Rate --}}
-                                <div class="{{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Freight Rate
-                                        <span x-show="quotation_revision.type === 'via'" class="normal-case">
-                                            (<span x-text="getForeignCurrencyLabel()"></span>)
-                                        </span>
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][air_sea_freight_rate]'"
-                                        x-model.number="row.air_sea_freight_rate" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateAirSeaFreight(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- Air/Sea Freight Total --}}
-                                <div class="relative {{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Freight Total
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][air_sea_freight]'"
-                                        x-bind:value="format2(row.air_sea_freight)" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-colors {{ $disabledClass }}"
-                                        readonly />
-                                </div>
-
-                                {{-- Tax Percentage --}}
-                                <div class="{{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Tax (%) / VAT
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][tax_percentage]'"
-                                        x-model.number="row.tax_percentage" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateTaxAmount(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- Tax Amount --}}
-                                <div class="relative {{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Tax Amount
-                                    </label>
-                                    <input type="number" step="0.01" :name="'quotation_products[' + index + '][tax]'"
-                                        x-model.number="row.tax" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateTaxPercentage(index); calculateUnitPrice(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- AIT Percentage --}}
-                                <div class="{{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        AIT (%)
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][att_percentage]'"
-                                        x-model.number="row.att_percentage" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateAttAmount(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- AIT Amount --}}
-                                <div class="relative {{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        AIT Amount
-                                    </label>
-                                    <input type="number" step="0.01" :name="'quotation_products[' + index + '][att]'"
-                                        x-model.number="row.att" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateAttPercentage(index); calculateUnitPrice(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- Margin Percentage --}}
-                                <div class="{{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Margin (%)
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][margin]'" x-model.number="row.margin"
-                                        placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateMarginValue(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-
-                                {{-- Margin Value --}}
-                                <div class="relative {{ $disabledClass }}">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        Margin Value
-                                    </label>
-                                    <input type="number" step="0.01"
-                                        :name="'quotation_products[' + index + '][margin_value]'"
-                                        x-model.number="row.margin_value" placeholder="0.00"
-                                        class="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-colors {{ $disabledClass }}"
-                                        @input="calculateMarginPercentage(index); calculateTotals()" {{ $readonlyAttr }} />
-                                </div>
-                            </div>
-                        </div>
+                        </template>
                     </div>
 
                     {{-- Line Total Display --}}
