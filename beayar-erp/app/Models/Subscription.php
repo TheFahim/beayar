@@ -112,8 +112,14 @@ class Subscription extends Model
      */
     public function hasFeatureAccess(string $featureSlug): bool
     {
-        // Custom plan gets everything
-        if ($this->plan_type === 'custom' || ($this->plan && $this->plan->slug === 'custom')) {
+        // Custom, Pro, and Pro Plus plans get everything
+        $unlimitedPlans = ['custom', 'pro', 'pro-plus'];
+        
+        if (in_array($this->plan_type, $unlimitedPlans)) {
+            return true;
+        }
+
+        if ($this->plan && in_array($this->plan->slug, $unlimitedPlans)) {
             return true;
         }
 

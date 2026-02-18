@@ -24,40 +24,14 @@ trait HasSubscriptionFeatures
     {
         // Eager load subscription and plan features if not already loaded to avoid N+1
         // However, in a trait method, we usually rely on what's available or lazy load.
-        
+
         $subscription = $this->tenant->subscription;
 
         if (!$subscription) {
             return false;
         }
 
-        // 1. Check Subscription Overrides (if any)
-        if (isset($subscription->feature_access[$featureSlug])) {
-            return $subscription->feature_access[$featureSlug];
-        }
-
-        // 2. Check Plan Features
-        // We need to check if the plan has this feature.
-        // Assuming subscription->plan is loaded or we load it.
-        $plan = $subscription->plan;
-        
-        if (!$plan) {
-            return false;
-        }
-
-        // Check if the feature exists in the plan's features
-        // We use the relation 'features' on the Plan model
-        // To optimize, we should probably check the loaded relation if available, 
-        // otherwise query it.
-        
-        // For performance, we might want to cache this or use the loaded relation.
-        // If 'features' relation is loaded:
-        if ($plan->relationLoaded('features')) {
-            return $plan->features->contains('slug', $featureSlug);
-        }
-
-        // If not loaded, we can query existence efficiently
-        return $plan->features()->where('slug', $featureSlug)->exists();
+        return $subscription->hasFeatureAccess($featureSlug);
     }
 
     /**
@@ -86,7 +60,7 @@ trait HasSubscriptionFeatures
 
         // We need to get the config from the pivot table for this feature
         // Ideally we should eagerly load plans.features
-        
+
         $feature = null;
         if ($plan->relationLoaded('features')) {
             $feature = $plan->features->firstWhere('slug', $featureSlug);

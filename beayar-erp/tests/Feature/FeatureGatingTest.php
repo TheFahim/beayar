@@ -12,22 +12,30 @@ uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     $this->plan = Plan::create([
-        'name' => 'Pro Plan',
-        'slug' => 'pro',
-        'base_price' => 49,
+        'name' => 'Free Plan',
+        'slug' => 'free',
+        'base_price' => 0,
         'billing_cycle' => 'monthly',
-        'description' => 'Pro plan for testing',
+        'description' => 'Free plan for testing',
     ]);
 
     $this->user = User::factory()->create();
     $this->tenant = Tenant::create(['user_id' => $this->user->id, 'name' => 'Test Tenant']);
+    $this->company = \App\Models\TenantCompany::create([
+        'tenant_id' => $this->tenant->id,
+        'owner_id' => $this->user->id,
+        'name' => 'Test Company',
+    ]);
+
+    $this->user->current_tenant_company_id = $this->company->id;
+    $this->user->save();
 
     $this->subscription = Subscription::create([
         'user_id' => $this->user->id,
         'tenant_id' => $this->tenant->id,
         'plan_id' => $this->plan->id,
         'status' => 'active',
-        'price' => 49,
+        'price' => 0,
         'starts_at' => now(),
     ]);
 
@@ -65,6 +73,31 @@ test('custom plan gets access to all features', function () {
     $this->subscription->update(['plan_type' => 'custom']);
 
     expect($this->user->fresh()->hasFeatureAccess('anything'))->toBeTrue();
+});
+
+test('pro plan gets access to all features', function () {
+    Feature::create(['name' => 'Anything', 'slug' => 'anything', 'is_active' => true]);
+
+    // Create a pro plan
+    $proPlan = Plan::create([
+        'name' => 'Pro Plan',
+        'slug' => 'pro',
+        'base_price' => 49,
+        'billing_cycle' => 'monthly',
+        'description' => 'Pro plan',
+    ]);
+
+    // Update subscription to use Pro plan
+    $this->subscription->update([
+        'plan_id' => $proPlan->id,
+        'plan_type' => 'pro'
+    ]);
+
+    // Refresh relationships
+    $this->user->refresh();
+
+    // Even though feature is not attached to plan, Pro should have access
+    expect($this->user->hasFeatureAccess('anything'))->toBeTrue();
 });
 
 test('user without subscription is denied', function () {

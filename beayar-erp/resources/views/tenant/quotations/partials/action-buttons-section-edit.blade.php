@@ -2,28 +2,37 @@
     <div class="flex justify-between">
         <div class="flex gap-3 mx-5">
             @if (!$hasAnyChallan && !$hasAnyBill)
-                <button type="button" @click="saveQuotation('revision');"
-                    class="group relative px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg hover:shadow-green-500/50 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300 dark:from-green-600 dark:to-green-700 dark:hover:shadow-green-600/50 dark:focus:ring-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 ease-in-out"
-                    :disabled="isSubmitting">
-                    <span class="flex items-center">
-                        <svg x-show="!isSubmitting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                @if(auth()->user()->currentCompany->hasFeature('quotations.revisions'))
+                    <button type="button" @click="saveQuotation('revision');"
+                        class="group relative px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg hover:shadow-green-500/50 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300 dark:from-green-600 dark:to-green-700 dark:hover:shadow-green-600/50 dark:focus:ring-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 ease-in-out"
+                        :disabled="isSubmitting">
+                        <span class="flex items-center">
+                            <svg x-show="!isSubmitting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span x-text="isSubmitting ? 'Saving...' : 'New Revision'"></span>
+                        </span>
+                        <span
+                            class="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+                    </button>
+                @else
+                    <span class="px-5 py-2.5 text-xs font-medium text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400 rounded-lg flex items-center cursor-not-allowed" title="Revisions not available in your plan">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
-                        <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
-                            viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                        <span x-text="isSubmitting ? 'Saving...' : 'New Revision'"></span>
+                        Revision Locked
                     </span>
-                    <span
-                        class="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
-                </button>
+                @endif
             @endif
             @if (!$loadRevision->is_active && !$hasAnyChallan && !$hasAnyBill)
                 <a href="{{ route('tenant.quotations.revisions.activate', $loadRevision->id) }}"

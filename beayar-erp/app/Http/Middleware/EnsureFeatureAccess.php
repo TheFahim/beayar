@@ -18,16 +18,19 @@ class EnsureFeatureAccess
     {
         $user = $request->user();
 
-        if (!$user || !$user->currentTenant) {
+        if (!$user || !$user->currentCompany) {
             // If no user or no tenant context, deny access or redirect
             return redirect()->route('login')->with('error', 'Authentication required.');
         }
 
-        if (!$user->currentTenant->hasFeature($feature)) {
+        if (!$user->currentCompany->hasFeature($feature)) {
             // You might want to redirect to a specific 'upgrade' page
             // or return a 403 Forbidden response.
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Feature not included in your plan.'], 403);
+                return response()->json([
+                    'message' => 'Feature not included in your plan.',
+                    'feature' => $feature,
+                ], 403);
             }
 
             return redirect()->back()->with('error', 'Feature not included in your plan. Please upgrade.');

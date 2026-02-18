@@ -252,6 +252,15 @@ class QuotationController extends Controller
      */
     private function handleNewRevisionFromUpdate(Request $request, Quotation $quotation)
     {
+        $user = $request->user();
+
+        // Check for Quotation Revisions feature restriction
+        if ($user && $user->currentCompany && !$user->currentCompany->hasFeature('quotations.revisions')) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Creating quotation revisions is not available in your current plan. Please upgrade.');
+        }
+
         // Check for Import Quotation restriction for new revision
         if ($request->input('quotation_revision.type') === 'via') {
             $user = $request->user();
