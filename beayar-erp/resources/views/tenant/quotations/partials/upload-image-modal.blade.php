@@ -39,8 +39,8 @@
             <div class="modal-body p-6 max-h-[70vh] overflow-auto" id="modal-image-grid-container">
                 <div id="modal-image-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <template x-for="image in images" :key="image.id">
-                        <div class="group relative border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden image-item shadow-md hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:border-blue-400 dark:hover:border-blue-500"
-                            :data-id="image.id">
+                        <div class="group relative border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden image-item shadow-md hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer"
+                            :data-id="image.id" @click="select(image)">
                             <div class="relative overflow-hidden">
                                 <img :src="image.path"
                                     class="w-full h-36 object-cover transition-transform duration-500 group-hover:scale-110"
