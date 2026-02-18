@@ -11,6 +11,7 @@ enum FeatureEnum: string
     case MODULE_HRM = 'module_hrm';
     case MODULE_POS = 'module_pos';
     case MODULE_IMPORT_QUOTATION = 'module_import_quotation';
+    case MODULE_PRICE_CALCULATOR = 'module_price_calculator';
 
     // Limits (Numeric)
     case LIMIT_USERS = 'limit_users';
