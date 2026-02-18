@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Enums\FeatureEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuotationRequest;
 use App\Http\Requests\QuotationRevisionRequest;
@@ -18,6 +19,7 @@ use App\Services\QuotationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class QuotationController extends Controller
 {
@@ -72,6 +74,19 @@ class QuotationController extends Controller
      */
     public function store(QuotationRequest $request)
     {
+        // Check for Import Quotation restriction
+        if ($request->input('quotation_revision.type') === 'via') {
+            $user = $request->user();
+            if ($user && $user->currentCompany && !$user->currentCompany->hasFeature(FeatureEnum::MODULE_IMPORT_QUOTATION->value)) {
+                if ($request->wantsJson()) {
+                    return response()->json(['message' => 'Import Quotation feature is not available in your current plan.'], 403);
+                }
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Import Quotation feature is not available in your current plan. Please upgrade.');
+            }
+        }
+
         try {
             $quotation = $this->quotationService->createQuotation($request->validated());
             $revisionNo = $quotation->getActiveRevision()?->revision_no ?? 'R00';
@@ -203,6 +218,16 @@ class QuotationController extends Controller
             return redirect()->back()->with('error', 'Cannot modify quotation because it has associated bills.');
         }
 
+        // Check for Import Quotation restriction
+        if ($request->input('quotation_revision.type') === 'via') {
+            $user = $request->user();
+            if ($user && $user->currentCompany && !$user->currentCompany->hasFeature(FeatureEnum::MODULE_IMPORT_QUOTATION->value)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Import Quotation feature is not available in your current plan. Please upgrade.');
+            }
+        }
+
         // Handle new revision creation
         if ($request->quotation_revision['new_revision'] ?? false) {
             return $this->handleNewRevisionFromUpdate($request, $quotation);
@@ -227,6 +252,16 @@ class QuotationController extends Controller
      */
     private function handleNewRevisionFromUpdate(Request $request, Quotation $quotation)
     {
+        // Check for Import Quotation restriction for new revision
+        if ($request->input('quotation_revision.type') === 'via') {
+            $user = $request->user();
+            if ($user && $user->currentCompany && !$user->currentCompany->hasFeature(FeatureEnum::MODULE_IMPORT_QUOTATION->value)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Import Quotation feature is not available in your current plan. Please upgrade.');
+            }
+        }
+
         $validatedData = $request->validate([
             'quotation.customer_id' => 'required|exists:customers,id',
             'quotation.quotation_no' => 'required|string|max:255',
@@ -242,7 +277,7 @@ class QuotationController extends Controller
 
         // Validate revision data using QuotationRevisionRequest rules manually
         $revisionRequest = new QuotationRevisionRequest;
-        $validator = \Validator::make($request->all(), $revisionRequest->rules());
+        $validator = Validator::make($request->all(), $revisionRequest->rules());
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();

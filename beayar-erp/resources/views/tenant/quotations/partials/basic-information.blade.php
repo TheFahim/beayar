@@ -4,8 +4,24 @@
             <x-ui.form.simple-select name="quotation_revision[type]" x-model="quotation_revision.type" label="Type"
                 class="w-full px-1.5 text-xs" @change="onQuotationTypeChange()" required>
                 <option value="normal">Normal Quotation</option>
-                <option value="via">Import Quotation</option>
+                @feature('module_import_quotation')
+                    <option value="via">Import Quotation</option>
+                @else
+                    <option value="via" disabled>Import Quotation (Upgrade Required)</option>
+                @endfeature
             </x-ui.form.simple-select>
+            
+            @unless(auth()->user()->currentCompany->hasFeature('module_import_quotation'))
+                <div class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                    <a href="{{ route('tenant.subscription.index') }}" class="flex items-center hover:underline">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        Upgrade plan to unlock Import Quotations
+                    </a>
+                </div>
+            @endunless
+
             <div x-show="quotation_revision.type === 'via'" class="text-xs text-blue-600 dark:text-blue-400 mt-1">
                 <span class="flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
