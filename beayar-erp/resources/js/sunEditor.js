@@ -189,10 +189,10 @@ const specificationsEditorConfig = {
     plugins: plugins,
     buttonList: [
         ['undo', 'redo'],
+        ['align', 'horizontalRule', 'list', 'lineHeight'],
         ['bold', 'underline', 'italic'],
         ['fontColor', 'hiliteColor'],
         ['removeFormat'],
-        ['list'],
         ['link'],
         ['preview']
     ],

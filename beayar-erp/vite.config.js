@@ -8,6 +8,26 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-
-
+    build: {
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('suneditor') || id.includes('katex')) {
+                            return 'editor-vendor';
+                        }
+                        if (id.includes('apexcharts')) {
+                            return 'charts-vendor';
+                        }
+                        if (id.includes('exceljs')) {
+                            return 'excel-vendor';
+                        }
+                        
+                        return 'vendor';
+                    }
+                }
+            }
+        }
+    }
 });
