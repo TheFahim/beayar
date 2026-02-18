@@ -39,17 +39,15 @@
 
                     {{-- Product Base Information Section --}}
                     <div class="px-4 pb-3">
-                        <div class="flex items-center gap-2 mb-3">
-                            <div class="w-1 h-6 bg-blue-500 rounded-full"></div>
-                            <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200">Product Base Information
-                            </h4>
+                        <div class="mb-3 flex items-center gap-2">
+                             <div class="w-1 h-5 bg-blue-500 rounded-full"></div>
+                             <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Product Information</h4>
                         </div>
 
-                        <div
-                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                            {{-- 1. Product Selection with Create Option --}}
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <div class="grid grid-cols-12 gap-4 border border-gray-200 dark:border-gray-700 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
+                            {{-- 1. Product Selection --}}
+                            <div class="col-span-12 md:col-span-4">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Product <span class="text-red-500">*</span>
                                 </label>
                                 <div class="flex gap-2">
@@ -62,51 +60,41 @@
                                             imageField="image" imagePath="path" :perPage="20"
                                             @option-selected="handleProductSelection($event, index)" />
                                     </div>
-                                    {{-- <button type="button" @click="openCreateProductModal(index)"
-                                        class="flex-shrink-0 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap"
-                                        title="Create new product">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 4v16m8-8H4"></path>
-                                        </svg>
-                                        <span>New</span>
-                                    </button> --}}
                                     <a href="{{ route('tenant.products.create') }}" target="_blank"
-                                        class="flex-shrink-0 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg flex items-center gap-1.5 text-xs font-semibold whitespace-nowrap"
+                                        class="flex-shrink-0 px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 dark:text-gray-300 rounded-lg transition-all duration-200 flex items-center justify-center shadow-sm"
                                         title="Create new product">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 4v16m8-8H4"></path>
                                         </svg>
-                                        <span>New</span>
                                     </a>
                                 </div>
                             </div>
 
                             {{-- 2. Size --}}
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Size
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][size]'"
-                                    x-model="row.size" placeholder="Product Size"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    x-model="row.size" placeholder="Size"
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                             {{-- 3. Specification --}}
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-3">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Specification
                                 </label>
                                 <div class="relative">
                                     <button type="button" @click="openSpecificationModal(index)"
-                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                                        class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-left flex items-center justify-between hover:bg-white dark:hover:bg-gray-600 transition-colors"
                                         :class="row.specification_id ? 'text-gray-900 dark:text-white' :
-                                            'text-gray-500 dark:text-gray-400'"
+                                            'text-gray-400'"
                                         :title="getSelectedSpecificationText(row) || 'Select specification'">
                                         <span class="truncate flex-1"
                                             x-html="getSelectedSpecificationSummary(row)"></span>
-                                        <svg class="w-4 h-4 ml-2 flex-shrink-0" fill="none" stroke="currentColor"
+                                        <svg class="w-4 h-4 ml-2 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 9l-7 7-7-7"></path>
@@ -117,237 +105,234 @@
                                         :value="row.specification_id" />
 
                                     <div x-show="row.specifications && row.specifications.length > 0"
-                                        class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                        class="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-sm">
                                         <span x-text="row.specifications ? row.specifications.length : 0"></span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="space-y-4">
-                                <div class="flex items-end gap-4">
-                                    <div class="flex-1">
-                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Brand/Origin
-                                        </label>
-                                        <div x-data="brandOriginSearchableSelect({
-                                            value: row.brand_origin_id,
-                                            endpoint: '{{ route('tenant.brand-origins.search') }}'
-                                        })" x-init="init" class="relative"
-                                            @click.away="open = false">
+                            {{-- 3. Brand/Origin --}}
+                            <div class="col-span-12 md:col-span-3">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                    Brand/Origin
+                                </label>
+                                <div x-data="brandOriginSearchableSelect({
+                                    value: row.brand_origin_id,
+                                    endpoint: '{{ route('tenant.brand-origins.search') }}'
+                                })" x-init="init" class="relative"
+                                    @click.away="open = false">
 
-                                            {{-- Hidden input for form submission --}}
-                                            <input type="hidden"
-                                                :name="'quotation_products[' + index + '][brand_origin_id]'"
-                                                x-bind:value="selectedValue">
+                                    {{-- Hidden input for form submission --}}
+                                    <input type="hidden"
+                                        :name="'quotation_products[' + index + '][brand_origin_id]'"
+                                        x-bind:value="selectedValue">
 
-                                            {{-- Visible search input --}}
-                                            <div class="relative">
-                                                <input type="text" x-model="searchTerm" @focus="open = true"
-                                                    @input.debounce.300ms="filterOptions" placeholder="Search Brand..."
-                                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                    required>
-                                                {{-- Dropdown Arrow --}}
-                                                <div
-                                                    class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
-                                                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                                        aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none" viewBox="0 0 20 20">
-                                                        <path stroke="currentColor" stroke-linecap="round"
-                                                            stroke-linejoin="round" stroke-width="2"
-                                                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-
-                                            <div x-show="open" x-transition:enter="transition ease-out duration-200"
-                                                x-transition:enter-start="opacity-0 transform scale-95"
-                                                x-transition:enter-end="opacity-100 transform scale-100"
-                                                x-transition:leave="transition ease-in duration-150"
-                                                x-transition:leave-start="opacity-100 transform scale-100"
-                                                x-transition:leave-end="opacity-0 transform scale-95"
-                                                class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-xl border-2 border-gray-200 dark:border-gray-600 overflow-hidden"
-                                                style="display: none;">
-
-                                                {{-- Scrollable container with max height --}}
-                                                <div class="max-h-60 overflow-y-auto relative">
-                                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                                        <template x-if="loading">
-                                                            <li
-                                                                class="px-4 py-3 text-gray-500 flex items-center gap-2">
-                                                                <svg class="w-4 h-4 animate-spin" fill="none"
-                                                                    viewBox="0 0 24 24">
-                                                                    <circle class="opacity-25" cx="12"
-                                                                        cy="12" r="10" stroke="currentColor"
-                                                                        stroke-width="4"></circle>
-                                                                    <path class="opacity-75" fill="currentColor"
-                                                                        d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                                    </path>
-                                                                </svg>
-                                                                Loading brand origins...
-                                                            </li>
-                                                        </template>
-                                                        <template x-if="!loading && filteredOptions.length === 0">
-                                                            <li class="px-4 py-3 text-gray-500">
-                                                                No brand origins found.
-                                                                <button type="button" @click="openModal"
-                                                                    class="text-green-600 hover:text-green-800 font-medium hover:underline">Add
-                                                                    new brand origin</button>
-                                                            </li>
-                                                        </template>
-                                                        <template x-for="(option, index) in filteredOptions"
-                                                            :key="option.id">
-                                                            <li
-                                                                class="px-4 py-3 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-200 group">
-                                                                <div class="flex items-center justify-between">
-                                                                    <div @click="selectOption(option)" class="flex-1">
-                                                                        <div class="font-medium text-gray-900 dark:text-white"
-                                                                            x-text="option.name">
-                                                                        </div>
-                                                                        <div class="text-xs text-gray-500 dark:text-gray-400"
-                                                                            x-text="option.address"
-                                                                            x-show="option.address">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div
-                                                                        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                                        <!-- Edit Button -->
-                                                                        <button type="button"
-                                                                            @click="editBrandOrigin(option)"
-                                                                            class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors duration-200"
-                                                                            title="Edit company">
-                                                                            <svg class="w-4 h-4" fill="none"
-                                                                                stroke="currentColor"
-                                                                                viewBox="0 0 24 24">
-                                                                                <path stroke-linecap="round"
-                                                                                    stroke-linejoin="round"
-                                                                                    stroke-width="2"
-                                                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                                                </path>
-                                                                            </svg>
-                                                                        </button>
-                                                                        <!-- Delete Button -->
-                                                                        <button type="button"
-                                                                            @click="deleteBrandOrigin(option)"
-                                                                            class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200"
-                                                                            title="Delete company">
-                                                                            <svg class="w-4 h-4" fill="none"
-                                                                                stroke="currentColor"
-                                                                                viewBox="0 0 24 24">
-                                                                                <path stroke-linecap="round"
-                                                                                    stroke-linejoin="round"
-                                                                                    stroke-width="2"
-                                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                                                </path>
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </li>
-                                                        </template>
-
-                                                        {{-- Spacer to make room for fixed button when there are more than 3 items --}}
-                                                        <template x-if="filteredOptions.length > 3">
-                                                            <li class="h-14"></li>
-                                                        </template>
-                                                    </ul>
-                                                </div>
-
-                                                {{-- Fixed Create Brand Origin Button - appears after 3 records --}}
-                                                <div x-show="!loading && filteredOptions.length > 3"
-                                                    class="absolute bottom-0 left-0 right-0 border-t-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
-                                                    <button type="button"
-                                                        @click="$dispatch('open-brand-origin-modal')"
-                                                        class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                                        </svg>
-                                                        Add new brand origin
-                                                    </button>
-                                                </div>
-
-                                                {{-- Regular Create Brand Origin Button - shows when 3 or fewer items --}}
-                                                <div x-show="!loading && filteredOptions.length <= 3 && filteredOptions.length > 0"
-                                                    class="border-t-2 border-gray-200 dark:border-gray-600">
-                                                    <button type="button"
-                                                        @click="$dispatch('open-brand-origin-modal')"
-                                                        class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                                        </svg>
-                                                        Add new brand origin
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {{-- Add this additional CSS at the bottom of your file if not already present --}}
-
+                                    {{-- Visible search input --}}
+                                    <div class="relative">
+                                        <input type="text" x-model="searchTerm" @focus="open = true"
+                                            @input.debounce.300ms="filterOptions" placeholder="Search Brand..."
+                                            class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
+                                            required>
+                                        {{-- Dropdown Arrow --}}
+                                        <div
+                                            class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-400"
+                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 20 20">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"
+                                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                            </svg>
                                         </div>
-                                        @error('brand_origin_id')
-                                            <p class="text-xs text-red-500 font-semibold mt-1 flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
                                     </div>
+
+                                    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 transform scale-95"
+                                        x-transition:enter-end="opacity-100 transform scale-100"
+                                        x-transition:leave="transition ease-in duration-150"
+                                        x-transition:leave-start="opacity-100 transform scale-100"
+                                        x-transition:leave-end="opacity-0 transform scale-95"
+                                        class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-xl border-2 border-gray-200 dark:border-gray-600 overflow-hidden"
+                                        style="display: none;">
+
+                                        {{-- Scrollable container with max height --}}
+                                        <div class="max-h-60 overflow-y-auto relative">
+                                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+                                                <template x-if="loading">
+                                                    <li
+                                                        class="px-4 py-3 text-gray-500 flex items-center gap-2">
+                                                        <svg class="w-4 h-4 animate-spin" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12"
+                                                                cy="12" r="10" stroke="currentColor"
+                                                                stroke-width="4"></circle>
+                                                            <path class="opacity-75" fill="currentColor"
+                                                                d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                            </path>
+                                                        </svg>
+                                                        Loading brand origins...
+                                                    </li>
+                                                </template>
+                                                <template x-if="!loading && filteredOptions.length === 0">
+                                                    <li class="px-4 py-3 text-gray-500">
+                                                        No brand origins found.
+                                                        <button type="button" @click="openModal"
+                                                            class="text-green-600 hover:text-green-800 font-medium hover:underline">Add
+                                                            new brand origin</button>
+                                                    </li>
+                                                </template>
+                                                <template x-for="(option, index) in filteredOptions"
+                                                    :key="option.id">
+                                                    <li
+                                                        class="px-4 py-3 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-200 group">
+                                                        <div class="flex items-center justify-between">
+                                                            <div @click="selectOption(option)" class="flex-1">
+                                                                <div class="font-medium text-gray-900 dark:text-white"
+                                                                    x-text="option.name">
+                                                                </div>
+                                                                <div class="text-xs text-gray-500 dark:text-gray-400"
+                                                                    x-text="option.address"
+                                                                    x-show="option.address">
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                                <!-- Edit Button -->
+                                                                <button type="button"
+                                                                    @click="editBrandOrigin(option)"
+                                                                    class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors duration-200"
+                                                                    title="Edit company">
+                                                                    <svg class="w-4 h-4" fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            stroke-width="2"
+                                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </button>
+                                                                <!-- Delete Button -->
+                                                                <button type="button"
+                                                                    @click="deleteBrandOrigin(option)"
+                                                                    class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200"
+                                                                    title="Delete company">
+                                                                    <svg class="w-4 h-4" fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            stroke-width="2"
+                                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                                        </path>
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </template>
+
+                                                {{-- Spacer to make room for fixed button when there are more than 3 items --}}
+                                                <template x-if="filteredOptions.length > 3">
+                                                    <li class="h-14"></li>
+                                                </template>
+                                            </ul>
+                                        </div>
+
+                                        {{-- Fixed Create Brand Origin Button - appears after 3 records --}}
+                                        <div x-show="!loading && filteredOptions.length > 3"
+                                            class="absolute bottom-0 left-0 right-0 border-t-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
+                                            <button type="button"
+                                                @click="$dispatch('open-brand-origin-modal')"
+                                                class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                                Add new brand origin
+                                            </button>
+                                        </div>
+
+                                        {{-- Regular Create Brand Origin Button - shows when 3 or fewer items --}}
+                                        <div x-show="!loading && filteredOptions.length <= 3 && filteredOptions.length > 0"
+                                            class="border-t-2 border-gray-200 dark:border-gray-600">
+                                            <button type="button"
+                                                @click="$dispatch('open-brand-origin-modal')"
+                                                class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                                Add new brand origin
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Add this additional CSS at the bottom of your file if not already present --}}
+
                                 </div>
+                                @error('brand_origin_id')
+                                    <p class="text-xs text-red-500 font-semibold mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
 
                             {{-- 4. Additional Specification --}}
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-3">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Additional Specification
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][add_spec]'"
                                     x-model="row.add_spec" placeholder="Additional specification details..."
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                             {{-- 5. Delivery Time --}}
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Delivery Time
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][delivery_time]'"
                                     x-model="row.delivery_time" placeholder="e.g., 3-4 weeks"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                             {{-- 6. Unit --}}
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Unit
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][unit]'"
                                     x-model="row.unit" placeholder="Unit"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                             {{-- 7. Quantity --}}
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Quantity
                                 </label>
                                 <input type="number" :name="'quotation_products[' + index + '][quantity]'"
                                     x-model.number="row.quantity" placeholder="1" min="1"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
                                     @input="onQuantityChange(index)" />
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <div class="col-span-12 md:col-span-3">
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Requ/PR No.
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][requision_no]'"
-                                    x-model.number="row.requision_no" placeholder="" min="1"
-                                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    x-model.number="row.requision_no" placeholder=""
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
                                 />
                             </div>
 

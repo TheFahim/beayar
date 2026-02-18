@@ -46,7 +46,7 @@ export default {
   },
 
   updateAllBdtBuyingValues() {
-    this.addVisualFeedback('currency-section', 'bg-blue-200 dark:bg-blue-900/30 border-2 border-blue-400', 2000);
+    // this.addVisualFeedback('currency-section', 'bg-blue-200 dark:bg-blue-900/30 border-2 border-blue-400', 2000);
 
     this.quotation_products.forEach((row, index) => {
       const currency = this.quotation_revision.currency;
