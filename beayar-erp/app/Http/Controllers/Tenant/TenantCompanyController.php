@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use App\Models\TenantCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TenantCompanyController extends Controller
 {
@@ -40,6 +41,7 @@ class TenantCompanyController extends Controller
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $user = Auth::user();
@@ -62,6 +64,11 @@ class TenantCompanyController extends Controller
             }
         }
 
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('companies/logos', 'public');
+        }
+
         $company = TenantCompany::create([
             'tenant_id' => $tenant->id,
             'owner_id' => $user->id,
@@ -69,6 +76,7 @@ class TenantCompanyController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
+            'logo' => $logoPath,
             'organization_type' => TenantCompany::TYPE_INDEPENDENT,
             'status' => 'active',
         ]);
@@ -131,14 +139,24 @@ class TenantCompanyController extends Controller
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $company->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
-        ]);
+        ];
+
+        if ($request->hasFile('logo')) {
+            if ($company->logo) {
+                Storage::disk('public')->delete($company->logo);
+            }
+            $data['logo'] = $request->file('logo')->store('companies/logos', 'public');
+        }
+
+        $company->update($data);
 
         return redirect()->route('tenant.user-companies.index')->with('success', 'Company updated successfully.');
     }
@@ -155,9 +173,9 @@ class TenantCompanyController extends Controller
         if ($company->owner_id !== $user->id) {
             abort(403, 'Unauthorized action. Only the owner can delete the company.');
         }
-        
+
         $company->delete();
-        
+
         // If the user was currently in this company, handle session/context
         if (session('tenant_id') == $id) {
             session()->forget('tenant_id');

@@ -179,3 +179,4 @@ Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('a
     Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
     Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
 });
+

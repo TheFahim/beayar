@@ -109,7 +109,7 @@ class QuotationController extends Controller
     {
         $this->authorizeQuotation($quotation);
 
-        $quotation->load(['customer', 'customer.customerCompany']);
+        $quotation->load(['customer', 'customer.customerCompany', 'company']);
 
         $activeRevision = $quotation->getActiveRevision();
         if ($activeRevision) {

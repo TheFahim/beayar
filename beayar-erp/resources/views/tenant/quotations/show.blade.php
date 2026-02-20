@@ -54,7 +54,7 @@
                     transform: translate(-50%, -50%) rotate(-45deg);
                     width: 70vmin;
                     height: 70vmin;
-                    background: url("{{ asset('assets/images/logo.png') }}") center/contain no-repeat;
+                    background: url("{{ $quotation->company && $quotation->company->logo ? asset('storage/' . $quotation->company->logo) : asset('assets/images/logo.png') }}") center/contain no-repeat;
                     opacity: 0.06;
                     z-index: 0;
                     pointer-events: none;
@@ -220,17 +220,30 @@
                                         {{-- Header --}}
                                         <div class="flex justify-between items-start gap-3">
                                             <div class="flex gap-4 items-center">
-                                                <img src="{{ asset('assets/images/logo.png') }}" alt="Company Logo"
-                                                    class="h-20 w-auto" />
+                                                @if($quotation->company && $quotation->company->logo)
+                                                    <img src="{{ asset('storage/' . $quotation->company->logo) }}" alt="{{ $quotation->company->name }}"
+                                                        class="h-20 w-auto" />
+                                                @else
+                                                    <img src="{{ asset('assets/images/logo.png') }}" alt="{{ $quotation->company->name ?? 'Company Logo' }}"
+                                                        class="h-20 w-auto" />
+                                                @endif
                                             </div>
                                             <div class="leading-tight text-right">
-                                                <div class="text-xs text-gray-600">Malek Mansion (Ground), 128 Motijheel
-                                                    C/A, Dhaka-1000
-                                                </div>
-                                                <div class="text-xs text-gray-600">ataur@optimech.com.bd,
-                                                    ataur.optimech@gmail.com</div>
-                                                <div class="text-xs text-gray-600">+8801841176747, +8801712117558</div>
-                                                <div class="text-xs text-gray-600">www.optimech.com.bd</div>
+                                                @if($quotation->company)
+                                                    <div class="text-sm font-bold text-gray-800">{{ $quotation->company->name }}</div>
+                                                    <div class="text-xs text-gray-600 whitespace-pre-line">{{ $quotation->company->address }}</div>
+                                                    @if($quotation->company->email)
+                                                        <div class="text-xs text-gray-600">{{ $quotation->company->email }}</div>
+                                                    @endif
+                                                    @if($quotation->company->phone)
+                                                        <div class="text-xs text-gray-600">{{ $quotation->company->phone }}</div>
+                                                    @endif
+                                                    @if($quotation->company->bin_no)
+                                                        <div class="text-xs text-gray-600">BIN: {{ $quotation->company->bin_no }}</div>
+                                                    @endif
+                                                @else
+                                                    <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
@@ -623,10 +636,10 @@
             $preparedProducts = [];
             $products = $activeRevision->products;
             $count = count($products);
-            
+
             $prevSpecId = null;
             $prevImagePath = null;
-            
+
             for ($i = 0; $i < $count; $i++) {
                 $p = $products[$i];
                 $item = [
@@ -642,13 +655,13 @@
                     'image_url' => $p->product->image->path ?? null ? asset($p->product->image->path) : null,
                     'unit_price' => $p->unit_price,
                     'total' => $p->unit_price * $p->quantity,
-                    
+
                     'skip_spec' => false,
                     'spec_rowspan' => 1,
                     'skip_image' => false,
                     'image_rowspan' => 1,
                 ];
-                
+
                 // Spec Logic
                 if ($prevSpecId !== $p->specification_id) {
                     $rowspan = 1;
@@ -664,7 +677,7 @@
                 } else {
                     $item['skip_spec'] = true;
                 }
-                
+
                 // Image Logic
                 $currentImagePath = $p->product->image->path ?? null;
                 if ($prevImagePath !== $currentImagePath) {
@@ -682,7 +695,7 @@
                 } else {
                     $item['skip_image'] = true;
                 }
-                
+
                 $preparedProducts[] = $item;
             }
 
