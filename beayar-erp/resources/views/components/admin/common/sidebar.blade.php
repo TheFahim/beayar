@@ -36,5 +36,11 @@
                 <span class="flex-1 ms-3 whitespace-nowrap">Coupons</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        <li>
+            <x-dashboard.common.sidebar-link url="{{ route('admin.permissions.index') }}">
+                <x-ui.svg.admin-settings class="h-5 w-5" />
+                <span class="flex-1 ms-3 whitespace-nowrap">Permissions</span>
+            </x-dashboard.common.sidebar-link>
+        </li>
     </ul>
 </x-dashboard.common.sidebar-wrapper>

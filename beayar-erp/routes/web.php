@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FeatureController as AdminFeatureController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
+use App\Http\Controllers\Admin\PermissionController as AdminPermissionController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\TenantController as AdminTenantController;
 use App\Http\Controllers\Api\V1\CompanyController;
@@ -182,5 +183,11 @@ Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('a
     Route::get('/coupons', [AdminCouponController::class, 'index'])->name('coupons.index');
     Route::post('/coupons', [AdminCouponController::class, 'store'])->name('coupons.store');
     Route::delete('/coupons/{coupon}', [AdminCouponController::class, 'destroy'])->name('coupons.destroy');
+
+    // Permissions
+    Route::get('/permissions', [AdminPermissionController::class, 'index'])->name('permissions.index');
+    Route::post('/permissions', [AdminPermissionController::class, 'store'])->name('permissions.store');
+    Route::put('/permissions/{permission}', [AdminPermissionController::class, 'update'])->name('permissions.update');
+    Route::delete('/permissions/{permission}', [AdminPermissionController::class, 'destroy'])->name('permissions.destroy');
 });
 
