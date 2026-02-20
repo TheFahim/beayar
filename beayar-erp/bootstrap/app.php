@@ -25,6 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'ensure.operational' => \App\Http\Middleware\EnsureOperationalCompany::class,
             'company.role' => \App\Http\Middleware\CheckCompanyRole::class,
             'feature' => \App\Http\Middleware\EnsureFeatureAccess::class,
+            'tenant.role.scope' => \App\Http\Middleware\TenantRoleScopeMiddleware::class,
+        ]);
+
+        $middleware->web(append: [
+            \App\Http\Middleware\TenantRoleScopeMiddleware::class,
         ]);
 
         $middleware->redirectGuestsTo(function (Request $request) {

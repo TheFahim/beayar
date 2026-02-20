@@ -242,19 +242,19 @@ class OnboardingController extends Controller
                 'is_active' => true,
             ]);
 
-            // Assign Spatie Role
-            $guardName = config('auth.defaults.guard');
-            Role::findOrCreate('tenant_admin', $guardName);
-            if (! $user->hasRole('tenant_admin')) {
-                $user->assignRole('tenant_admin');
-            }
-
             // Set current context
             $user->current_tenant_company_id = $company->id;
             $user->save();
 
             // Set session
             session(['tenant_id' => $company->id]);
+
+            // Assign Spatie Role
+            $guardName = config('auth.defaults.guard');
+            Role::findOrCreate('tenant_admin', $guardName);
+            if (! $user->hasRole('tenant_admin')) {
+                $user->assignRole('tenant_admin');
+            }
 
             DB::commit();
 

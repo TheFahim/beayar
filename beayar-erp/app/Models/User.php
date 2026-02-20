@@ -87,6 +87,14 @@ class User extends Authenticatable
         return $this->current_tenant_company_id ?? session('tenant_id');
     }
 
+    /**
+     * Get the team ID for Spatie Permissions.
+     */
+    public function getPermissionsTeamId()
+    {
+        return $this->getCurrentCompanyId();
+    }
+
     public function getEffectiveSubscription()
     {
         // 1. If user is owner, they have subscription directly (via Tenant)

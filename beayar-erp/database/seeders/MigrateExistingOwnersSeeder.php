@@ -32,10 +32,15 @@ class MigrateExistingOwnersSeeder extends Seeder
                         'updated_at' => now(),
                     ]);
 
-                    // Also assign Spatie Role 'tenant_admin' globally to the owner
+                    // Also assign Spatie Role 'tenant_admin' to the owner for this company
                     $user = \App\Models\User::find($company->owner_id);
-                    if ($user && ! $user->hasRole('tenant_admin')) {
-                        $user->assignRole('tenant_admin');
+                    if ($user) {
+                        // Set the team context for Spatie
+                        $user->current_tenant_company_id = $company->id;
+                        
+                        if (! $user->hasRole('tenant_admin')) {
+                            $user->assignRole('tenant_admin');
+                        }
                     }
                 }
             }
