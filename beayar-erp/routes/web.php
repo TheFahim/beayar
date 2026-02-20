@@ -68,6 +68,10 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     // User Companies (Workspaces)
     Route::resource('user-companies', \App\Http\Controllers\Tenant\TenantCompanyController::class)->names('tenant.user-companies');
 
+    // Role Management
+    Route::resource('roles', \App\Http\Controllers\Tenant\TenantRoleController::class)->names('tenant.roles');
+    Route::post('/roles/assign', [\App\Http\Controllers\Tenant\TenantRoleController::class, 'assignRole'])->name('tenant.roles.assign');
+
     // Billing Routes
     Route::get('/bills/search', [BillController::class, 'search'])->name('tenant.bills.search');
     Route::get('/bills/data', [BillController::class, 'getBillingData'])->name('tenant.bills.data');

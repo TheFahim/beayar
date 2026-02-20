@@ -249,6 +249,9 @@ class OnboardingController extends Controller
             // Set session
             session(['tenant_id' => $company->id]);
 
+            // Set Spatie Team ID global context
+            setPermissionsTeamId($company->id);
+
             // Assign Spatie Role
             $guardName = config('auth.defaults.guard');
             Role::findOrCreate('tenant_admin', $guardName);

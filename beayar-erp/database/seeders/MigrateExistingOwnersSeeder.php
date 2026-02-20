@@ -37,6 +37,7 @@ class MigrateExistingOwnersSeeder extends Seeder
                     if ($user) {
                         // Set the team context for Spatie
                         $user->current_tenant_company_id = $company->id;
+                        setPermissionsTeamId($company->id);
                         
                         if (! $user->hasRole('tenant_admin')) {
                             $user->assignRole('tenant_admin');

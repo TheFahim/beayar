@@ -87,6 +87,13 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Team Members</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
+                @if(Auth::user()->isOwnerOf(Auth::user()->getCurrentCompanyId()))
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.roles.index') }}" class="pl-12">
+                        <span class="flex-1 ms-3 whitespace-nowrap">Roles & Permissions</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                @endif
             </ul>
         </li>
 

@@ -12,6 +12,23 @@ use Illuminate\Validation\ValidationException;
 
 class TenantRoleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $user = Auth::user();
+            if (!$user) {
+                abort(401);
+            }
+            
+            // Check if user is owner OR has tenant_admin role within the current context
+            // Note: tenant_admin role is assigned to owners upon creation.
+            if (!$user->isOwnerOf($user->current_tenant_company_id) && !$user->hasRole('tenant_admin')) {
+                 abort(403, 'Unauthorized action. Only tenant owners can manage roles.');
+            }
+            return $next($request);
+        });
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -38,8 +55,7 @@ class TenantRoleController extends Controller
     public function create()
     {
         // Fetch all global permissions (created by Super Admin)
-        // Assuming permissions are global and don't have team_id
-        $permissions = Permission::whereNull('tenant_company_id')->get();
+        $permissions = Permission::all();
 
         return view('tenant.roles.create', compact('permissions'));
     }
@@ -72,9 +88,7 @@ class TenantRoleController extends Controller
         ]);
 
         // Sync Permissions
-        if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
-        }
+        $role->syncPermissions($request->input('permissions', []));
 
         return redirect()->route('tenant.roles.index')->with('success', 'Role created successfully.');
     }
@@ -85,7 +99,7 @@ class TenantRoleController extends Controller
     public function edit(string $id)
     {
         $role = Role::where('id', $id)->where('tenant_company_id', Auth::user()->current_tenant_company_id)->firstOrFail();
-        $permissions = Permission::whereNull('tenant_company_id')->get();
+        $permissions = Permission::all();
         
         return view('tenant.roles.edit', compact('role', 'permissions'));
     }
@@ -110,9 +124,8 @@ class TenantRoleController extends Controller
 
         $role->update(['name' => $request->name]);
 
-        if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
-        }
+        // Sync permissions (if empty, it will remove all permissions)
+        $role->syncPermissions($request->input('permissions', []));
 
         return redirect()->route('tenant.roles.index')->with('success', 'Role updated successfully.');
     }
