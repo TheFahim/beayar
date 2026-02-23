@@ -23,18 +23,21 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($companies as $company)
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col group relative">
+                @php
+                    $isActive = Auth::user()->current_tenant_company_id == $company->id;
+                @endphp
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border {{ $isActive ? 'border-blue-500 ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900' : 'border-gray-200 dark:border-gray-700' }} hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col group relative">
                     
-                    @if(Auth::user()->current_user_company_id == $company->id)
+                    @if($isActive)
                         <div class="absolute top-0 right-0 mt-4 mr-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800">
-                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                                Active
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shadow-sm">
+                                <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-1.5 animate-pulse"></span>
+                                Current Workspace
                             </span>
                         </div>
                     @endif
 
-                    <div class="p-6 flex-1">
+                    <div class="p-6 flex-1 {{ $isActive ? 'bg-blue-50/10 dark:bg-blue-900/10' : '' }}">
                         <div class="flex items-start gap-4 mb-4">
                             <div class="shrink-0">
                                 <img class="h-14 w-14 rounded-xl object-cover bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600" 
@@ -66,7 +69,7 @@
                     </div>
 
                     <div class="bg-gray-50 dark:bg-gray-800/50 px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex items-center gap-3">
-                        @if(Auth::user()->current_user_company_id != $company->id)
+                        @if(!$isActive)
                             <form action="{{ route('companies.switch', $company->id) }}" method="POST" class="flex-1">
                                 @csrf
                                 <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 transition-colors shadow-sm">

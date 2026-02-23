@@ -258,10 +258,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <select name="roles[]" multiple class="hidden" x-model="selected">
-                                    <template x-for="option in options" :key="option.value">
-                                        <option :value="option.value" x-text="option.label"></option>
-                                    </template>
+                                <!-- Hidden inputs for form submission -->
+                                <select name="roles[]" multiple class="sr-only" x-model="selected">
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
