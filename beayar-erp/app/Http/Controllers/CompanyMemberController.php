@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
+use Spatie\Permission\Models\Role;
+
 class CompanyMemberController extends Controller
 {
     protected $memberService;
@@ -38,8 +40,27 @@ class CompanyMemberController extends Controller
         // $this->authorize('viewAny', [User::class, $company]);
 
         $members = $company->members()->get();
+
+        // Load roles for each member
+        setPermissionsTeamId($company->id);
+        $members->each(function($member) {
+            $member->load('roles');
+        });
+
+        // Get all available roles for this tenant (or global roles)
+        // Global roles have team_id = null. Tenant roles have team_id = $company->id
+        // We want roles that are either global OR specific to this tenant.
+        // However, Spatie usually filters by team_id if set.
+        // Let's get all roles that are applicable.
+        $roles = Role::where('tenant_company_id', $company->id)
+                     ->orWhereNull('tenant_company_id')
+                     ->get();
+
         // Include owner in the list for display if needed, or separate.
         $owner = $company->owner;
+        if ($owner) {
+             $owner->load('roles');
+        }
 
         // Get potential users to add (members of other owned companies who are not in this company)
         $availableUsers = collect();
@@ -54,7 +75,7 @@ class CompanyMemberController extends Controller
             ->get();
         }
 
-        return view('company_members.index', compact('company', 'members', 'owner', 'availableUsers'));
+        return view('company_members.index', compact('company', 'members', 'owner', 'availableUsers', 'roles'));
     }
 
     /**
@@ -65,7 +86,8 @@ class CompanyMemberController extends Controller
         $request->validate([
             'email' => 'required|email',
             'name' => 'nullable|string|max:255',
-            'role' => 'required|in:company_admin,employee',
+            'roles' => 'required|array', // Now array
+            'roles.*' => 'exists:roles,name', // Validate role names exist
             'password' => 'nullable|string|min:8',
             'employee_id' => 'nullable|string|max:255',
             'avatar' => 'nullable|image|max:2048',
@@ -92,7 +114,7 @@ class CompanyMemberController extends Controller
         }
 
         try {
-            $this->memberService->addMember($company, $request->email, $request->role, $request->name, $request->password, $extraData);
+            $this->memberService->addMember($company, $request->email, $request->roles, $request->name, $request->password, $extraData);
 
             return redirect()->back()->with('success', 'Member added successfully.');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -108,7 +130,8 @@ class CompanyMemberController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'role' => 'required|in:company_admin,employee',
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
             'phone' => 'nullable|string|max:20',
@@ -131,7 +154,7 @@ class CompanyMemberController extends Controller
 
         // $this->authorize('update', [User::class, $company]);
 
-        $data = $request->only(['role', 'name', 'email', 'phone', 'is_active', 'joined_at', 'employee_id']);
+        $data = $request->only(['roles', 'name', 'email', 'phone', 'is_active', 'joined_at', 'employee_id']);
         if ($request->filled('password')) {
             $data['password'] = $request->password;
         }

@@ -109,11 +109,21 @@
                                     {{ $member->pivot->employee_id ?: 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($member->pivot->role === 'company_admin')
-                                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-purple-900 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Admin</span>
-                                    @else
-                                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">Employee</span>
-                                    @endif
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach($member->roles as $role)
+                                            @php
+                                                $colors = match($role->name) {
+                                                    'company_admin' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+                                                    'employee' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600',
+                                                    'tenant_admin' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
+                                                    default => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+                                                };
+                                            @endphp
+                                            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full border {{ $colors }}">
+                                                {{ ucfirst(str_replace('_', ' ', $role->name)) }}
+                                            </span>
+                                        @endforeach
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($member->pivot->is_active)
@@ -200,12 +210,60 @@
                             <label for="employee_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Employee ID</label>
                             <input type="text" name="employee_id" id="employee_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="EMP-001">
                         </div>
-                        <div class="col-span-2 sm:col-span-1">
-                            <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
-                            <select id="role" name="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option value="employee" selected>Employee</option>
-                                <option value="company_admin">Admin</option>
-                            </select>
+                        <div class="col-span-2 sm:col-span-1" x-data="{
+                            search: '',
+                            open: false,
+                            selected: ['employee'],
+                            options: [
+                                @foreach($roles as $role)
+                                    { value: '{{ $role->name }}', label: '{{ ucfirst(str_replace('_', ' ', $role->name)) }}' },
+                                @endforeach
+                            ],
+                            get selectedLabels() {
+                                if (this.selected.length === 0) return 'Select roles...';
+                                return this.selected.map(v => this.options.find(o => o.value === v)?.label).join(', ');
+                            },
+                            toggle(value) {
+                                if (this.selected.includes(value)) {
+                                    this.selected = this.selected.filter(v => v !== value);
+                                } else {
+                                    this.selected.push(value);
+                                }
+                            }
+                        }">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
+                            <div class="relative" @click.away="open = false">
+                                <button type="button" @click="open = !open" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 text-left dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-h-[42px] flex items-center justify-between">
+                                    <span x-text="selectedLabels" class="block truncate mr-2"></span>
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+
+                                <div x-show="open" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto" style="display: none;">
+                                    <div class="p-2 sticky top-0 bg-white dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                                        <input x-model="search" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search roles...">
+                                    </div>
+                                    <div class="p-1">
+                                        <template x-for="option in options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))" :key="option.value">
+                                            <div @click="toggle(option.value)" class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
+                                                <div class="flex items-center h-5">
+                                                    <input type="checkbox" :value="option.value" :checked="selected.includes(option.value)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pointer-events-none">
+                                                </div>
+                                                <div class="ms-2 text-sm">
+                                                    <label class="font-medium text-gray-900 dark:text-gray-300 select-none" x-text="option.label"></label>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <div x-show="options.filter(o => o.label.toLowerCase().includes(search.toLowerCase())).length === 0" class="p-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+                                            No roles found
+                                        </div>
+                                    </div>
+                                </div>
+                                <select name="roles[]" multiple class="hidden" x-model="selected">
+                                    <template x-for="option in options" :key="option.value">
+                                        <option :value="option.value" x-text="option.label"></option>
+                                    </template>
+                                </select>
+                            </div>
                         </div>
                         <div class="col-span-2">
                             <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password (Optional)</label>

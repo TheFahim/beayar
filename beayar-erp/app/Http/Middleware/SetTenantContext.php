@@ -44,6 +44,9 @@ class SetTenantContext
 
                 // Sync session context to user instance for consistent access
                 $user->current_tenant_company_id = $tenantId;
+                
+                // Set Spatie Permissions Team ID
+                setPermissionsTeamId($tenantId);
             }
         }
 

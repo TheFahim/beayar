@@ -13,7 +13,7 @@ class BillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return Session::has('tenant_id');
+        return $user->can('view_bills');
     }
 
     /**
@@ -21,8 +21,8 @@ class BillPolicy
      */
     public function view(User $user, Bill $bill): bool
     {
-        return $user->companies()->where('tenant_company_id', $bill->tenant_company_id)->exists() ||
-               $user->ownedCompanies()->where('id', $bill->tenant_company_id)->exists();
+        return $user->can('view_bills') &&
+               ($bill->tenant_company_id === $user->current_tenant_company_id);
     }
 
     /**
@@ -30,14 +30,7 @@ class BillPolicy
      */
     public function create(User $user): bool
     {
-        if (! Session::has('tenant_id')) {
-            return false;
-        }
-
-        $tenantId = Session::get('tenant_id');
-        $role = $user->roleInCompany($tenantId);
-
-        return $user->isOwnerOf($tenantId) || in_array($role, ['company_admin', 'employee']);
+        return $user->can('create_bills');
     }
 
     /**
@@ -45,13 +38,8 @@ class BillPolicy
      */
     public function update(User $user, Bill $bill): bool
     {
-        if ($bill->tenant_company_id != Session::get('tenant_id')) {
-            return false;
-        }
-
-        $role = $user->roleInCompany($bill->tenant_company_id);
-
-        return $user->isOwnerOf($bill->tenant_company_id) || in_array($role, ['company_admin', 'employee']);
+        return $user->can('edit_bills') &&
+               ($bill->tenant_company_id === $user->current_tenant_company_id);
     }
 
     /**
@@ -59,12 +47,14 @@ class BillPolicy
      */
     public function delete(User $user, Bill $bill): bool
     {
-        if ($bill->tenant_company_id != Session::get('tenant_id')) {
-            return false;
-        }
-
-        $role = $user->roleInCompany($bill->tenant_company_id);
-
-        return $user->isOwnerOf($bill->tenant_company_id) || $role === 'company_admin';
+        // Typically bills shouldn't be deleted easily, but if permission exists:
+        // We didn't define delete_bills in seeder, so maybe restrict to owner or admin role check as fallback?
+        // Or assume edit_bills covers deletion? Or prevent deletion.
+        // Let's check seeder: 'view_bills', 'create_bills', 'edit_bills', 'view_finance'.
+        // No delete_bills.
+        // So only super_admin or tenant_admin might delete if logic permits.
+        
+        return $user->hasRole('tenant_admin') && 
+               ($bill->tenant_company_id === $user->current_tenant_company_id);
     }
 }

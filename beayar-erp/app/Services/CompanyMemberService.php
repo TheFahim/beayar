@@ -7,14 +7,23 @@ use App\Models\TenantCompany;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class CompanyMemberService
 {
     /**
      * Add a member to a company.
+     * @param string|array $role Single role string or array of roles
      */
-    public function addMember(TenantCompany $company, string $email, string $role = 'member', ?string $name = null, ?string $password = null, array $extraData = []): User
+    public function addMember(TenantCompany $company, string $email, string|array $role = 'member', ?string $name = null, ?string $password = null, array $extraData = []): User
     {
+        // Normalize roles to array
+        $roles = is_array($role) ? $role : [$role];
+
+        // Determine primary role for pivot table (backward compatibility)
+        // Prefer 'company_admin' if present, otherwise first role or 'employee'
+        $primaryRole = in_array('company_admin', $roles) ? 'company_admin' : ($roles[0] ?? 'employee');
+
         // Check member limit
         if ($company->owner && $company->owner->subscription) {
             $limit = $company->owner->subscription->getLimit('employees');
@@ -56,12 +65,24 @@ class CompanyMemberService
         }
 
         $pivotData = [
-            'role' => $role,
+            'role' => $primaryRole,
             'is_active' => true,
             'employee_id' => $extraData['employee_id'] ?? null,
         ];
 
         $company->members()->attach($user->id, $pivotData);
+
+        // Assign Spatie Roles
+        // Resolve roles manually to include global roles
+        $roleObjects = Role::whereIn('name', $roles)
+            ->where(function ($q) use ($company) {
+                $q->where('tenant_company_id', $company->id)
+                  ->orWhereNull('tenant_company_id');
+            })
+            ->get();
+
+        setPermissionsTeamId($company->id);
+        $user->syncRoles($roleObjects);
 
         return $user;
     }
@@ -73,6 +94,13 @@ class CompanyMemberService
     {
         if ($company->owner_id === $user->id) {
             throw ValidationException::withMessages(['user' => 'Cannot remove the company owner.']);
+        }
+
+        // Remove Spatie Role
+        setPermissionsTeamId($company->id);
+        $roleName = $user->roleInCompany($company->id);
+        if ($roleName) {
+            $user->removeRole($roleName);
         }
 
         $company->members()->detach($user->id);
@@ -109,20 +137,47 @@ class CompanyMemberService
         }
 
         // 2. Update Membership info (role, is_active, joined_at, employee_id)
-        // Check if updating owner
-        if ($company->owner_id === $user->id) {
-            // Cannot change role or status of owner
-            if (isset($data['role']) && $data['role'] !== 'company_admin') {
-                throw ValidationException::withMessages(['user' => 'Cannot change role of the company owner.']);
-            }
-            if (isset($data['is_active']) && !$data['is_active']) {
-                throw ValidationException::withMessages(['user' => 'Cannot deactivate the company owner.']);
-            }
+        $pivotUpdates = [];
+
+        // Handle Role Updates
+        if (array_key_exists('roles', $data) || array_key_exists('role', $data)) {
+             $inputRole = $data['roles'] ?? $data['role'];
+             $roles = is_array($inputRole) ? $inputRole : [$inputRole];
+
+             // Check if updating owner and role change is attempted
+             if ($company->owner_id === $user->id) {
+                 if (!in_array('company_admin', $roles)) {
+                      throw ValidationException::withMessages(['user' => 'Company owner must retain Admin role.']);
+                 }
+                 // Ensure company_admin is primary
+                 $primaryRole = 'company_admin';
+             } else {
+                 $primaryRole = in_array('company_admin', $roles) ? 'company_admin' : ($roles[0] ?? 'employee');
+             }
+
+             $pivotUpdates['role'] = $primaryRole;
+
+             // Sync Spatie Roles
+             // Resolve roles manually to include global roles
+             $roleObjects = Role::whereIn('name', $roles)
+                 ->where(function ($q) use ($company) {
+                     $q->where('tenant_company_id', $company->id)
+                       ->orWhereNull('tenant_company_id');
+                 })
+                 ->get();
+
+             setPermissionsTeamId($company->id);
+             $user->syncRoles($roleObjects);
         }
 
-        $pivotUpdates = [];
-        if (array_key_exists('role', $data)) $pivotUpdates['role'] = $data['role'];
-        if (array_key_exists('is_active', $data)) $pivotUpdates['is_active'] = $data['is_active'];
+        // Handle Status Updates
+        if (array_key_exists('is_active', $data)) {
+             if ($company->owner_id === $user->id && !$data['is_active']) {
+                  throw ValidationException::withMessages(['user' => 'Cannot deactivate the company owner.']);
+             }
+             $pivotUpdates['is_active'] = $data['is_active'];
+        }
+
         if (array_key_exists('joined_at', $data)) $pivotUpdates['joined_at'] = $data['joined_at'];
         if (array_key_exists('employee_id', $data)) $pivotUpdates['employee_id'] = $data['employee_id'];
 

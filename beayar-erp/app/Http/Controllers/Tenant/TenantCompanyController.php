@@ -8,6 +8,7 @@ use App\Models\TenantCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class TenantCompanyController extends Controller
 {
@@ -86,6 +87,10 @@ class TenantCompanyController extends Controller
             'role' => 'company_admin',
             'is_active' => true,
         ]);
+
+        // Assign Spatie Role
+        setPermissionsTeamId($company->id);
+        $user->assignRole('company_admin');
 
         return redirect()->route('tenant.user-companies.index')->with('success', 'Company created successfully.');
     }

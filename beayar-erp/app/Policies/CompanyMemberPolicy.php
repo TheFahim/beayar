@@ -13,7 +13,7 @@ class CompanyMemberPolicy
      */
     public function viewAny(User $user): bool
     {
-        return Session::has('tenant_id');
+        return $user->can('manage_members') || $user->hasRole('tenant_admin');
     }
 
     /**
@@ -21,24 +21,7 @@ class CompanyMemberPolicy
      */
     public function create(User $user): bool
     {
-        if (! Session::has('tenant_id')) {
-            return false;
-        }
-
-        $tenantId = Session::get('tenant_id');
-
-        // Check Global Role (Spatie)
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        // Check Contextual Role (Company Member)
-        $role = $user->roleInCompany($tenantId);
-
-        // Tenant Admin (Owner) OR Company Admin can create members
-        return $user->isOwnerOf($tenantId) ||
-               $user->hasRole('tenant_admin') ||
-               $role === 'company_admin';
+        return $user->can('manage_members') || $user->hasRole('tenant_admin');
     }
 
     /**
@@ -46,18 +29,8 @@ class CompanyMemberPolicy
      */
     public function update(User $user, TenantCompany $company): bool
     {
-        // Check Global Role
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        $role = $user->roleInCompany($company->id);
-
-        // Tenant Admin (Owner) OR Company Admin can update roles
-        // BUT Company Admin cannot demote/promote the Owner or other Tenant Admins (logic needs care)
-        return $user->isOwnerOf($company->id) ||
-               $user->hasRole('tenant_admin') ||
-               $role === 'company_admin';
+        return ($user->can('manage_members') || $user->hasRole('tenant_admin')) &&
+               ($company->id === $user->current_tenant_company_id);
     }
 
     /**
@@ -65,14 +38,7 @@ class CompanyMemberPolicy
      */
     public function delete(User $user, TenantCompany $company): bool
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        $role = $user->roleInCompany($company->id);
-
-        return $user->isOwnerOf($company->id) ||
-               $user->hasRole('tenant_admin') ||
-               $role === 'company_admin';
+        return ($user->can('manage_members') || $user->hasRole('tenant_admin')) &&
+               ($company->id === $user->current_tenant_company_id);
     }
 }

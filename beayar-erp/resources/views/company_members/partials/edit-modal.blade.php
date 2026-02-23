@@ -53,12 +53,60 @@
                         <input type="text" name="employee_id" id="employee_id" value="{{ $member->pivot->employee_id }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="EMP-001">
                     </div>
 
-                    <div class="col-span-2 sm:col-span-1">
-                        <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
-                        <select id="role" name="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option value="employee" {{ $member->pivot->role === 'employee' ? 'selected' : '' }}>Employee</option>
-                            <option value="company_admin" {{ $member->pivot->role === 'company_admin' ? 'selected' : '' }}>Admin</option>
-                        </select>
+                    <div class="col-span-2 sm:col-span-1" x-data="{
+                        search: '',
+                        open: false,
+                        selected: {{ json_encode($member->roles->pluck('name')) }},
+                        options: [
+                            @foreach($roles as $role)
+                                { value: '{{ $role->name }}', label: '{{ ucfirst(str_replace('_', ' ', $role->name)) }}' },
+                            @endforeach
+                        ],
+                        get selectedLabels() {
+                            if (this.selected.length === 0) return 'Select roles...';
+                            return this.selected.map(v => this.options.find(o => o.value === v)?.label).join(', ');
+                        },
+                        toggle(value) {
+                            if (this.selected.includes(value)) {
+                                this.selected = this.selected.filter(v => v !== value);
+                            } else {
+                                this.selected.push(value);
+                            }
+                        }
+                    }">
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
+                        <div class="relative" @click.away="open = false">
+                            <button type="button" @click="open = !open" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 text-left dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-h-[42px] flex items-center justify-between">
+                                <span x-text="selectedLabels" class="block truncate mr-2"></span>
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+
+                            <div x-show="open" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto" style="display: none;">
+                                <div class="p-2 sticky top-0 bg-white dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                                    <input x-model="search" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search roles...">
+                                </div>
+                                <div class="p-1">
+                                    <template x-for="option in options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()))" :key="option.value">
+                                        <div @click="toggle(option.value)" class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
+                                            <div class="flex items-center h-5">
+                                                <input type="checkbox" :value="option.value" :checked="selected.includes(option.value)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pointer-events-none">
+                                            </div>
+                                            <div class="ms-2 text-sm">
+                                                <label class="font-medium text-gray-900 dark:text-gray-300 select-none" x-text="option.label"></label>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <div x-show="options.filter(o => o.label.toLowerCase().includes(search.toLowerCase())).length === 0" class="p-2 text-sm text-gray-500 dark:text-gray-400 text-center">
+                                        No roles found
+                                    </div>
+                                </div>
+                            </div>
+                            <select name="roles[]" multiple class="hidden" x-model="selected">
+                                <template x-for="option in options" :key="option.value">
+                                    <option :value="option.value" x-text="option.label"></option>
+                                </template>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="col-span-2 sm:col-span-1">

@@ -21,7 +21,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <form action="{{ route('tenant.roles.store') }}" method="POST" x-data="{ search: '' }">
                 @csrf
-                
+
                 <div class="mb-6">
                     <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Role Name</label>
                     <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2.5 border" required placeholder="e.g. Sales Manager">
@@ -42,16 +42,48 @@
                             <input type="text" x-model="search" class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search permissions...">
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto p-2 border rounded-md dark:border-gray-700">
-                        @foreach($permissions as $permission)
-                            <div class="flex items-start p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" 
-                                 x-show="search === '' || '{{ strtolower($permission->name) }}'.includes(search.toLowerCase())">
-                                <div class="flex items-center h-5">
-                                    <input id="perm_{{ $permission->id }}" name="permissions[]" value="{{ $permission->name }}" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+
+                    <div class="space-y-6 max-h-[600px] overflow-y-auto p-2 border rounded-md dark:border-gray-700">
+                        @foreach($groupedPermissions as $group => $permissions)
+                            <div class="border rounded-lg p-4 dark:border-gray-700"
+                                 x-show="search === '' || '{{ strtolower($group) }}'.includes(search.toLowerCase()) || Array.from($el.querySelectorAll('label')).some(l => l.innerText.toLowerCase().includes(search.toLowerCase()))">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wide">{{ $group }}</h4>
+                                    <button type="button"
+                                            @click="$el.closest('.border').querySelectorAll('input[type=checkbox]').forEach(el => el.checked = !el.checked)"
+                                            class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                        Select All
+                                    </button>
                                 </div>
-                                <div class="ml-3 text-sm">
-                                    <label for="perm_{{ $permission->id }}" class="font-medium text-gray-900 dark:text-gray-300 select-none cursor-pointer">{{ $permission->name }}</label>
+
+                                @if($group === 'Quotations')
+                                <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs rounded-lg flex items-start gap-2">
+                                    <x-ui.svg.info-circle class="w-4 h-4 flex-shrink-0 mt-0.5" />
+                                    <p>
+                                        <strong>Tip:</strong> If you are granting "Create Quotations" access, consider also assigning:
+                                        <ul class="list-disc list-inside mt-1 ml-1 space-y-0.5">
+                                            <li><strong>Products:</strong> Create/View Products (to add items)</li>
+                                            <li><strong>Images:</strong> Image Library (for product images)</li>
+                                            <li><strong>Customers:</strong> Create/View Customers (to select clients)</li>
+                                        </ul>
+                                    </p>
+                                </div>
+                                @endif
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    @foreach($permissions as $permission)
+                                        <div class="flex items-start p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                             x-show="search === '' || '{{ strtolower($permission->name) }}'.includes(search.toLowerCase())">
+                                            <div class="flex items-center h-5">
+                                                <input id="perm_{{ $permission->id }}" name="permissions[]" value="{{ $permission->name }}" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="perm_{{ $permission->id }}" class="font-medium text-gray-900 dark:text-gray-300 select-none cursor-pointer">
+                                                    {{ ucwords(str_replace('_', ' ', $permission->name)) }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         @endforeach

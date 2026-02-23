@@ -16,6 +16,11 @@ use Illuminate\Validation\Rule;
 
 class ChallanController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Challan::class, 'challan');
+    }
+
     /**
      * Display a listing of the resource.
      */

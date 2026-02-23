@@ -10,6 +10,11 @@ use Illuminate\Support\Str;
 
 class CustomerController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Customer::class, 'customer');
+    }
+
     public function index(Request $request)
     {
         $query = Customer::with(['customerCompany'])->withCount('quotations');
@@ -80,9 +85,9 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
-        if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //    abort(403);
+        // }
 
         $customer->load('quotations');
         $hasQuotation = $customer->quotations()->count() > 0;
@@ -93,9 +98,9 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         // return $request;
-        if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //    abort(403);
+        // }
 
         $validated = $request->validate([
             'customer_company_id' => 'required|exists:customer_companies,id',
@@ -129,9 +134,9 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
-        if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // if ($customer->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //    abort(403);
+        // }
 
         if (! $customer->is_deletable) {
             if (request()->ajax() || request()->wantsJson()) {
@@ -157,6 +162,8 @@ class CustomerController extends Controller
     // API for searching customer companies (to replace Optimech's companies.search)
     public function searchCompanies(Request $request)
     {
+        $this->authorize('viewAny', Customer::class);
+
         $user = auth()->user();
         // Fallback to first owned company if current_tenant_company_id is not set
         $companyId = $user->current_tenant_company_id ?? $user->ownedCompanies()->first()?->id;
@@ -185,6 +192,8 @@ class CustomerController extends Controller
 
     public function nextCustomerSerial(Request $request, CustomerCompany $company)
     {
+        $this->authorize('create', Customer::class);
+
         $lastCustomer = $company->customers()
             ->where('customer_no', 'like', $company->company_code.'-%')
             ->orderByRaw('CAST(SUBSTRING(customer_no, LENGTH(?) + 2) AS UNSIGNED) DESC', [$company->company_code])

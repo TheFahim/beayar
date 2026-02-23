@@ -22,25 +22,37 @@ class RolesAndPermissionsSeeder extends Seeder
             'create_products',
             'edit_products',
             'delete_products',
-            
+
+            // Image Management
+            'view_images',
+            'create_images',
+            'edit_images',
+            'delete_images',
+
             // Quotation Management
             'view_quotations',
             'create_quotations',
             'edit_quotations',
             'delete_quotations',
-            
+
+            // Challan Management
+            'view_challans',
+            'create_challans',
+            'edit_challans',
+            'delete_challans',
+
             // Customer Management
             'view_customers',
             'create_customers',
             'edit_customers',
             'delete_customers',
-            
+
             // Billing & Finance
             'view_bills',
             'create_bills',
             'edit_bills',
             'view_finance',
-            
+
             // Settings & Members
             'manage_settings',
             'manage_members',
@@ -53,18 +65,26 @@ class RolesAndPermissionsSeeder extends Seeder
             \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => $guardName]);
         }
 
-        // Create Roles
+        // Create Roles and Assign Permissions
         $roles = [
-            'super_admin',  // Manages the entire application (tenants/customers)
-            'tenant_admin', // The Owner who signed up (manages companies)
-            'company_admin', // Manages a specific company (employees, data)
-            'employee',     // Regular user within a company
+            'super_admin' => [], // Super admin bypasses checks usually, or we can give all
+            'tenant_admin' => $permissions, // Owner gets everything
+            'company_admin' => $permissions, // Admin gets everything
+            'employee' => [
+                'view_products', 'create_products', 'edit_products',
+                'view_images', 'create_images', 'edit_images',
+                'view_quotations', 'create_quotations', 'edit_quotations',
+                'view_challans', 'create_challans', 'edit_challans',
+                'view_customers', 'create_customers', 'edit_customers',
+                'view_bills', 'create_bills', 'edit_bills',
+            ],
         ];
 
-        $guardName = config('auth.defaults.guard');
-
-        foreach ($roles as $roleName) {
-            Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guardName]);
+        foreach ($roles as $roleName => $rolePermissions) {
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => $guardName]);
+            if (!empty($rolePermissions)) {
+                $role->syncPermissions($rolePermissions);
+            }
         }
     }
 }

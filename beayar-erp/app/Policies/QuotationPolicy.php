@@ -13,7 +13,7 @@ class QuotationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return Session::has('tenant_id');
+        return $user->can('view_quotations');
     }
 
     /**
@@ -21,8 +21,8 @@ class QuotationPolicy
      */
     public function view(User $user, Quotation $quotation): bool
     {
-        return $user->companies()->where('tenant_company_id', $quotation->tenant_company_id)->exists() ||
-               $user->ownedCompanies()->where('id', $quotation->tenant_company_id)->exists();
+        return $user->can('view_quotations') &&
+               ($quotation->tenant_company_id === $user->current_tenant_company_id);
     }
 
     /**
@@ -30,14 +30,7 @@ class QuotationPolicy
      */
     public function create(User $user): bool
     {
-        if (! Session::has('tenant_id')) {
-            return false;
-        }
-
-        $tenantId = Session::get('tenant_id');
-        $role = $user->roleInCompany($tenantId);
-
-        return $user->isOwnerOf($tenantId) || in_array($role, ['company_admin', 'employee']);
+        return $user->can('create_quotations');
     }
 
     /**
@@ -45,13 +38,8 @@ class QuotationPolicy
      */
     public function update(User $user, Quotation $quotation): bool
     {
-        if ($quotation->tenant_company_id != Session::get('tenant_id')) {
-            return false;
-        }
-
-        $role = $user->roleInCompany($quotation->tenant_company_id);
-
-        return $user->isOwnerOf($quotation->tenant_company_id) || in_array($role, ['company_admin', 'employee']);
+        return $user->can('edit_quotations') &&
+               ($quotation->tenant_company_id === $user->current_tenant_company_id);
     }
 
     /**
@@ -59,12 +47,7 @@ class QuotationPolicy
      */
     public function delete(User $user, Quotation $quotation): bool
     {
-        if ($quotation->tenant_company_id != Session::get('tenant_id')) {
-            return false;
-        }
-
-        $role = $user->roleInCompany($quotation->tenant_company_id);
-
-        return $user->isOwnerOf($quotation->tenant_company_id) || $role === 'company_admin';
+        return $user->can('delete_quotations') &&
+               ($quotation->tenant_company_id === $user->current_tenant_company_id);
     }
 }

@@ -35,6 +35,7 @@ class BillController extends Controller
     {
         $this->billingService = $billingService;
         $this->invoiceNumberGenerator = $invoiceNumberGenerator;
+        $this->authorizeResource(Bill::class, 'bill');
     }
 
     /**

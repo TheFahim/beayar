@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Product::class, 'product');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -100,14 +105,14 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Product $product)
     {
-        $product = Product::with(['image', 'specifications'])->findOrFail($id);
+        $product->load(['image', 'specifications']);
 
-        // Ensure tenant access
-        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // Ensure tenant access - handled by policy
+        // if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //    abort(403);
+        // }
 
         return view('tenant.products.edit', compact('product'));
     }
@@ -115,14 +120,12 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
-        $product = Product::findOrFail($id);
-
-        // Ensure tenant access
-        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // Ensure tenant access - handled by policy
+        // if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //    abort(403);
+        // }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -179,14 +182,12 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        $product = Product::findOrFail($id);
-
-        // Ensure tenant access
-        if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // Ensure tenant access - handled by policy
+        // if ($product->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //    abort(403);
+        // }
 
         if (! $product->is_deletable) {
             if (request()->ajax() || request()->wantsJson()) {

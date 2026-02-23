@@ -27,7 +27,9 @@ class QuotationController extends Controller
         private QuotationService $quotationService,
         private QuotationQueryService $queryService,
         private ExchangeRateService $exchangeRateService
-    ) {}
+    ) {
+        $this->authorizeResource(Quotation::class, 'quotation');
+    }
 
     /**
      * Display a listing of quotations with nested structure.
@@ -47,8 +49,6 @@ class QuotationController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', Quotation::class);
-
         $customers = Customer::with('customerCompany:id,name')
             ->select('id', 'name', 'customer_company_id', 'customer_no', 'address', 'phone', 'email', 'attention')
             ->orderBy('name')
@@ -107,8 +107,6 @@ class QuotationController extends Controller
      */
     public function show(Quotation $quotation)
     {
-        $this->authorizeQuotation($quotation);
-
         $quotation->load(['customer', 'customer.customerCompany', 'company']);
 
         $activeRevision = $quotation->getActiveRevision();
@@ -134,8 +132,6 @@ class QuotationController extends Controller
      */
     public function edit(Quotation $quotation, Request $request)
     {
-        $this->authorizeQuotation($quotation);
-
         $revisions = $quotation->revisions()
             ->with(['createdBy:id,name'])
             ->orderBy('created_at', 'desc')
@@ -212,8 +208,6 @@ class QuotationController extends Controller
      */
     public function update(QuotationUpdateRequest $request, Quotation $quotation)
     {
-        $this->authorizeQuotation($quotation);
-
         if (! $quotation->isEditable()) {
             return redirect()->back()->with('error', 'Cannot modify quotation because it has associated bills.');
         }
@@ -303,7 +297,7 @@ class QuotationController extends Controller
      */
     public function updateStatus(Request $request, Quotation $quotation)
     {
-        $this->authorizeQuotation($quotation);
+        $this->authorize('update', $quotation);
 
         $validated = $request->validate([
             'status' => 'required|string|in:in_progress,active,completed,cancelled',
@@ -326,7 +320,7 @@ class QuotationController extends Controller
     public function activateRevision(QuotationRevision $revision)
     {
         $quotation = $revision->quotation;
-        $this->authorizeQuotation($quotation);
+        $this->authorize('update', $quotation);
 
         if ($quotation->hasBills()) {
             return redirect()->back()->with('error', 'Cannot change active revision because quotation has associated bills.');
@@ -357,8 +351,6 @@ class QuotationController extends Controller
      */
     public function destroy(Quotation $quotation)
     {
-        $this->authorizeQuotation($quotation);
-
         if (! $quotation->isDeletable()) {
             $message = $quotation->hasBills()
                 ? 'Cannot delete quotation because it has associated bills.'
@@ -387,7 +379,7 @@ class QuotationController extends Controller
      */
     public function destroyRevision(Quotation $quotation, QuotationRevision $revision)
     {
-        $this->authorizeQuotation($quotation);
+        $this->authorize('update', $quotation);
 
         if ($quotation->hasBills()) {
             return redirect()->route('tenant.quotations.edit', $quotation->id)
@@ -439,6 +431,8 @@ class QuotationController extends Controller
      */
     public function searchProduct(Request $request)
     {
+        $this->authorize('viewAny', Product::class);
+
         $query = $request->input('q');
         $perPage = (int) ($request->input('per_page') ?? 20);
 
@@ -461,6 +455,8 @@ class QuotationController extends Controller
      */
     public function getProductSpecifications(Request $request, $productId)
     {
+        $this->authorize('viewAny', Product::class);
+
         $tenantCompanyId = auth()->user()->current_tenant_company_id;
         $product = Product::where('tenant_company_id', $tenantCompanyId)->find($productId);
 
@@ -495,6 +491,8 @@ class QuotationController extends Controller
      */
     public function getNextQuotationNo(Request $request)
     {
+        $this->authorize('create', Quotation::class);
+
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
         ]);
@@ -516,6 +514,8 @@ class QuotationController extends Controller
      */
     public function createProduct(Request $request)
     {
+        $this->authorize('create', Product::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'image_id' => 'nullable|exists:images,id',

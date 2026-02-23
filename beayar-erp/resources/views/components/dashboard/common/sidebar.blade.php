@@ -82,94 +82,96 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">My Companies</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('company-members.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Team Members</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
-                @if(Auth::user()->isOwnerOf(Auth::user()->getCurrentCompanyId()))
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.roles.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Roles & Permissions</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
-                @endif
+                @can('manage_members')
+        <li>
+            <x-dashboard.common.sidebar-link url="{{ route('company-members.index') }}" class="pl-12">
+                <span class="flex-1 ms-3 whitespace-nowrap">Team Members</span>
+            </x-dashboard.common.sidebar-link>
+        </li>
+        @endcan
+        @can('manage_roles')
+        <li>
+            <x-dashboard.common.sidebar-link url="{{ route('tenant.roles.index') }}" class="pl-12">
+                <span class="flex-1 ms-3 whitespace-nowrap">Roles & Permissions</span>
+            </x-dashboard.common.sidebar-link>
+        </li>
+        @endcan
             </ul>
         </li>
 
         @if(Auth::user()->getCurrentCompanyId())
-        {{-- @feature('customers.manage') --}}
+        @can('view_customers')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
                 <x-ui.svg.customer class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        {{-- @endfeature --}}
-        @endif
+        @endcan
 
-        @if(Auth::user()->getCurrentCompanyId())
-        {{-- @feature('images.library') --}}
+        @can('view_images')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
                 <x-ui.svg.image class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        {{-- @endfeature --}}
-        @endif
+        @endcan
 
-        {{-- @feature('products.manage') --}}
+        @can('view_products')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}">
                 <x-ui.svg.product class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        {{-- @endfeature --}}
+        @endcan
 
-        {{-- @if(Auth::user()->hasModuleAccess('quotations')) --}}
+        @can('view_quotations')
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.index') }}">
                     <x-ui.svg.qutation class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Quotations</span>
                 </x-dashboard.common.sidebar-link>
             </li>
-        {{-- @endif --}}
+        @endcan
 
-        {{-- @if(Auth::user()->hasModuleAccess('challans')) --}}
+        @can('view_challans')
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.challans.index') }}">
                     <x-ui.svg.chalan class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Challans</span>
                 </x-dashboard.common.sidebar-link>
             </li>
-        {{-- @endif --}}
+        @endcan
 
-        {{-- @if(Auth::user()->hasModuleAccess('billing')) --}}
+        @can('view_bills')
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.bills.index') }}">
                     <x-ui.svg.bill class="h-5 w-5" />
                     <span class="flex-1 ms-3 whitespace-nowrap">Billing</span>
                 </x-dashboard.common.sidebar-link>
             </li>
-        {{-- @endif --}}
+        @endcan
 
-        {{-- @feature('finance.dashboard') --}}
+        @can('view_finance')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.finance.index') }}">
                 <x-ui.svg.payment class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Finance</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        {{-- @endfeature --}}
+        @endcan
 
+        @if(Auth::user()->isOwnerOf(Auth::user()->getCurrentCompanyId()))
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.subscription.index') }}">
                 <x-ui.svg.home class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Subscription</span>
             </x-dashboard.common.sidebar-link>
         </li>
+        @endif
+        @endif
         @endif
 
         {{-- Fallback for development if no roles set --}}

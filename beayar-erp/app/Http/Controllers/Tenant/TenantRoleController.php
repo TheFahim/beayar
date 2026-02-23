@@ -19,7 +19,7 @@ class TenantRoleController extends Controller
             if (!$user) {
                 abort(401);
             }
-            
+
             // Check if user is owner OR has tenant_admin role within the current context
             // Note: tenant_admin role is assigned to owners upon creation.
             if (!$user->isOwnerOf($user->current_tenant_company_id) && !$user->hasRole('tenant_admin')) {
@@ -35,8 +35,13 @@ class TenantRoleController extends Controller
     public function index()
     {
         $tenantId = Auth::user()->current_tenant_company_id;
-        
-        $roles = Role::where('tenant_company_id', $tenantId)
+
+        // Fetch Tenant Specific Roles AND Global Roles (seeded), but exclude super_admin
+        $roles = Role::where(function($q) use ($tenantId) {
+                $q->where('tenant_company_id', $tenantId)
+                  ->orWhereNull('tenant_company_id');
+            })
+            ->where('name', '!=', 'super_admin')
             ->with('permissions')
             ->get();
 
@@ -54,10 +59,11 @@ class TenantRoleController extends Controller
      */
     public function create()
     {
-        // Fetch all global permissions (created by Super Admin)
+        // Fetch all global permissions and group them
         $permissions = Permission::all();
+        $groupedPermissions = $this->groupPermissions($permissions);
 
-        return view('tenant.roles.create', compact('permissions'));
+        return view('tenant.roles.create', compact('groupedPermissions'));
     }
 
     /**
@@ -79,8 +85,6 @@ class TenantRoleController extends Controller
         }
 
         // Create Role scoped to the team
-        // We manually set tenant_company_id because Spatie's create() might rely on setPermissionsTeamId global state,
-        // but passing it explicitly is safer.
         $role = Role::create([
             'name' => $request->name,
             'guard_name' => 'web',
@@ -99,9 +103,27 @@ class TenantRoleController extends Controller
     public function edit(string $id)
     {
         $role = Role::where('id', $id)->where('tenant_company_id', Auth::user()->current_tenant_company_id)->firstOrFail();
+
         $permissions = Permission::all();
-        
-        return view('tenant.roles.edit', compact('role', 'permissions'));
+        $groupedPermissions = $this->groupPermissions($permissions);
+
+        return view('tenant.roles.edit', compact('role', 'groupedPermissions'));
+    }
+
+    /**
+     * Helper to group permissions by module
+     */
+    private function groupPermissions($permissions)
+    {
+        return $permissions->groupBy(function($perm) {
+            $parts = explode('_', $perm->name);
+            // If format is action_module (e.g. view_products), take the rest as module
+            if (count($parts) > 1) {
+                array_shift($parts); // remove action
+                return ucwords(implode(' ', $parts));
+            }
+            return 'General';
+        })->sortKeys();
     }
 
     /**
@@ -136,7 +158,7 @@ class TenantRoleController extends Controller
     public function destroy(string $id)
     {
         $role = Role::where('id', $id)->where('tenant_company_id', Auth::user()->current_tenant_company_id)->firstOrFail();
-        
+
         // Optional: Prevent deleting if assigned to users?
         if ($role->users()->exists()) {
             return back()->withErrors('Cannot delete role because it is assigned to users.');

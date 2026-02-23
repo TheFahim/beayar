@@ -16,6 +16,11 @@ class ImageController extends Controller
      */
     private const UPLOAD_DIR = 'uploads/images';
 
+    public function __construct()
+    {
+        $this->authorizeResource(Image::class, 'image');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -230,19 +235,17 @@ class ImageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Image $image)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'nullable|image',
         ]);
 
-        $image = Image::findOrFail($id);
-
-        // Ensure user belongs to the same company
-        if ($image->tenant_company_id !== auth()->user()->current_tenant_company_id) {
-            abort(403);
-        }
+        // Ensure user belongs to the same company - handled by policy now
+        // if ($image->tenant_company_id !== auth()->user()->current_tenant_company_id) {
+        //     abort(403);
+        // }
 
         $data = [
             'name' => $request->name,
@@ -341,10 +344,10 @@ class ImageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Image $image)
     {
-        // Find image scoped by tenant
-        $image = Image::findOrFail($id);
+        // Find image scoped by tenant - handled by policy
+        // $image = Image::findOrFail($id);
 
         // Delete file
         $filePath = public_path($image->path);
