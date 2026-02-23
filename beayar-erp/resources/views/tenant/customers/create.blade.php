@@ -331,8 +331,8 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
-                                <textarea x-model="companyForm.address" rows="2"
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Address <span class="text-red-500">*</span></label>
+                                <textarea x-model="companyForm.address" rows="2" required
                                     class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 resize-none"
                                     placeholder="Company HQ address"></textarea>
                             </div>
@@ -455,6 +455,12 @@
             async submitCompany() {
                 this.loading = true;
                 this.errors = {};
+
+                if (!this.companyForm.address) {
+                    this.errors = { address: ['The address field is required.'] };
+                    this.loading = false;
+                    return;
+                }
 
                 try {
                     const url = this.isEditing ?

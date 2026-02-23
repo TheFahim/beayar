@@ -18,7 +18,7 @@ class CompanyCreateRequest extends FormRequest
             'company_code' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string'],
+            'address' => ['required', 'string'],
             'bin_no' => ['nullable', 'string', 'max:50'],
             'logo' => ['nullable', 'image', 'max:2048'],
         ];

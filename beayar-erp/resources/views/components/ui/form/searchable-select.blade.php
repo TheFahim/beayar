@@ -7,6 +7,8 @@
     'searchFields' => ['name'], // Fields to search in (array)
     'placeholder' => 'Search and select an option...', // Placeholder text
     'noResultsText' => 'No results found.', // Text when no results
+    'createEvent' => null, // Event to dispatch when create is clicked
+    'createLabel' => 'Create New', // Label for create button
     'showImages' => false, // Whether to show images in dropdown options
     'imageField' => 'image', // The field that contains image data
     'imagePath' => 'path', // The path to the image within the image object
@@ -33,6 +35,8 @@
         searchFields: @js($searchFields),
         placeholder: @js($placeholder),
         noResultsText: @js($noResultsText),
+        createEvent: @js($createEvent),
+        createLabel: @js($createLabel),
         showImages: @js($showImages),
         imageField: @js($imageField),
         imagePath: @js($imagePath),
@@ -64,6 +68,10 @@
             @blur="isInputFocused = false"
             @input.debounce.300ms="onSearchInput"
             x-bind:placeholder="placeholder"
+            @keydown.arrow-down.prevent="highlightNext()"
+            @keydown.arrow-up.prevent="highlightPrev()"
+            @keydown.enter.prevent="selectHighlighted()"
+            @keydown.escape="open = false"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
         {{-- Dropdown Arrow --}}
@@ -87,12 +95,24 @@
                  <li class="px-4 py-2 text-gray-500">Loading...</li>
             </template>
             <template x-if="!loading && filteredOptions.length === 0">
-                 <li class="px-4 py-2 text-gray-500" x-text="noResultsText"></li>
+                 <li class="px-4 py-3 text-gray-500 text-center">
+                    <p class="text-sm" x-text="noResultsText"></p>
+                    <template x-if="createEvent">
+                        <button type="button" 
+                            @click="open = false; $dispatch(createEvent)" 
+                            class="mt-2 text-blue-600 hover:text-blue-800 text-xs font-bold uppercase tracking-wide hover:underline transition-all" 
+                            x-text="createLabel">
+                        </button>
+                    </template>
+                 </li>
             </template>
-            <template x-for="option in filteredOptions" :key="option.id">
+            <template x-for="(option, index) in filteredOptions" :key="option.id">
                 <li
                     @click="selectOption(option)"
-                    class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    @mouseenter="activeIndex = index"
+                    :class="{ 'bg-blue-50 dark:bg-blue-900/30': activeIndex === index, 'hover:bg-gray-100 dark:hover:bg-gray-700': activeIndex !== index }"
+                    :data-index="index"
+                    class="px-4 py-2 cursor-pointer flex items-center gap-3 transition-colors"
                 >
                     <template x-if="showImages && getImageUrl(option)">
                         <img
@@ -133,6 +153,8 @@
             searchFields: config.searchFields || ['name'],
             placeholder: config.placeholder || 'Search and select an option...',
             noResultsText: config.noResultsText || 'No results found.',
+            createEvent: config.createEvent || null,
+            createLabel: config.createLabel || 'Create New',
             showImages: config.showImages || false,
             imageField: config.imageField || 'image',
             imagePath: config.imagePath || 'path',
@@ -141,6 +163,7 @@
             lastPage: 1,
             hasMore: false,
             debounceMs: Number(config.debounceMs) || 300,
+            activeIndex: -1,
             init() {
                 if (!this.endpoint) {
                     this.loading = false;
@@ -305,6 +328,38 @@
                     // Client-side filtering
                     this.filterOptions();
                 }
+                this.activeIndex = -1;
+            },
+            highlightNext() {
+                if (!this.open) {
+                    this.open = true;
+                    return;
+                }
+                if (this.activeIndex < this.filteredOptions.length - 1) {
+                    this.activeIndex++;
+                    this.scrollToActive();
+                }
+            },
+            highlightPrev() {
+                if (this.activeIndex > 0) {
+                    this.activeIndex--;
+                    this.scrollToActive();
+                }
+            },
+            selectHighlighted() {
+                if (this.activeIndex >= 0 && this.activeIndex < this.filteredOptions.length) {
+                    this.selectOption(this.filteredOptions[this.activeIndex]);
+                } else if (this.filteredOptions.length === 1) {
+                     this.selectOption(this.filteredOptions[0]);
+                }
+            },
+            scrollToActive() {
+                this.$nextTick(() => {
+                    const activeEl = this.$refs.dropdown.querySelector(`[data-index='${this.activeIndex}']`);
+                    if (activeEl) {
+                        activeEl.scrollIntoView({ block: 'nearest' });
+                    }
+                });
             },
             onDropdownScroll(e) {
                 if (!this.serverPagination || !this.hasMore || this.isFetching) return;

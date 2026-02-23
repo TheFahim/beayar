@@ -61,12 +61,12 @@ class CustomerController extends Controller
             'customer_company_id' => $validated['customer_company_id'],
             'name' => $validated['customer_name'],
             'customer_no' => $validated['customer_no'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'address' => $validated['address'],
-            'attention' => $validated['attention'],
-            'designation' => $validated['designation'],
-            'department' => $validated['department'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'attention' => $validated['attention'] ?? null,
+            'designation' => $validated['designation'] ?? null,
+            'department' => $validated['department'] ?? null,
         ];
 
         // Ensure uniqueness of customer_no within tenant? Or globally?
@@ -79,7 +79,7 @@ class CustomerController extends Controller
 
         $customer = Customer::create($data);
 
-        if ($request->wantsJson()) {
+        if ($request->wantsJson() || $request->ajax()) {
             $customer->load('customerCompany:id,name');
             return response()->json([
                 'success' => true,

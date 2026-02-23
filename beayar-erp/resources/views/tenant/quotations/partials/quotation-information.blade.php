@@ -18,7 +18,10 @@
                 displayTemplate="{customer_no} - {name} ({customer_company.name})"
                 :searchFields="['name', 'customer_no', 'phone', 'email', 'customer_company.name', 'attention']"
                 placeholder="Search customers by name, number, phone, email, or company..."
-                noResultsText="No customers found." class="w-full"
+                noResultsText="No customers found."
+                createEvent="open-create-customer-modal"
+                createLabel="+ Add New Customer"
+                class="w-full"
                 @option-selected="handleCustomerSelection($event)" />
             <div x-show="selectedCustomer" class="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 dark:text-white rounded text-sm">
                 <span x-text="selectedCustomer ? `Selected: ${selectedCustomer.name}${selectedCustomer.attention ? ' (Attn: ' + selectedCustomer.attention + ')' : ''}` : ''"></span>
