@@ -77,7 +77,16 @@ class CustomerController extends Controller
             $data['customer_no'] .= '-'.Str::random(4);
         }
 
-        Customer::create($data);
+        $customer = Customer::create($data);
+
+        if ($request->wantsJson()) {
+            $customer->load('customerCompany:id,name');
+            return response()->json([
+                'success' => true,
+                'customer' => $customer,
+                'message' => 'Customer created successfully.'
+            ]);
+        }
 
         return redirect()->route('tenant.customers.index')
             ->with('success', 'Customer created successfully.');

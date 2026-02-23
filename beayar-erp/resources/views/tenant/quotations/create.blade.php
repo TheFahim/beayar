@@ -10,7 +10,7 @@
         <x-dashboard.ui.bread-crumb-list name="Create" />
     </x-dashboard.ui.bread-crumb>
 
-    <div x-data="quotationForm(quotationFormConfig)">
+    <div x-data="quotationForm(quotationFormConfig)" @customer-created.window="handleCustomerSelection($event.detail)">
         <h2 class="mx-5 text-xl font-extrabold dark:text-white">Add New Quotation</h2>
 
         <form id="quotation-form" x-ref="quotationForm" class="space-y-3" action="{{ route('tenant.quotations.store') }}" method="POST" enctype="multipart/form-data"
@@ -48,6 +48,8 @@
         @include('tenant.quotations.partials.upload-new-image-modal')
         <!-- Brand Origins Modal -->
         @include('tenant.quotations.partials.brand-origins-modal')
+        <!-- Create Customer Modal -->
+        @include('tenant.quotations.partials.create-customer-modal')
     </div>
 
 </x-dashboard.layout.default>
