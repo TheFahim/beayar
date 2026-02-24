@@ -28,80 +28,96 @@
                 </p>
             </div>
 
-            <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-                @foreach($plans as $plan)
-                    @if($plan->slug === 'custom')
-                        <!-- Custom Plan -->
-                        <div class="min-w-[85vw] sm:min-w-[45%] lg:min-w-[30%] snap-center bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all" onclick="showCustomForm()">
-                            <div class="px-6 py-8">
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center">{{ $plan->name }}</h3>
-                                <p class="mt-4 text-center text-gray-500 dark:text-gray-400">{{ $plan->description }}</p>
-                                <p class="mt-8 text-center text-5xl font-extrabold text-gray-900 dark:text-white">Custom</p>
-                                <p class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">pricing based on usage</p>
+            <!-- Plan Container -->
+            <div class="relative">
+                <!-- Navigation Buttons (only shown when carousel is active) -->
+                <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-600 hidden hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-600 hidden hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
 
-                                <ul class="mt-8 space-y-4">
-                                    <li class="flex items-center">
-                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="ml-3 text-gray-700 dark:text-gray-300">Unlimited Companies</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="ml-3 text-gray-700 dark:text-gray-300">Unlimited Users</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="ml-3 text-gray-700 dark:text-gray-300">Custom Modules</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700">
-                                <button type="button" class="w-full bg-indigo-600 text-white rounded-md py-2 hover:bg-indigo-700 transition">Configure Now</button>
-                            </div>
-                        </div>
-                    @else
-                        <!-- Standard Plan -->
-                        <div class="min-w-[85vw] sm:min-w-[45%] lg:min-w-[30%] snap-center bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all flex flex-col">
-                            <div class="px-6 py-8 flex-1">
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center">{{ $plan->name }}</h3>
-                                <p class="mt-4 text-center text-gray-500 dark:text-gray-400">{{ $plan->description }}</p>
-                                <p class="mt-8 text-center text-5xl font-extrabold text-gray-900 dark:text-white">${{ number_format($plan->base_price, 0) }}</p>
-                                <p class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">per {{ $plan->billing_cycle }}</p>
+                <!-- Plans Grid/Carousel Container -->
+                <div id="plans-container" class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 transition-all duration-300">
+                    @foreach($plans as $plan)
+                        @if($plan->slug === 'custom')
+                            <!-- Custom Plan -->
+                            <div class="min-w-[85vw] sm:min-w-[45%] lg:min-w-[25%] snap-center bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-blue-500 transition-all" onclick="showCustomForm()">
+                                <div class="px-6 py-8">
+                                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center">{{ $plan->name }}</h3>
+                                    <p class="mt-4 text-center text-gray-500 dark:text-gray-400">{{ $plan->description }}</p>
+                                    <p class="mt-8 text-center text-5xl font-extrabold text-gray-900 dark:text-white">Custom</p>
+                                    <p class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">pricing based on usage</p>
 
-                                <ul class="mt-8 space-y-4">
-                                    <li class="flex items-center">
-                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="ml-3 text-gray-700 dark:text-gray-300">{{ $plan->limits['sub_companies'] ?? 1 }} Company/ies</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="ml-3 text-gray-700 dark:text-gray-300">{{ $plan->limits['employees'] ?? 1 }} User/s</span>
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="ml-3 text-gray-700 dark:text-gray-300">
-                                            @if(($plan->limits['quotations'] ?? 0) == -1)
-                                                Unlimited Quotations
-                                            @else
-                                                {{ $plan->limits['quotations'] ?? 0 }} Quotations/mo
-                                            @endif
-                                        </span>
-                                    </li>
-                                </ul>
+                                    <ul class="mt-8 space-y-4">
+                                        <li class="flex items-center">
+                                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="ml-3 text-gray-700 dark:text-gray-300">Unlimited Companies</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="ml-3 text-gray-700 dark:text-gray-300">Unlimited Users</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="ml-3 text-gray-700 dark:text-gray-300">Custom Modules</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700">
+                                    <button type="button" class="w-full bg-indigo-600 text-white rounded-md py-2 hover:bg-indigo-700 transition">Configure Now</button>
+                                </div>
                             </div>
-                            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700">
-                                <form id="plan-form-{{ $plan->slug }}" action="{{ route('onboarding.plan.store') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="plan_type" value="{{ $plan->slug }}">
-                                    <button type="button" onclick="confirmStandardPlan('{{ $plan->name }}', '${{ number_format($plan->base_price, 0) }}', '{{ ucfirst($plan->billing_cycle) }}', {{ json_encode([
-                                        ($plan->limits['sub_companies'] ?? 1) . ' Company/ies',
-                                        ($plan->limits['employees'] ?? 1) . ' User/s',
-                                        (($plan->limits['quotations'] ?? 0) == -1 ? 'Unlimited' : ($plan->limits['quotations'] ?? 0)) . ' Quotations/mo'
-                                    ]) }}, 'plan-form-{{ $plan->slug }}')" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition">Select {{ $plan->name }}</button>
-                                </form>
+                        @else
+                            <!-- Standard Plan -->
+                            <div class="min-w-[85vw] sm:min-w-[45%] lg:min-w-[25%] snap-center bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all flex flex-col">
+                                <div class="px-6 py-8 flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center">{{ $plan->name }}</h3>
+                                    <p class="mt-4 text-center text-gray-500 dark:text-gray-400">{{ $plan->description }}</p>
+                                    <p class="mt-8 text-center text-5xl font-extrabold text-gray-900 dark:text-white">${{ number_format($plan->base_price, 0) }}</p>
+                                    <p class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">per {{ $plan->billing_cycle }}</p>
+
+                                    <ul class="mt-8 space-y-4">
+                                        <li class="flex items-center">
+                                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="ml-3 text-gray-700 dark:text-gray-300">{{ $plan->limits['sub_companies'] ?? 1 }} Company/ies</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="ml-3 text-gray-700 dark:text-gray-300">{{ $plan->limits['employees'] ?? 1 }} User/s</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="ml-3 text-gray-700 dark:text-gray-300">
+                                                @if(($plan->limits['quotations'] ?? 0) == -1)
+                                                    Unlimited Quotations
+                                                @else
+                                                    {{ $plan->limits['quotations'] ?? 0 }} Quotations/mo
+                                                @endif
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700">
+                                    <form id="plan-form-{{ $plan->slug }}" action="{{ route('onboarding.plan.store') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="plan_type" value="{{ $plan->slug }}">
+                                        <button type="button" onclick="confirmStandardPlan('{{ $plan->name }}', '${{ number_format($plan->base_price, 0) }}', '{{ ucfirst($plan->billing_cycle) }}', {{ json_encode([
+                                            ($plan->limits['sub_companies'] ?? 1) . ' Company/ies',
+                                            ($plan->limits['employees'] ?? 1) . ' User/s',
+                                            (($plan->limits['quotations'] ?? 0) == -1 ? 'Unlimited' : ($plan->limits['quotations'] ?? 0)) . ' Quotations/mo'
+                                        ]) }}, 'plan-form-{{ $plan->slug }}')" class="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition">Select {{ $plan->name }}</button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                @endforeach
+                        @endif
+                    @endforeach
+                </div>
             </div>
 
             <!-- Custom Plan Questionnaire Modal/Section -->
@@ -202,6 +218,7 @@
 
     <script>
         let selectedPlanFormId = null;
+        let isCarouselMode = false;
 
         function showCustomForm() {
             document.getElementById('custom-form-container').classList.remove('hidden');
@@ -279,6 +296,83 @@
             );
         }
 
+        // Responsive layout management
+        function checkLayoutMode() {
+            const container = document.getElementById('plans-container');
+            const plans = container.children.length;
+            const containerWidth = container.offsetWidth;
+            const planWidth = 320; // Approximate width of each plan card
+            const gap = 24; // Gap between cards
+            const totalWidthNeeded = (plans * planWidth) + ((plans - 1) * gap);
+            
+            // Check if we need carousel mode
+            const needsCarousel = totalWidthNeeded > containerWidth;
+            
+            if (needsCarousel !== isCarouselMode) {
+                isCarouselMode = needsCarousel;
+                updateLayoutMode();
+            }
+        }
+
+        function updateLayoutMode() {
+            const container = document.getElementById('plans-container');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (isCarouselMode) {
+                // Carousel mode
+                container.classList.remove('flex-wrap', 'justify-center');
+                container.classList.add('overflow-x-auto');
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                // Grid mode
+                container.classList.add('flex-wrap', 'justify-center');
+                container.classList.remove('overflow-x-auto');
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        // Navigation functions
+        function scrollPlans(direction) {
+            const container = document.getElementById('plans-container');
+            const scrollAmount = 350; // Adjust based on card width + gap
+            
+            if (direction === 'prev') {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        // Update button states based on scroll position
+        function updateNavigationButtons() {
+            const container = document.getElementById('plans-container');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (!isCarouselMode) return;
+            
+            // Disable previous button if at start
+            if (container.scrollLeft <= 0) {
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                prevBtn.disabled = false;
+            }
+            
+            // Disable next button if at end
+            if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 1) {
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.disabled = false;
+            }
+        }
+
         document.getElementById('confirm-btn').addEventListener('click', function() {
             if (selectedPlanFormId) {
                 const form = document.getElementById(selectedPlanFormId);
@@ -306,6 +400,26 @@
             if (event.target === this) {
                 closeModal();
             }
+        });
+
+        // Initialize responsive behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation button event listeners
+            document.getElementById('prev-btn').addEventListener('click', () => scrollPlans('prev'));
+            document.getElementById('next-btn').addEventListener('click', () => scrollPlans('next'));
+            
+            // Scroll event listener for button states
+            document.getElementById('plans-container').addEventListener('scroll', updateNavigationButtons);
+            
+            // Initial layout check
+            checkLayoutMode();
+            updateNavigationButtons();
+        });
+
+        // Check layout on window resize
+        window.addEventListener('resize', function() {
+            checkLayoutMode();
+            updateNavigationButtons();
         });
     </script>
 </x-layouts.app>
