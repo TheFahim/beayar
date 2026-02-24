@@ -36,7 +36,7 @@
             <!-- Create Product Modal -->
             @include('tenant.quotations.partials.create-product-modal')
             <!-- Image Library Modal (reusing existing modal) -->
-            {{-- @include('tenant.quotations.partials.upload-image-modal') --}}
+            @include('tenant.quotations.partials.upload-image-modal')
             <!-- Validation Error Modal -->
             @include('tenant.quotations.partials.validation-modal')
 
@@ -50,6 +50,8 @@
         @include('tenant.quotations.partials.brand-origins-modal')
         <!-- Create Customer Modal -->
         @include('tenant.quotations.partials.create-customer-modal')
+
+        @include('tenant.products.partials.image-scripts')
     </div>
 
 </x-dashboard.layout.default>

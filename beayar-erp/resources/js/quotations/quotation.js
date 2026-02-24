@@ -857,7 +857,15 @@ function initQuotationForm(config = {}) {
         },
 
         openImageLibraryForNewProduct() {
-            this.showUploadImageModal = true;
+            window.__selectImageCallback = (image) => {
+                this.createProductModal.imageId = image.id;
+                this.createProductModal.imageUrl = image.path;
+
+                setTimeout(() => {
+                    window.__selectImageCallback = null;
+                }, 0);
+            };
+            window.dispatchEvent(new CustomEvent('open-image-library'));
         },
 
         clearNewProductImage() {

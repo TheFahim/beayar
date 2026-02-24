@@ -17,7 +17,7 @@
 
     <div class="fixed inset-0 z-10 overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl"
+            <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl"
                  x-show="isOpen"
                  x-transition:enter="ease-out duration-300"
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -27,20 +27,20 @@
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  @click.away="closeModal()">
 
-                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                            <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">Create New Customer</h3>
+                            <h3 class="text-lg font-semibold leading-6 text-gray-900 dark:text-white" id="modal-title">Create New Customer</h3>
                             <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Left Column: Company & Basic Info -->
                                 <div class="space-y-4">
                                     <!-- Company Selection / Creation -->
-                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                                         <div class="flex justify-between items-center mb-2">
-                                            <label class="block text-sm font-medium text-gray-700">Company <span class="text-red-500">*</span></label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company <span class="text-red-500">*</span></label>
                                             <button type="button" 
                                                 @click="toggleCompanyMode()" 
-                                                class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                                class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
                                                 <span x-text="isCreatingCompany ? 'Select Existing Company' : '+ Create New Company'"></span>
                                             </button>
                                         </div>
@@ -53,16 +53,16 @@
                                                     @input.debounce.300ms="filterCompanies"
                                                     @focus="showCompanyDropdown = true"
                                                     placeholder="Search company..."
-                                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                                                 
                                                 <div x-show="showCompanyDropdown && filteredCompanies.length > 0" 
-                                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                                                     @click.away="showCompanyDropdown = false">
                                                     <template x-for="company in filteredCompanies" :key="company.id">
-                                                        <div class="cursor-pointer select-none py-2 pl-3 pr-9 hover:bg-gray-100"
+                                                        <div class="cursor-pointer select-none py-2 pl-3 pr-9 hover:bg-gray-100 dark:hover:bg-gray-600"
                                                             @click="selectCompany(company)">
-                                                            <span class="block truncate" :class="{ 'font-semibold': form.customer_company_id === company.id }" x-text="company.name"></span>
-                                                            <span class="block truncate text-xs text-gray-500" x-text="company.company_code"></span>
+                                                            <span class="block truncate dark:text-gray-200" :class="{ 'font-semibold': form.customer_company_id === company.id }" x-text="company.name"></span>
+                                                            <span class="block truncate text-xs text-gray-500 dark:text-gray-400" x-text="company.company_code"></span>
                                                         </div>
                                                     </template>
                                                 </div>
@@ -73,26 +73,26 @@
                                         <!-- Create New Company Form -->
                                         <div x-show="isCreatingCompany" x-transition class="space-y-3 mt-2">
                                             <div>
-                                                <input type="text" x-model="companyForm.name" placeholder="Company Name *" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                                <input type="text" x-model="companyForm.name" placeholder="Company Name *" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                                                 <p class="text-xs text-red-500 mt-1" x-text="companyErrors.name"></p>
                                             </div>
                                             <div class="grid grid-cols-2 gap-2">
                                                 <div>
                                                     <input type="text" x-model="companyForm.company_code" placeholder="Code (e.g. ABC) *" 
-                                                        @input="companyForm.company_code = $event.target.value.toUpperCase().replace(/[^A-Z]/g, '')"
+                                                        @input="handleCompanyCodeInput($event)"
                                                         maxlength="10"
-                                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                                                     <p class="text-xs text-red-500 mt-1" x-text="companyErrors.company_code"></p>
                                                 </div>
                                                 <div>
-                                                    <input type="text" x-model="companyForm.phone" placeholder="Phone" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                                    <input type="text" x-model="companyForm.phone" placeholder="Phone" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                                                 </div>
                                             </div>
                                             <div>
-                                                <input type="email" x-model="companyForm.email" placeholder="Email" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                                <input type="email" x-model="companyForm.email" placeholder="Email" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
                                             </div>
                                             <div>
-                                                <textarea x-model="companyForm.address" rows="2" placeholder="Address *" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"></textarea>
+                                                <textarea x-model="companyForm.address" rows="2" placeholder="Address *" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></textarea>
                                                 <p class="text-xs text-red-500 mt-1" x-text="companyErrors.address"></p>
                                             </div>
                                         </div>
@@ -100,59 +100,59 @@
 
                                     <!-- Customer No (Readonly) -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Customer No</label>
-                                        <input type="text" x-model="form.customer_no" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
-                                        <p class="text-xs text-gray-500 mt-1" x-show="isCreatingCompany">Will be generated from Company Code.</p>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer No</label>
+                                        <input type="text" x-model="form.customer_no" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-600 dark:border-gray-500 dark:text-gray-200">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" x-show="isCreatingCompany">Will be generated from Company Code.</p>
                                     </div>
 
                                     <!-- Name -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Customer Name <span class="text-red-500">*</span></label>
-                                        <input type="text" x-model="form.customer_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name <span class="text-red-500">*</span></label>
+                                        <input type="text" x-model="form.customer_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                         <p class="text-xs text-red-500 mt-1" x-text="errors.customer_name"></p>
                                     </div>
                                 </div>
 
                                 <!-- Right Column: Contact Details -->
                                 <div class="space-y-4">
-                                    <h4 class="text-sm font-medium text-gray-900 border-b pb-2">Contact Details</h4>
+                                    <h4 class="text-sm font-medium text-gray-900 dark:text-white border-b dark:border-gray-700 pb-2">Contact Details</h4>
                                     
                                     <!-- Email & Phone -->
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Email</label>
-                                            <input type="email" x-model="form.email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                                            <input type="email" x-model="form.email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             <p class="text-xs text-red-500 mt-1" x-text="errors.email"></p>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Phone</label>
-                                            <input type="text" x-model="form.phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+                                            <input type="text" x-model="form.phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             <p class="text-xs text-red-500 mt-1" x-text="errors.phone"></p>
                                         </div>
                                     </div>
 
                                     <!-- Address -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Address</label>
-                                        <textarea x-model="form.address" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"></textarea>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+                                        <textarea x-model="form.address" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                                         <p class="text-xs text-red-500 mt-1" x-text="errors.address"></p>
                                     </div>
 
                                     <!-- Attention -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Attention</label>
-                                        <input type="text" x-model="form.attention" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Attention</label>
+                                        <input type="text" x-model="form.attention" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
 
                                     <!-- Designation & Department -->
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Designation</label>
-                                            <input type="text" x-model="form.designation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Designation</label>
+                                            <input type="text" x-model="form.designation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Department</label>
-                                            <input type="text" x-model="form.department" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
+                                            <input type="text" x-model="form.department" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                         </div>
                                     </div>
                                 </div>
@@ -160,7 +160,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button type="button" 
                             @click="submit()"
                             :disabled="loading"
@@ -170,7 +170,7 @@
                     </button>
                     <button type="button" 
                             @click="closeModal()"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">Cancel</button>
                 </div>
             </div>
         </div>
@@ -211,6 +211,7 @@
             init() {
                 this.fetchCompanies();
                 
+                // Keep the watcher as a backup
                 this.$watch('companyForm.company_code', (value) => {
                     if (this.isCreatingCompany) {
                         this.form.customer_no = value ? value + '-01' : '';
@@ -230,6 +231,17 @@
                          }
                      }
                 });
+            },
+
+            handleCompanyCodeInput(event) {
+                // Update model
+                const value = event.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+                this.companyForm.company_code = value;
+                
+                // Update customer number explicitly
+                if (this.isCreatingCompany) {
+                    this.form.customer_no = value ? value + '-01' : '';
+                }
             },
 
             openModal() {

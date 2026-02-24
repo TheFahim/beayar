@@ -21,6 +21,7 @@
                 noResultsText="No customers found."
                 createEvent="open-create-customer-modal"
                 createLabel="+ Add New Customer"
+                newItemEvent="customer-created"
                 class="w-full"
                 @option-selected="handleCustomerSelection($event)" />
             <div x-show="selectedCustomer" class="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 dark:text-white rounded text-sm">

@@ -14,6 +14,7 @@
     'imagePath' => 'path', // The path to the image within the image object
     'perPage' => 20, // Page size for server-side pagination
     'debounceMs' => 300, // Debounce delay for search input
+    'newItemEvent' => null, // Event to listen for new items
 ])
 @php
     $nameAttr = $attributes->get('name');
@@ -41,7 +42,8 @@
         imageField: @js($imageField),
         imagePath: @js($imagePath),
         perPage: @js($perPage),
-        debounceMs: @js($debounceMs)
+        debounceMs: @js($debounceMs),
+        newItemEvent: @js($newItemEvent)
     })"
     x-init="init()"
     x-modelable="selectedValue"
@@ -164,6 +166,7 @@
             hasMore: false,
             debounceMs: Number(config.debounceMs) || 300,
             activeIndex: -1,
+            newItemEvent: config.newItemEvent || null,
             init() {
                 if (!this.endpoint) {
                     this.loading = false;
@@ -178,6 +181,24 @@
                 window.addEventListener('product-created', () => {
                     this.fetchOptions(true);
                 });
+
+                // Listen for generic new item events
+                if (this.newItemEvent) {
+                    window.addEventListener(this.newItemEvent, (e) => {
+                        const newItem = e.detail;
+                        if (newItem && newItem.id) {
+                            // Check if already exists to avoid duplicates
+                            const exists = this.allOptions.some(opt => opt.id == newItem.id);
+                            if (!exists) {
+                                this.allOptions.push(newItem);
+                                // If the new item is the currently selected value, update display
+                                if (this.selectedValue == newItem.id) {
+                                    this.updateDisplayFromSelected();
+                                }
+                            }
+                        }
+                    });
+                }
 
                 // Initial fetch with empty query
                 this.fetchOptions(true);
