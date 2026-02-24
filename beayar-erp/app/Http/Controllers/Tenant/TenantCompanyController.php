@@ -25,10 +25,15 @@ class TenantCompanyController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show form for creating a new resource.
      */
     public function create()
     {
+        // Only tenant_admin can create companies
+        if (!Auth::user()->hasRole('tenant_admin')) {
+            abort(403, 'Only tenant administrators can create companies.');
+        }
+
         return view('tenant.companies.create');
     }
 
@@ -37,6 +42,11 @@ class TenantCompanyController extends Controller
      */
     public function store(Request $request)
     {
+        // Only tenant_admin can create companies
+        if (!Auth::user()->hasRole('tenant_admin')) {
+            abort(403, 'Only tenant administrators can create companies.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email',

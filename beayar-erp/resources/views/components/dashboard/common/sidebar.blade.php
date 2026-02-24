@@ -56,7 +56,7 @@
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.show') }}">
                     <x-ui.svg.company class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Tenant Profile</span>
+                    <span class="flex-1 ms-3 whitespace-nowrap">Profile</span>
                 </x-dashboard.common.sidebar-link>
             </li>
         @endif
@@ -100,32 +100,49 @@
         </li>
 
         @if(Auth::user()->getCurrentCompanyId())
-        @can('view_customers')
+        @canany(['view_customers', 'view_images', 'view_products'])
         <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
-                <x-ui.svg.customer class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @endcan
+            <button type="button"
+                class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                aria-controls="sidebar-dropdown-catalog" data-collapse-toggle="sidebar-dropdown-catalog">
+                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 000-2H8a2 2 0 012-2h2a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd" />
+                </svg>
+                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Catalog</span>
+                <x-ui.svg.down-arrow class="h-3 w-3" />
+            </button>
+            <ul id="sidebar-dropdown-catalog" class="hidden py-2 space-y-2 transition duration-300">
+                @can('view_customers')
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}" class="pl-12">
+                        <x-ui.svg.customer class="h-5 w-5" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                @endcan
 
-        @can('view_images')
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
-                <x-ui.svg.image class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @endcan
+                @can('view_images')
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}" class="pl-12">
+                        <x-ui.svg.image class="h-5 w-5" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                @endcan
 
-        @can('view_products')
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}">
-                <x-ui.svg.product class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
-            </x-dashboard.common.sidebar-link>
+                @can('view_products')
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}" class="pl-12">
+                        <x-ui.svg.product class="h-5 w-5" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                @endcan
+            </ul>
         </li>
-        @endcan
+        @endcanany
 
         @can('view_quotations')
             <li>
@@ -183,28 +200,39 @@
             </x-dashboard.common.sidebar-link>
         </li>
         @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}">
-                    <x-ui.svg.customer class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
-        @endif
-        @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}">
-                    <x-ui.svg.image class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
-        @endif
-        @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('admin.dashboard') }}">
-                    <x-ui.svg.admin-settings class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Admin Dashboard</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
+        <li>
+            <button type="button"
+                class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                aria-controls="sidebar-dropdown-catalog-fallback" data-collapse-toggle="sidebar-dropdown-catalog-fallback">
+                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 000-2H8a2 2 0 012-2h2a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd" />
+                </svg>
+                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Catalog</span>
+                <x-ui.svg.down-arrow class="h-3 w-3" />
+            </button>
+            <ul id="sidebar-dropdown-catalog-fallback" class="hidden py-2 space-y-2 transition duration-300">
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}" class="pl-12">
+                        <x-ui.svg.customer class="h-5 w-5" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}" class="pl-12">
+                        <x-ui.svg.image class="h-5 w-5" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}" class="pl-12">
+                        <x-ui.svg.product class="h-5 w-5" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+            </ul>
+        </li>
         @endif
         @endif
 

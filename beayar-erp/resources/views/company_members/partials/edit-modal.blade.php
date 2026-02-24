@@ -12,6 +12,12 @@
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
+            @php
+                $currentUser = Auth::user();
+                $currentUserRole = $currentUser->roleInCompany(session('tenant_id'));
+                $isCompanyAdmin = $currentUserRole === 'company_admin';
+                $canEditRestrictedFields = !$isCompanyAdmin;
+            @endphp
             <form class="p-4 md:p-5" action="{{ route('company-members.update', $member->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -49,8 +55,17 @@
                     </div>
 
                     <div class="col-span-2 sm:col-span-1">
-                        <label for="employee_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Employee ID</label>
-                        <input type="text" name="employee_id" id="employee_id" value="{{ $member->pivot->employee_id }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="EMP-001">
+                        <label for="employee_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Employee ID
+                            @if($isCompanyAdmin)
+                                <span class="text-xs text-gray-500 ml-2">(Read-only for Company Admin)</span>
+                            @endif
+                        </label>
+                        @if($isCompanyAdmin)
+                            <input type="text" name="employee_id" id="employee_id" value="{{ $member->pivot->employee_id }}" class="bg-gray-100 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="EMP-001" readonly>
+                        @else
+                            <input type="text" name="employee_id" id="employee_id" value="{{ $member->pivot->employee_id }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="EMP-001">
+                        @endif
                     </div>
 
                     <div class="col-span-2 sm:col-span-1" x-data="{
@@ -59,7 +74,9 @@
                         selected: {{ json_encode($member->roles->pluck('name')) }},
                         options: [
                             @foreach($roles as $role)
-                                { value: '{{ $role->name }}', label: '{{ ucfirst(str_replace('_', ' ', $role->name)) }}' },
+                                @if(!$isCompanyAdmin || $role->name !== 'tenant_admin')
+                                    { value: '{{ $role->name }}', label: '{{ ucfirst(str_replace('_', ' ', $role->name)) }}' },
+                                @endif
                             @endforeach
                         ],
                         get selectedLabels() {
@@ -74,9 +91,14 @@
                             }
                         }
                     }">
-                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
+                        <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Roles
+                            @if($isCompanyAdmin)
+                                <span class="text-xs text-gray-500 ml-2">(Cannot assign Tenant Admin)</span>
+                            @endif
+                        </label>
                         <div class="relative" @click.away="open = false">
-                            <button type="button" @click="open = !open" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 text-left dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-h-[42px] flex items-center justify-between">
+                            <button type="button" @click="open = !open" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 text-left dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 min-h-[42px] items-center justify-between">
                                 <span x-text="selectedLabels" class="block truncate mr-2"></span>
                                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
@@ -104,12 +126,15 @@
                             <!-- Hidden inputs for form submission -->
                             <select name="roles[]" multiple class="sr-only" x-model="selected">
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                    @if(!$isCompanyAdmin || $role->name !== 'tenant_admin')
+                                        <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
                     </div>
 
+                    @if($canEditRestrictedFields)
                     <div class="col-span-2 sm:col-span-1">
                         <label for="is_active" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
                         <select id="is_active" name="is_active" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -122,6 +147,7 @@
                         <label for="joined_at" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Joined Date</label>
                         <input type="date" name="joined_at" id="joined_at" value="{{ $member->pivot->joined_at ? \Carbon\Carbon::parse($member->pivot->joined_at)->format('Y-m-d') : '' }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
+                    @endif
 
                     <div class="col-span-2">
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New Password (Optional)</label>

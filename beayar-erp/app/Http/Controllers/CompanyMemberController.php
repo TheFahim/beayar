@@ -51,9 +51,10 @@ class CompanyMemberController extends Controller
         // Global roles have team_id = null. Tenant roles have team_id = $company->id
         // We want roles that are either global OR specific to this tenant.
         // However, Spatie usually filters by team_id if set.
-        // Let's get all roles that are applicable.
+        // Let's get all roles that are applicable, but exclude 'super_admin' role.
         $roles = Role::where('tenant_company_id', $company->id)
                      ->orWhereNull('tenant_company_id')
+                     ->where('name', '!=', 'super_admin')
                      ->get();
 
         // Include owner in the list for display if needed, or separate.
@@ -86,7 +87,15 @@ class CompanyMemberController extends Controller
         $request->validate([
             'email' => 'required|email',
             'name' => 'nullable|string|max:255',
-            'roles' => 'required|array', // Now array
+            'roles' => [
+                'required',
+                'array',
+                function ($attribute, $value, $fail) {
+                    if (in_array('super_admin', $value)) {
+                        $fail('The super_admin role cannot be assigned to company members.');
+                    }
+                },
+            ],
             'roles.*' => 'exists:roles,name', // Validate role names exist
             'password' => 'nullable|string|min:8',
             'employee_id' => 'nullable|string|max:255',
@@ -129,8 +138,34 @@ class CompanyMemberController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $targetUser = User::findOrFail($id);
+        $user = Auth::user();
+        $tenantId = Session::get('tenant_id');
+        $company = $user->companies()->where('tenant_companies.id', $tenantId)->first()
+                   ?? $user->ownedCompanies()->where('id', $tenantId)->first();
+
+        if (! $company) {
+            abort(403);
+        }
+
+        // Get current user's role in this company
+        $currentUserRole = $user->roleInCompany($tenantId);
+
         $request->validate([
-            'roles' => 'required|array',
+            'roles' => [
+                'required',
+                'array',
+                function ($attribute, $value, $fail) use ($currentUserRole) {
+                    if (in_array('super_admin', $value)) {
+                        $fail('The super_admin role cannot be assigned to company members.');
+                    }
+
+                    // Prevent company_admin from assigning tenant_admin role
+                    if ($currentUserRole === 'company_admin' && in_array('tenant_admin', $value)) {
+                        $fail('Company administrators cannot assign tenant_admin role.');
+                    }
+                },
+            ],
             'roles.*' => 'exists:roles,name',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
@@ -142,19 +177,17 @@ class CompanyMemberController extends Controller
             'password' => 'nullable|string|min:8',
         ]);
 
-        $targetUser = User::findOrFail($id);
-        $user = Auth::user();
-        $tenantId = Session::get('tenant_id');
-        $company = $user->companies()->where('tenant_companies.id', $tenantId)->first()
-                   ?? $user->ownedCompanies()->where('id', $tenantId)->first();
-
-        if (! $company) {
-            abort(403);
-        }
-
         // $this->authorize('update', [User::class, $company]);
 
-        $data = $request->only(['roles', 'name', 'email', 'phone', 'is_active', 'joined_at', 'employee_id']);
+        // Apply field restrictions based on current user role
+        $allowedFields = ['name', 'email', 'phone', 'avatar', 'password'];
+
+        if ($currentUserRole !== 'company_admin') {
+            // Non-company-admin users can edit all fields except role restrictions above
+            $allowedFields = array_merge($allowedFields, ['roles', 'is_active', 'joined_at', 'employee_id']);
+        }
+
+        $data = $request->only($allowedFields);
         if ($request->filled('password')) {
             $data['password'] = $request->password;
         }
