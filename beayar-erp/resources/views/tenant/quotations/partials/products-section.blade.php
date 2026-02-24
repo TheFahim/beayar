@@ -60,14 +60,14 @@
                                             imageField="image" imagePath="path" :perPage="20"
                                             @option-selected="handleProductSelection($event, index)" />
                                     </div>
-                                    <a href="{{ route('tenant.products.create') }}" target="_blank"
+                                    <button type="button" @click="openCreateProductModal(index)"
                                         class="flex-shrink-0 px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 dark:text-gray-300 rounded-lg transition-all duration-200 flex items-center justify-center shadow-sm"
                                         title="Create new product">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 4v16m8-8H4"></path>
                                         </svg>
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
 

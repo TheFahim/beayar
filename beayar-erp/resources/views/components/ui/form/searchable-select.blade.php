@@ -98,9 +98,9 @@
                  <li class="px-4 py-3 text-gray-500 text-center">
                     <p class="text-sm" x-text="noResultsText"></p>
                     <template x-if="createEvent">
-                        <button type="button" 
-                            @click="open = false; $dispatch(createEvent)" 
-                            class="mt-2 text-blue-600 hover:text-blue-800 text-xs font-bold uppercase tracking-wide hover:underline transition-all" 
+                        <button type="button"
+                            @click="open = false; $dispatch(createEvent)"
+                            class="mt-2 text-blue-600 hover:text-blue-800 text-xs font-bold uppercase tracking-wide hover:underline transition-all"
                             x-text="createLabel">
                         </button>
                     </template>
@@ -173,6 +173,11 @@
 
                 // Track initial selected value for sync logic
                 this.lastSelectedValue = this.selectedValue || null;
+
+                // Listen for product creation events to refresh options
+                window.addEventListener('product-created', () => {
+                    this.fetchOptions(true);
+                });
 
                 // Initial fetch with empty query
                 this.fetchOptions(true);

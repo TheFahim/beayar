@@ -712,8 +712,41 @@ function initQuotationForm(config = {}) {
             this.createProductModal = {
                 ...QuotationHelpers.createEmptyModal('createProduct'),
                 show: true,
-                productIndex: index
+                productIndex: index,
+                specifications: [
+                    {
+                        key: Date.now() + Math.floor(Math.random() * 1000000),
+                        description: ''
+                    }
+                ]
             };
+
+            // Initialize SunEditor after the modal is visible
+            this.$nextTick(() => {
+                if (window.sunEditorUtils && window.sunEditorUtils.initializeEditors) {
+                    window.sunEditorUtils.initializeEditors();
+                }
+            });
+        },
+
+        addModalSpec() {
+            this.createProductModal.specifications.push({
+                key: Date.now() + Math.floor(Math.random() * 1000000),
+                description: ''
+            });
+
+            // Reinitialize SunEditor for the new textarea
+            this.$nextTick(() => {
+                if (window.sunEditorUtils && window.sunEditorUtils.initializeEditors) {
+                    window.sunEditorUtils.initializeEditors();
+                }
+            });
+        },
+
+        removeModalSpec(index) {
+            if (this.createProductModal.specifications.length > 1) {
+                this.createProductModal.specifications.splice(index, 1);
+            }
         },
 
         closeCreateProductModal() {
@@ -730,6 +763,14 @@ function initQuotationForm(config = {}) {
                 return;
             }
 
+            // Save SunEditor content before submitting
+            if (window.sunEditorUtils && window.sunEditorUtils.saveEditorContent) {
+                this.createProductModal.specifications.forEach((spec, index) => {
+                    const textareaId = `spec-textarea-${index}`;
+                    window.sunEditorUtils.saveEditorContent(textareaId);
+                });
+            }
+
             this.createProductModal.creating = true;
 
             try {
@@ -740,8 +781,13 @@ function initQuotationForm(config = {}) {
                     formData.append('image_id', this.createProductModal.imageId);
                 }
 
-                if (this.createProductModal.specification.trim()) {
-                    formData.append('specifications[0][description]', this.createProductModal.specification.trim());
+                // Handle multiple specifications
+                if (this.createProductModal.specifications && this.createProductModal.specifications.length > 0) {
+                    this.createProductModal.specifications.forEach((spec, index) => {
+                        if (spec.description.trim()) {
+                            formData.append(`specifications[${index}][description]`, spec.description.trim());
+                        }
+                    });
                 }
 
                 const response = await fetch(this.routes.createProduct, {
@@ -765,6 +811,16 @@ function initQuotationForm(config = {}) {
                         this.quotation_products[productIndex].specifications = data.product.specifications;
                         this.quotation_products[productIndex].specification_id = data.product.specifications[0].id;
                     }
+
+                    // Dispatch custom event to refresh searchable selects
+                    this.$nextTick(() => {
+                        window.dispatchEvent(new CustomEvent('product-created', {
+                            detail: {
+                                product: data.product,
+                                productIndex: productIndex
+                            }
+                        }));
+                    });
 
                     this.updateProductSearchableSelect(productIndex, data.product);
 

@@ -149,7 +149,12 @@ const QuotationHelpers = {
                 productName: '',
                 imageId: null,
                 imageUrl: null,
-                specification: '',
+                specifications: [
+                    {
+                        key: Date.now() + Math.floor(Math.random() * 1000000),
+                        description: ''
+                    }
+                ],
                 creating: false,
                 errorMessage: '',
                 successMessage: '',
