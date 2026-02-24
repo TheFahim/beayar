@@ -93,14 +93,17 @@ class TenantCompanyController extends Controller
         ]);
 
         // Attach user as Admin
+        // If user is tenant_admin (which they must be to create), give them tenant_admin role in company too
+        $role = $user->hasRole('tenant_admin') ? 'tenant_admin' : 'company_admin';
+        
         $company->members()->attach($user->id, [
-            'role' => 'company_admin',
+            'role' => $role,
             'is_active' => true,
         ]);
 
         // Assign Spatie Role
         setPermissionsTeamId($company->id);
-        $user->assignRole('company_admin');
+        $user->assignRole($role);
 
         return redirect()->route('tenant.user-companies.index')->with('success', 'Company created successfully.');
     }

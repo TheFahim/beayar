@@ -37,7 +37,7 @@ class CheckCompanyRole
         }
 
         // Super Admin Bypass
-        if ($userRole === 'company_admin') {
+        if ($userRole === 'company_admin' || $userRole === 'tenant_admin') {
             return $next($request);
         }
 
