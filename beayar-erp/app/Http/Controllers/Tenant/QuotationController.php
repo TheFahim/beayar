@@ -13,6 +13,7 @@ use App\Models\Quotation;
 use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
 use App\Models\Specification;
+use App\Services\CompanySettingsService;
 use App\Services\ExchangeRateService;
 use App\Services\QuotationQueryService;
 use App\Services\QuotationService;
@@ -26,7 +27,8 @@ class QuotationController extends Controller
     public function __construct(
         private QuotationService $quotationService,
         private QuotationQueryService $queryService,
-        private ExchangeRateService $exchangeRateService
+        private ExchangeRateService $exchangeRateService,
+        private CompanySettingsService $companySettingsService
     ) {
         $this->authorizeResource(Quotation::class, 'quotation');
     }
@@ -62,10 +64,13 @@ class QuotationController extends Controller
             ->select('id', 'description')
             ->get();
 
+        $companySettings = $this->companySettingsService->getSettings(auth()->user()->currentCompany);
+
         return view('tenant.quotations.create', compact(
             'customers',
             'products',
             'specifications',
+            'companySettings',
         ));
     }
 
@@ -162,6 +167,8 @@ class QuotationController extends Controller
             ->select('id', 'description')
             ->get();
 
+        $companySettings = $this->companySettingsService->getSettings(auth()->user()->currentCompany);
+
         return view('tenant.quotations.edit', compact(
             'quotation',
             'loadRevision',
@@ -171,7 +178,8 @@ class QuotationController extends Controller
             'hasAnyBill',
             'customers',
             'products',
-            'specifications'
+            'specifications',
+            'companySettings'
         ));
     }
 

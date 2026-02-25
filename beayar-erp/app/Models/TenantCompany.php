@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class TenantCompany extends Model
 {
-    use HasFactory, HasSubscriptionFeatures, HasRoles;
+    use HasFactory, HasRoles, HasSubscriptionFeatures;
 
     protected $guarded = ['id'];
 
@@ -20,6 +20,44 @@ class TenantCompany extends Model
     public const TYPE_HOLDING = 'holding';
 
     public const TYPE_SUBSIDIARY = 'subsidiary';
+
+    public const DEFAULT_SETTINGS = [
+        'date_format' => 'd-m-Y',
+        'currency' => 'BDT',
+        'currency_symbol' => '৳',
+        'quotation_prefix' => '',
+        'quotation_number_format' => '{CUSTOMER_NO}-{YY}-{SEQUENCE}',
+    ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'settings' => 'array',
+        ];
+    }
+
+    /**
+     * Get all settings merged with defaults.
+     *
+     * @return array<string, mixed>
+     */
+    public function getSettings(): array
+    {
+        return array_merge(self::DEFAULT_SETTINGS, $this->settings ?? []);
+    }
+
+    /**
+     * Get a single setting value with fallback to default.
+     */
+    public function getSetting(string $key): mixed
+    {
+        $settings = $this->getSettings();
+
+        return $settings[$key] ?? null;
+    }
 
     public function isHolding(): bool
     {

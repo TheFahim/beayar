@@ -12,8 +12,8 @@ class ReusableDatepicker {
             format: 'yyyy-mm-dd',
             title: null,
             rangePicker: false,
-            onShow: () => {},
-            onHide: () => {},
+            onShow: () => { },
+            onHide: () => { },
             ...options
         };
 
@@ -89,11 +89,24 @@ class ReusableDatepicker {
 /**
  * Initialize default datepickers when DOM is loaded
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize quotation datepickers with class 'quotation-datepicker'
     // Use display format consistent with forms: dd/mm/yyyy
+
+    let dateFormat = 'dd/mm/yyyy';
+
+    // Check if configuration is available globally
+    if (window.quotationFormConfig && window.quotationFormConfig.companySettings && window.quotationFormConfig.companySettings.date_format) {
+        const phpFormat = window.quotationFormConfig.companySettings.date_format;
+        // Map PHP to Flowbite/JS format
+        if (phpFormat === 'd-m-Y') dateFormat = 'dd-mm-yyyy';
+        else if (phpFormat === 'Y-m-d') dateFormat = 'yyyy-mm-dd';
+        else if (phpFormat === 'm/d/Y') dateFormat = 'mm/dd/yyyy';
+        else if (phpFormat === 'd/m/Y') dateFormat = 'dd/mm/yyyy';
+    }
+
     window.quotationDatepicker = new ReusableDatepicker('quotation-datepicker', {
-        format: 'dd/mm/yyyy',
+        format: dateFormat,
         autohide: true,
         orientation: 'bottom'
     });

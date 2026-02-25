@@ -69,6 +69,11 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     // User Companies (Workspaces)
     Route::resource('user-companies', \App\Http\Controllers\Tenant\TenantCompanyController::class)->names('tenant.user-companies');
 
+    // Company Settings
+    Route::get('/user-companies/{company}/settings', [\App\Http\Controllers\Tenant\CompanySettingsController::class, 'edit'])->name('tenant.company-settings.edit');
+    Route::put('/user-companies/{company}/settings', [\App\Http\Controllers\Tenant\CompanySettingsController::class, 'update'])->name('tenant.company-settings.update');
+    Route::get('/company-settings/options', [\App\Http\Controllers\Tenant\CompanySettingsController::class, 'getOptions'])->name('tenant.company-settings.options');
+
     // Role Management
     Route::resource('roles', \App\Http\Controllers\Tenant\TenantRoleController::class)->names('tenant.roles');
     Route::post('/roles/assign', [\App\Http\Controllers\Tenant\TenantRoleController::class, 'assignRole'])->name('tenant.roles.assign');
@@ -190,4 +195,3 @@ Route::prefix('admin')->middleware(['web', 'auth:admin', 'admin.auth'])->name('a
     Route::put('/permissions/{permission}', [AdminPermissionController::class, 'update'])->name('permissions.update');
     Route::delete('/permissions/{permission}', [AdminPermissionController::class, 'destroy'])->name('permissions.destroy');
 });
-

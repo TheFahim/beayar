@@ -3,11 +3,14 @@
 namespace Tests\Feature\Tenant;
 
 use App\Models\Customer;
+use App\Models\Plan;
 use App\Models\Quotation;
 use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
-use App\Models\User;
+use App\Models\Subscription;
+use App\Models\Tenant;
 use App\Models\TenantCompany;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -32,11 +35,42 @@ class QuotationRevisionActivationTest extends TestCase
     {
         parent::setUp();
 
-        // Create user and company
-        $this->company = TenantCompany::factory()->create();
-        $this->user = User::factory()->create([
-            'current_tenant_company_id' => $this->company->id,
+        // Create user and tenant
+        $this->user = User::factory()->create();
+        $tenant = Tenant::create(['user_id' => $this->user->id, 'name' => 'Test Tenant']);
+
+        // Create Plan and Subscription
+        $plan = Plan::firstOrCreate(['slug' => 'pro'], [
+            'name' => 'Pro',
+            'description' => 'Test Plan',
+            'base_price' => 10,
+            'billing_cycle' => 'monthly',
+            'limits' => ['employees' => 5],
+            'is_active' => true,
         ]);
+
+        Subscription::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $this->user->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
+        ]);
+
+        // Create company linked to tenant
+        $this->company = TenantCompany::factory()->create([
+            'tenant_id' => $tenant->id,
+            'owner_id' => $this->user->id,
+        ]);
+
+        $this->company->members()->attach($this->user->id, [
+            'role' => 'company_admin',
+            'is_active' => true,
+            'joined_at' => now(),
+        ]);
+
+        $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
         // Authenticate
         $this->actingAs($this->user);
@@ -67,6 +101,7 @@ class QuotationRevisionActivationTest extends TestCase
             'quotation_no' => 'QT-REV-TEST',
             'reference_no' => 'QT-REV-TEST',
             'status_id' => QuotationStatus::where('name', 'Draft')->first()->id,
+            'ship_to' => 'Test Ship To',
         ]);
 
         // Create active revision 1
@@ -83,6 +118,7 @@ class QuotationRevisionActivationTest extends TestCase
             'saved_as' => 'draft',
             'is_active' => true,
             'created_by' => $this->user->id,
+            'terms_conditions' => 'Terms and conditions',
         ]);
 
         // Create inactive revision 2
@@ -99,6 +135,7 @@ class QuotationRevisionActivationTest extends TestCase
             'saved_as' => 'draft',
             'is_active' => false,
             'created_by' => $this->user->id,
+            'terms_conditions' => 'Terms and conditions',
         ]);
     }
 

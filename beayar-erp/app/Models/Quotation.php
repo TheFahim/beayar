@@ -20,7 +20,20 @@ class Quotation extends BaseModel
 
         static::creating(function ($model) {
             if (! $model->reference_no) {
-                $model->reference_no = 'QT-'.date('Y').'-'.strtoupper(Str::random(5));
+                $prefix = 'QT';
+
+                // Use company settings prefix if available
+                if ($model->tenant_company_id) {
+                    $company = \App\Models\TenantCompany::find($model->tenant_company_id);
+                    if ($company) {
+                        $companyPrefix = $company->getSetting('quotation_prefix');
+                        if (! empty($companyPrefix)) {
+                            $prefix = rtrim($companyPrefix, '-');
+                        }
+                    }
+                }
+
+                $model->reference_no = $prefix.'-'.date('Y').'-'.strtoupper(Str::random(5));
             }
         });
     }

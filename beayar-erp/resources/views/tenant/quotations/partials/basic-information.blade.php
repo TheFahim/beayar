@@ -10,7 +10,7 @@
                     <option value="via" disabled>Import Quotation (Upgrade Required)</option>
                 @endfeature
             </x-ui.form.simple-select>
-            
+
             @unless(auth()->user()->currentCompany->hasFeature('module_import_quotation'))
                 <div class="mt-1 text-xs text-amber-600 dark:text-amber-400">
                     <a href="{{ route('tenant.subscription.index') }}" class="flex items-center hover:underline">
@@ -33,9 +33,20 @@
             </div>
         </div>
 
+@php
+    $datePlaceholder = 'DD/MM/YYYY';
+    if (isset($companySettings['date_format'])) {
+        $datePlaceholder = str_replace(
+            ['d', 'm', 'Y', 'y', 'M'],
+            ['DD', 'MM', 'YYYY', 'YY', 'Mon'],
+            $companySettings['date_format']
+        );
+    }
+@endphp
+
         <div>
             <x-ui.form.input type="text" x-model="quotation_revision.date" name="quotation_revision[date]" label="Date"
-                placeholder="DD/MM/YYYY" class="quotation-datepicker w-full px-1.5 text-xs"
+                placeholder="{{ $datePlaceholder }}" class="quotation-datepicker w-full px-1.5 text-xs"
                 @change="updateQuotationNumber()" required />
         </div>
 
@@ -60,7 +71,7 @@
             <x-ui.form.simple-select x-model="quotation_revision.currency" name="quotation_revision[currency]"
                 label="Currency" class="w-full px-1.5 text-xs" @change="onCurrencyChange()"
                 x-bind:required="quotation_revision.type === 'via'">
-                <option value="USD" x-bind:selected="quotation_revision.currency === 'USD'">USD</option>
+                <option value="USD">USD</option>
                 <option value="EUR">EURO</option>
                 <option value="RMB">RMB</option>
                 <option value="INR">INR</option>

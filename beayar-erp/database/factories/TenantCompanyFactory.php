@@ -25,6 +25,7 @@ class TenantCompanyFactory extends Factory
             'address' => fake()->address(),
             'bin_no' => fake()->numerify('##########'),
             'status' => 'active',
+            'settings' => \App\Models\TenantCompany::DEFAULT_SETTINGS,
         ];
     }
 }

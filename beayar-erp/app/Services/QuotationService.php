@@ -7,6 +7,7 @@ use App\Models\Quotation;
 use App\Models\QuotationProduct;
 use App\Models\QuotationRevision;
 use App\Models\QuotationStatus;
+use App\Models\TenantCompany;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -230,7 +231,7 @@ class QuotationService
         $hasPriceCalculator = true;
         $user = Auth::user();
         if ($user && $user->currentCompany) {
-             $hasPriceCalculator = $user->currentCompany->hasFeature('module_price_calculator');
+            $hasPriceCalculator = $user->currentCompany->hasFeature('module_price_calculator');
         }
 
         // Collect existing product IDs from payload
@@ -248,7 +249,7 @@ class QuotationService
         }
 
         foreach ($productsData as $productData) {
-            if (!$hasPriceCalculator) {
+            if (! $hasPriceCalculator) {
                 // Keep Foreign/BDT and Final Price (unit_price)
                 // Zero out restricted calculation fields
                 $productData['weight'] = 0;
@@ -385,35 +386,24 @@ class QuotationService
     }
 
     /**
-     * Generate next quotation number for a customer.
+     * Generate next quotation number for a customer using company settings.
      */
     public function generateNextQuotationNo(Customer $customer): string
     {
-        $customerNo = $customer->customer_no;
-        $currentYear = date('y'); // 2-digit year, e.g., "25"
+        $company = TenantCompany::find(Auth::user()->current_tenant_company_id);
 
-        // Beayar: filter by company and customer, matching format {customerNo}-{YY}-{sequence}
-        $latestQuotation = Quotation::where('tenant_company_id', Auth::user()->current_tenant_company_id)
-            ->where('customer_id', $customer->id)
-            ->where('quotation_no', 'LIKE', $customerNo . '-' . $currentYear . '-%')
-            ->orderByRaw('LENGTH(quotation_no) DESC') // Order by length first to handle variable digits
-            ->orderBy('quotation_no', 'desc')
-            ->first();
+        if ($company) {
+            $settingsService = app(CompanySettingsService::class);
 
-        $nextNumber = 1;
-
-        if ($latestQuotation) {
-            $parts = explode('-', $latestQuotation->quotation_no);
-            $lastNumber = end($parts);
-
-            if (is_numeric($lastNumber)) {
-                $nextNumber = (int) $lastNumber + 1;
-            }
+            return $settingsService->generateQuotationNumber($company, $customer);
         }
 
-        $sequence = str_pad($nextNumber, 3, '0', STR_PAD_LEFT); // 3 digits padding
+        // Fallback to legacy format if no company context
+        $customerNo = $customer->customer_no;
+        $currentYear = date('y');
+        $sequence = str_pad('1', 3, '0', STR_PAD_LEFT);
 
-        return $customerNo . '-' . $currentYear . '-' . $sequence;
+        return $customerNo.'-'.$currentYear.'-'.$sequence;
     }
 
     /**

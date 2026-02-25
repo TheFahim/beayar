@@ -72,7 +72,7 @@
                 'type' => 'normal',
                 'date' => '',
                 'validity' => '',
-                'currency' => 'USD',
+                'currency' => $companySettings['currency'] ?? 'USD',
                 'exchange_rate' => '',
                 'discount' => 0,
                 'shipping' => 0,
@@ -121,6 +121,9 @@
         },
 
         // CSRF Token
-        csrfToken: @json(csrf_token())
+        csrfToken: @json(csrf_token()),
+
+        // Company Settings
+        companySettings: @json($companySettings ?? [])
     };
 </script>

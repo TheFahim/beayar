@@ -301,7 +301,10 @@
         },
 
         // CSRF Token
-        csrfToken: @json(csrf_token())
+        csrfToken: @json(csrf_token()),
+
+        // Company Settings
+        companySettings: @json($companySettings ?? [])
     };
 
     // Revision History Interactive Functions
