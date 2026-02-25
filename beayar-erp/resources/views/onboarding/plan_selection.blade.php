@@ -1,6 +1,6 @@
 <x-layouts.app>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto">
+        <div class=" max-w-6xl mx-auto">
             @if(session('error'))
                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <strong class="font-bold">Error!</strong>
@@ -304,10 +304,10 @@
             const planWidth = 320; // Approximate width of each plan card
             const gap = 24; // Gap between cards
             const totalWidthNeeded = (plans * planWidth) + ((plans - 1) * gap);
-            
+
             // Check if we need carousel mode
             const needsCarousel = totalWidthNeeded > containerWidth;
-            
+
             if (needsCarousel !== isCarouselMode) {
                 isCarouselMode = needsCarousel;
                 updateLayoutMode();
@@ -318,7 +318,7 @@
             const container = document.getElementById('plans-container');
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
-            
+
             if (isCarouselMode) {
                 // Carousel mode
                 container.classList.remove('flex-wrap', 'justify-center');
@@ -338,7 +338,7 @@
         function scrollPlans(direction) {
             const container = document.getElementById('plans-container');
             const scrollAmount = 350; // Adjust based on card width + gap
-            
+
             if (direction === 'prev') {
                 container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             } else {
@@ -351,9 +351,9 @@
             const container = document.getElementById('plans-container');
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
-            
+
             if (!isCarouselMode) return;
-            
+
             // Disable previous button if at start
             if (container.scrollLeft <= 0) {
                 prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -362,7 +362,7 @@
                 prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 prevBtn.disabled = false;
             }
-            
+
             // Disable next button if at end
             if (container.scrollLeft >= container.scrollWidth - container.clientWidth - 1) {
                 nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -407,10 +407,10 @@
             // Navigation button event listeners
             document.getElementById('prev-btn').addEventListener('click', () => scrollPlans('prev'));
             document.getElementById('next-btn').addEventListener('click', () => scrollPlans('next'));
-            
+
             // Scroll event listener for button states
             document.getElementById('plans-container').addEventListener('scroll', updateNavigationButtons);
-            
+
             // Initial layout check
             checkLayoutMode();
             updateNavigationButtons();
