@@ -25,6 +25,7 @@ class TenantCompany extends Model
         'date_format' => 'd-m-Y',
         'currency' => 'BDT',
         'currency_symbol' => '৳',
+        'quotation_currencies' => ['BDT', 'USD', 'EUR', 'INR', 'RMB'],
         'quotation_prefix' => '',
         'quotation_number_format' => '{CUSTOMER_NO}-{YY}-{SEQUENCE}',
         'vat_percentages' => [0, 5, 10, 15],

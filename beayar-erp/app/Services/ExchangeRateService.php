@@ -23,6 +23,12 @@ class ExchangeRateService
      */
     public function getRates(): array
     {
+        // Try to retrieve valid rates from cache first
+        $cached = \Illuminate\Support\Facades\Cache::get('exchange_rates');
+        if ($cached && !($cached['fallback'] ?? false)) {
+            return $cached;
+        }
+
         try {
             $data = $this->fetchRatesFromApi();
 
@@ -30,14 +36,22 @@ class ExchangeRateService
                 throw new \Exception('Invalid API response format or missing currency rates.');
             }
 
-            return [
+            $result = [
                 'success' => true,
                 'rates' => $this->calculateRates($data['rates']),
                 'last_updated' => $data['date'] ?? date('Y-m-d'),
+                'fallback' => false,
             ];
+
+            // Cache successful response for 12 hours
+            \Illuminate\Support\Facades\Cache::put('exchange_rates', $result, 43200);
+
+            return $result;
         } catch (\Exception $e) {
             Log::warning('Exchange rate API unavailable: '.$e->getMessage());
 
+            // If we have stale cache (even if expired or marked fallback previously but valid data exists?), use it?
+            // For now, just return fallback if fetch fails and no valid cache.
             return $this->getFallbackResponse();
         }
     }
@@ -70,7 +84,7 @@ class ExchangeRateService
      */
     private function isValidApiResponse(array $data): bool
     {
-        return isset($data['rates']['USD'], $data['rates']['EUR'], $data['rates']['CNY']);
+        return isset($data['rates']) && is_array($data['rates']);
     }
 
     /**
@@ -78,12 +92,15 @@ class ExchangeRateService
      */
     private function calculateRates(array $apiRates): array
     {
-        return [
-            'USD' => round(1 / $apiRates['USD'], 2),
-            'EUR' => round(1 / $apiRates['EUR'], 2),
-            'RMB' => round(1 / $apiRates['CNY'], 2),
-            'INR' => round(1 / $apiRates['INR'], 2),
-        ];
+        $rates = [];
+        foreach ($apiRates as $currency => $rate) {
+            if ($rate > 0) {
+                // Handle RMB mapping (API uses CNY)
+                $key = ($currency === 'CNY') ? 'RMB' : $currency;
+                $rates[$key] = round(1 / $rate, 2);
+            }
+        }
+        return $rates;
     }
 
     /**

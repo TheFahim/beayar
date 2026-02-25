@@ -180,6 +180,7 @@ it('merges defaults with saved settings', function () {
     // Defaults are filled in
     expect($settings['date_format'])->toBe('d-m-Y');
     expect($settings['quotation_number_format'])->toBe('{CUSTOMER_NO}-{YY}-{SEQUENCE}');
+    expect($settings['quotation_currencies'])->toBe(['BDT', 'USD', 'EUR', 'INR', 'RMB']);
 });
 
 it('returns available currencies', function () {

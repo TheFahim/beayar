@@ -42,6 +42,14 @@
             $companySettings['date_format']
         );
     }
+    $quotationCurrencies = $companySettings['quotation_currencies'] ?? ['USD', 'EUR', 'RMB', 'INR', 'BDT'];
+    if (!is_array($quotationCurrencies)) {
+        $quotationCurrencies = ['USD', 'EUR', 'RMB', 'INR', 'BDT'];
+    }
+    $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
+    if (!in_array('BDT', $quotationCurrencies, true)) {
+        $quotationCurrencies[] = 'BDT';
+    }
 @endphp
 
         <div>
@@ -71,11 +79,13 @@
             <x-ui.form.simple-select x-model="quotation_revision.currency" name="quotation_revision[currency]"
                 label="Currency" class="w-full px-1.5 text-xs" @change="onCurrencyChange()"
                 x-bind:required="quotation_revision.type === 'via'">
-                <option value="USD">USD</option>
-                <option value="EUR">EURO</option>
-                <option value="RMB">RMB</option>
-                <option value="INR">INR</option>
-                <option value="BDT" x-show="quotation_revision.type === 'normal'">BDT</option>
+                @foreach($quotationCurrencies as $code)
+                    @if($code === 'BDT')
+                        <option value="BDT" x-show="quotation_revision.type === 'normal'">BDT</option>
+                    @else
+                        <option value="{{ $code }}">{{ $code }}</option>
+                    @endif
+                @endforeach
             </x-ui.form.simple-select>
             <div x-show="quotation_revision.type === 'via' && !quotation_revision.currency"
                 class="text-xs text-red-600 dark:text-red-400 mt-1">

@@ -71,7 +71,7 @@ export default {
 
   setDefaultCurrencyForViaQuotation() {
     if (!this.quotation_revision.currency || this.quotation_revision.currency === 'BDT') {
-      this.quotation_revision.currency = 'USD';
+      this.quotation_revision.currency = this.getDefaultCurrencyForType('via');
       // Only auto-update rate when not in edit mode (prevent overwriting saved rate)
       if (this.mode !== 'edit') {
         this.updateExchangeRate();

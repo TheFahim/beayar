@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\CompanySettingsService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,6 +17,16 @@ class QuotationRequest extends FormRequest
     {
         // Get the quotation ID from the route parameter (for update) or from the request (for create)
         $quotationId = $this->route('quotation')?->id ?? $this->quotation['id'] ?? null;
+        $company = $this->user()?->currentCompany;
+        $settings = $company?->getSettings() ?? [];
+        $quotationCurrencies = $settings['quotation_currencies'] ?? array_keys(CompanySettingsService::AVAILABLE_CURRENCIES);
+        if (!is_array($quotationCurrencies) || empty($quotationCurrencies)) {
+            $quotationCurrencies = array_keys(CompanySettingsService::AVAILABLE_CURRENCIES);
+        }
+        $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
+        if (!in_array('BDT', $quotationCurrencies, true)) {
+            $quotationCurrencies[] = 'BDT';
+        }
 
         return [
             // Main quotation fields
@@ -41,7 +52,7 @@ class QuotationRequest extends FormRequest
             'quotation_revision.type' => ['required', 'string', 'in:normal,via'],
             'quotation_revision.date' => ['required', 'date_format:d/m/Y'],
             'quotation_revision.validity' => ['required', 'date_format:d/m/Y'], // Removed after_or_equal check to simplify for now
-            'quotation_revision.currency' => ['required', 'string', 'in:USD,EUR,BDT,RMB,INR'],
+            'quotation_revision.currency' => ['required', 'string', Rule::in($quotationCurrencies)],
             'quotation_revision.exchange_rate' => [
                 'required_if:quotation_revision.type,via',
                 'nullable',

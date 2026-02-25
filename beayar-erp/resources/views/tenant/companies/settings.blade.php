@@ -61,6 +61,22 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Set the default date format and
                                 currency for your company.</p>
 
+                            @php
+                                $defaultCurrencies = ['BDT', 'USD', 'EUR', 'INR', 'RMB'];
+                                $quotationCurrencies = old('quotation_currencies', $settings['quotation_currencies'] ?? $defaultCurrencies);
+                                if (!is_array($quotationCurrencies)) {
+                                    $quotationCurrencies = $defaultCurrencies;
+                                }
+                                $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
+                                $selectedCurrency = old('currency', $settings['currency']);
+                                if ($selectedCurrency && !in_array($selectedCurrency, $quotationCurrencies, true)) {
+                                    $quotationCurrencies[] = $selectedCurrency;
+                                }
+                                if (!in_array('BDT', $quotationCurrencies, true)) {
+                                    $quotationCurrencies[] = 'BDT';
+                                }
+                            @endphp
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {{-- Date Format --}}
                                 <div>
@@ -88,9 +104,12 @@
                                     <select name="currency" id="currency"
                                         class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
                                         onchange="updateCurrencySymbol(this)">
-                                        @foreach($currencies as $code => $symbol)
-                                            <option value="{{ $code }}" data-symbol="{{ $symbol }}" {{ old('currency', $settings['currency']) === $code ? 'selected' : '' }}>
-                                                {{ $code }} ({{ $symbol }})
+                                        @foreach($quotationCurrencies as $code)
+                                            @php
+                                                $symbol = $currencies[$code] ?? '';
+                                            @endphp
+                                            <option value="{{ $code }}" data-symbol="{{ $symbol }}" {{ $selectedCurrency === $code ? 'selected' : '' }}>
+                                                {{ $symbol ? "{$code} ({$symbol})" : $code }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -109,6 +128,102 @@
                                         class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
                                         placeholder="$" maxlength="5" required>
                                     @error('currency_symbol')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="md:col-span-2" x-data="{
+                                    search: '',
+                                    open: false,
+                                    selected: {{ json_encode($quotationCurrencies) }},
+                                    allCurrencies: {{ json_encode($currencies) }},
+
+                                    init() {
+                                        this.$nextTick(() => syncCurrencySelectOptions());
+                                    },
+
+                                    get filteredCurrencies() {
+                                        if (this.search === '') return {};
+                                        const query = this.search.toLowerCase();
+                                        const result = {};
+                                        for (const [code, symbol] of Object.entries(this.allCurrencies)) {
+                                            if (!this.selected.includes(code)) {
+                                                 if (code.toLowerCase().includes(query) || (symbol && symbol.toLowerCase().includes(query))) {
+                                                    result[code] = symbol;
+                                                }
+                                            }
+                                        }
+                                        return result;
+                                    },
+
+                                    add(code) {
+                                        if (!this.selected.includes(code)) {
+                                            this.selected.push(code);
+                                            this.search = '';
+                                            this.open = false;
+                                            this.$nextTick(() => syncCurrencySelectOptions());
+                                        }
+                                    },
+
+                                    remove(code) {
+                                        if (code !== 'BDT') {
+                                            this.selected = this.selected.filter(c => c !== code);
+                                            this.$nextTick(() => syncCurrencySelectOptions());
+                                        }
+                                    }
+                                }">
+                                    <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Quotation Currencies <span class="text-red-500">*</span></label>
+
+                                    {{-- Selected Tags --}}
+                                    <div class="flex flex-wrap gap-2 mb-3">
+                                        <template x-for="code in selected" :key="code">
+                                            <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5">
+                                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-200" x-text="code"></span>
+                                                <input type="hidden" name="quotation_currencies[]" :value="code">
+                                                <button type="button"
+                                                    class="h-6 w-6 rounded-md flex items-center justify-center transition-colors"
+                                                    :class="code === 'BDT' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'"
+                                                    :disabled="code === 'BDT'"
+                                                    @click="remove(code)">
+                                                    ×
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    {{-- Search Input --}}
+                                    <div class="relative" @click.away="open = false">
+                                        <input type="text"
+                                            x-model="search"
+                                            @focus="open = true"
+                                            @keydown.escape="open = false"
+                                            class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
+                                            placeholder="Search to add currency (e.g. USD, Euro)...">
+
+                                        <div x-show="open && Object.keys(filteredCurrencies).length > 0"
+                                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                                            style="display: none;">
+                                            <template x-for="(symbol, code) in filteredCurrencies" :key="code">
+                                                <div class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                                                    @click="add(code)">
+                                                    <span class="block truncate">
+                                                        <span x-text="code" class="font-medium"></span>
+                                                        <span x-show="symbol" x-text="` (${symbol})`" class="text-gray-500 dark:text-gray-400"></span>
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div x-show="open && search !== '' && Object.keys(filteredCurrencies).length === 0"
+                                             class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 px-3 text-sm text-gray-500 dark:text-gray-400"
+                                             style="display: none;">
+                                            No matching currencies found.
+                                        </div>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Search for currencies supported by the exchange rate provider.</p>
+                                    @error('quotation_currencies')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                    @error('quotation_currencies.*')
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -298,11 +413,99 @@
 
     <script>
         const currencyMap = @json($currencies);
+        const initialQuotationCurrencies = @json($quotationCurrencies);
 
         function updateCurrencySymbol(select) {
             const option = select.options[select.selectedIndex];
-            document.getElementById('currency_symbol').value = option.dataset.symbol || '';
+            const symbol = option?.dataset?.symbol;
+            if (symbol) {
+                document.getElementById('currency_symbol').value = symbol;
+            }
             updatePreview();
+        }
+
+        function normalizeCurrency(value) {
+            return value.trim().toUpperCase();
+        }
+
+        function getQuotationCurrencyValues() {
+            return Array.from(document.querySelectorAll('input[name="quotation_currencies[]"]'))
+                .map((input) => input.value)
+                .filter((value) => value);
+        }
+
+        function syncCurrencySelectOptions() {
+            const select = document.getElementById('currency');
+            if (!select) return;
+            const currentValue = select.value;
+            const codes = getQuotationCurrencyValues();
+            select.innerHTML = '';
+
+            codes.forEach((code) => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.dataset.symbol = currencyMap[code] || '';
+                option.textContent = currencyMap[code] ? `${code} (${currencyMap[code]})` : code;
+                if (code === currentValue) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            if (codes.length && !codes.includes(currentValue)) {
+                select.value = codes[0];
+                updateCurrencySymbol(select);
+            }
+        }
+
+        function createCurrencyChip(code) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex items-center gap-2 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5';
+
+            const label = document.createElement('span');
+            label.className = 'text-sm font-semibold text-gray-700 dark:text-gray-200';
+            label.textContent = code;
+
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'quotation_currencies[]';
+            hidden.value = code;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'h-6 w-6 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20';
+            removeButton.textContent = '×';
+
+            if (code === 'BDT') {
+                removeButton.disabled = true;
+                removeButton.className = 'h-6 w-6 rounded-md text-gray-300 cursor-not-allowed';
+            } else {
+                removeButton.addEventListener('click', () => {
+                    wrapper.remove();
+                    syncCurrencySelectOptions();
+                });
+            }
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(hidden);
+            wrapper.appendChild(removeButton);
+
+            return wrapper;
+        }
+
+        function addQuotationCurrency(code) {
+            const normalized = normalizeCurrency(code);
+            if (!/^[A-Z]{2,5}$/.test(normalized)) {
+                return;
+            }
+            const existing = getQuotationCurrencyValues();
+            if (existing.includes(normalized)) {
+                return;
+            }
+            const list = document.getElementById('quotation-currency-list');
+            if (!list) return;
+            list.appendChild(createCurrencyChip(normalized));
+            syncCurrencySelectOptions();
         }
 
         function updatePreview() {
@@ -426,7 +629,31 @@
                 });
             }
 
+            const currencyList = document.getElementById('quotation-currency-list');
+            const currencyInput = document.getElementById('quotation_currencies_input');
+            const addCurrencyButton = document.getElementById('add-quotation-currency');
+
+            if (currencyList) {
+                (initialQuotationCurrencies || []).forEach((code) => addQuotationCurrency(code));
+            }
+
+            if (currencyInput && addCurrencyButton) {
+                addCurrencyButton.addEventListener('click', () => {
+                    addQuotationCurrency(currencyInput.value || '');
+                    currencyInput.value = '';
+                    currencyInput.focus();
+                });
+
+                currencyInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addCurrencyButton.click();
+                    }
+                });
+            }
+
             syncVatDefaultOptions();
+            syncCurrencySelectOptions();
         });
     </script>
 </x-dashboard.layout.default>

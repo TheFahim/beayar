@@ -36,6 +36,22 @@ function initQuotationForm(config = {}) {
         ? defaultVatFromSettings
         : vatPercentages[vatPercentages.length - 1] ?? 0;
     const defaultVatPercentage = config.oldQuotationRevision?.vat_percentage ?? resolvedDefaultVat;
+    const rawQuotationCurrencies = Array.isArray(config.companySettings?.quotation_currencies)
+        ? config.companySettings.quotation_currencies
+        : ['USD', 'EUR', 'RMB', 'INR', 'BDT'];
+    const normalizedQuotationCurrencies = rawQuotationCurrencies
+        .map((value) => String(value).trim().toUpperCase())
+        .filter((value) => value.length >= 2 && value.length <= 5)
+        .reduce((acc, value) => {
+            if (!acc.includes(value)) acc.push(value);
+            return acc;
+        }, []);
+    if (!normalizedQuotationCurrencies.includes('BDT')) {
+        normalizedQuotationCurrencies.push('BDT');
+    }
+    const companyDefaultCurrency = config.companySettings?.currency
+        ? String(config.companySettings.currency).trim().toUpperCase()
+        : normalizedQuotationCurrencies[0] || 'USD';
 
     return {
         // --- Grouped Data Structure ---
@@ -86,6 +102,8 @@ function initQuotationForm(config = {}) {
         showSaveDropdown: false,
         lastExchangeRate: config.oldQuotationRevision?.exchange_rate || '',
         vatPercentages,
+        quotationCurrencies: normalizedQuotationCurrencies,
+        companyDefaultCurrency,
 
         // Modals
         specificationModal: QuotationHelpers.createEmptyModal('specification'),
@@ -106,6 +124,18 @@ function initQuotationForm(config = {}) {
 
         format2(value) {
             return QuotationHelpers.format2(value);
+        },
+
+        getDefaultCurrencyForType(type) {
+            const available = Array.isArray(this.quotationCurrencies) && this.quotationCurrencies.length
+                ? this.quotationCurrencies
+                : ['USD', 'EUR', 'RMB', 'INR', 'BDT'];
+            const nonBdt = available.filter((currency) => currency !== 'BDT');
+            const base = this.companyDefaultCurrency || nonBdt[0] || 'USD';
+            if (type === 'via') {
+                return nonBdt[0] || (base === 'BDT' ? 'USD' : base);
+            }
+            return base || 'BDT';
         },
 
         formatToApi(dateStr) {
@@ -188,7 +218,7 @@ function initQuotationForm(config = {}) {
             try {
                 // Auto-select USD if no currency is set, regardless of type
                 if (!this.quotation_revision.currency) {
-                    this.quotation_revision.currency = 'USD';
+                    this.quotation_revision.currency = this.getDefaultCurrencyForType(this.quotation_revision.type);
                     // Only update exchange rate for foreign currency mode
                     if (this.quotation_revision.type === 'via') {
                         this.updateExchangeRate();

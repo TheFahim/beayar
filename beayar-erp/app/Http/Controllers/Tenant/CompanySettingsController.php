@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanySettingsRequest;
 use App\Models\TenantCompany;
 use App\Services\CompanySettingsService;
+use App\Services\ExchangeRateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,10 @@ use Illuminate\View\View;
 
 class CompanySettingsController extends Controller
 {
-    public function __construct(private CompanySettingsService $settingsService) {}
+    public function __construct(
+        private CompanySettingsService $settingsService,
+        private ExchangeRateService $exchangeRateService
+    ) {}
 
     /**
      * Show the settings form for a company.
@@ -25,6 +29,18 @@ class CompanySettingsController extends Controller
 
         $settings = $this->settingsService->getSettings($company);
         $currencies = $this->settingsService->getAvailableCurrencies();
+        
+        // Fetch all supported currencies from API
+        $apiRates = $this->exchangeRateService->getRates();
+        if ($apiRates['success']) {
+            foreach ($apiRates['rates'] as $code => $rate) {
+                if (!isset($currencies[$code])) {
+                    $currencies[$code] = ''; // No symbol available
+                }
+            }
+        }
+        ksort($currencies);
+
         $dateFormats = $this->settingsService->getAvailableDateFormats();
 
         return view('tenant.companies.settings', compact(

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Quotation;
+use App\Services\CompanySettingsService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,6 +19,16 @@ class QuotationUpdateRequest extends FormRequest
         // Get the quotation ID safely
         $quotation = $this->route('quotation');
         $quotationId = $quotation instanceof Quotation ? $quotation->id : $quotation;
+        $company = $this->user()?->currentCompany;
+        $settings = $company?->getSettings() ?? [];
+        $quotationCurrencies = $settings['quotation_currencies'] ?? array_keys(CompanySettingsService::AVAILABLE_CURRENCIES);
+        if (!is_array($quotationCurrencies) || empty($quotationCurrencies)) {
+            $quotationCurrencies = array_keys(CompanySettingsService::AVAILABLE_CURRENCIES);
+        }
+        $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
+        if (!in_array('BDT', $quotationCurrencies, true)) {
+            $quotationCurrencies[] = 'BDT';
+        }
 
         return [
             // Main quotation fields
@@ -44,7 +55,7 @@ class QuotationUpdateRequest extends FormRequest
             // Allow both d/m/Y (datepicker often used in frontend) and Y-m-d (standard DB/HTML5)
             'quotation_revision.date' => ['required', 'date_format:d/m/Y,Y-m-d'],
             'quotation_revision.validity' => ['required', 'date_format:d/m/Y,Y-m-d'],
-            'quotation_revision.currency' => ['required', 'string', 'in:USD,EUR,BDT,RMB,INR'],
+            'quotation_revision.currency' => ['required', 'string', Rule::in($quotationCurrencies)],
             'quotation_revision.exchange_rate' => [
                 'required_if:quotation_revision.type,via',
                 'nullable',

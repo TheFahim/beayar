@@ -13,6 +13,31 @@ class CompanySettingsRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $currencies = $this->input('quotation_currencies', []);
+        if (!is_array($currencies)) {
+            $currencies = [];
+        }
+
+        $normalized = array_values(array_unique(array_filter(array_map(static function ($value) {
+            if (!is_string($value)) {
+                return null;
+            }
+
+            $cleaned = strtoupper(trim($value));
+            return $cleaned !== '' ? $cleaned : null;
+        }, $currencies))));
+
+        if (!in_array('BDT', $normalized, true)) {
+            $normalized[] = 'BDT';
+        }
+
+        $this->merge([
+            'quotation_currencies' => $normalized,
+        ]);
+    }
+
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -20,11 +45,36 @@ class CompanySettingsRequest extends FormRequest
     {
         $validCurrencies = array_keys(CompanySettingsService::AVAILABLE_CURRENCIES);
         $validDateFormats = array_keys(CompanySettingsService::AVAILABLE_DATE_FORMATS);
+        $quotationCurrencies = $this->input('quotation_currencies', $validCurrencies);
+        if (!is_array($quotationCurrencies) || empty($quotationCurrencies)) {
+            $quotationCurrencies = $validCurrencies;
+        }
 
         return [
             'date_format' => ['required', 'string', Rule::in($validDateFormats)],
-            'currency' => ['required', 'string', Rule::in($validCurrencies)],
+            'currency' => ['required', 'string', Rule::in($quotationCurrencies)],
             'currency_symbol' => ['required', 'string', 'max:5'],
+            'quotation_currencies' => [
+                'required',
+                'array',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    if (!is_array($value)) {
+                        return;
+                    }
+                    $hasForeign = false;
+                    foreach ($value as $currency) {
+                        if (is_string($currency) && strtoupper($currency) !== 'BDT') {
+                            $hasForeign = true;
+                            break;
+                        }
+                    }
+                    if (! $hasForeign) {
+                        $fail('Add at least one foreign currency for quotations.');
+                    }
+                },
+            ],
+            'quotation_currencies.*' => ['required', 'string', 'distinct', 'regex:/^[A-Z]{2,5}$/'],
             'quotation_prefix' => ['nullable', 'string', 'max:20'],
             'quotation_number_format' => ['required', 'string', 'max:100'],
             'vat_percentages' => ['required', 'array', 'min:1'],
@@ -40,7 +90,7 @@ class CompanySettingsRequest extends FormRequest
     {
         return [
             'date_format.in' => 'The selected date format is not valid. Choose from: d-m-Y, Y-m-d, m/d/Y, d M, Y, d/m/Y.',
-            'currency.in' => 'The selected currency is not valid. Choose from: BDT, USD, EUR, INR, RMB.',
+            'currency.in' => 'The selected currency is not valid.',
             'currency_symbol.max' => 'The currency symbol must not exceed 5 characters.',
             'quotation_prefix.max' => 'The quotation prefix must not exceed 20 characters.',
             'quotation_number_format.max' => 'The quotation number format must not exceed 100 characters.',
