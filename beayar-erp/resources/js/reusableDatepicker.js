@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (phpFormat === 'Y-m-d') dateFormat = 'yyyy-mm-dd';
         else if (phpFormat === 'm/d/Y') dateFormat = 'mm/dd/yyyy';
         else if (phpFormat === 'd/m/Y') dateFormat = 'dd/mm/yyyy';
+        else if (phpFormat === 'd M, Y') dateFormat = 'dd M, yyyy';
     }
 
     window.quotationDatepicker = new ReusableDatepicker('quotation-datepicker', {

@@ -18,6 +18,25 @@ document.addEventListener('alpine:init', () => {
 
 
 function initQuotationForm(config = {}) {
+    const rawVatPercentages = Array.isArray(config.companySettings?.vat_percentages)
+        ? config.companySettings.vat_percentages
+        : [0, 5, 10, 15];
+    const normalizedVatPercentages = rawVatPercentages
+        .map((value) => Number(value))
+        .filter((value) => Number.isFinite(value))
+        .map((value) => Math.max(0, Math.min(100, value)))
+        .reduce((acc, value) => {
+            if (!acc.includes(value)) acc.push(value);
+            return acc;
+        }, []);
+    const vatPercentages = normalizedVatPercentages.length ? normalizedVatPercentages : [0, 5, 10, 15];
+    const rawDefaultVat = Number(config.companySettings?.vat_default_percentage);
+    const defaultVatFromSettings = Number.isFinite(rawDefaultVat) ? rawDefaultVat : null;
+    const resolvedDefaultVat = defaultVatFromSettings !== null && vatPercentages.includes(defaultVatFromSettings)
+        ? defaultVatFromSettings
+        : vatPercentages[vatPercentages.length - 1] ?? 0;
+    const defaultVatPercentage = config.oldQuotationRevision?.vat_percentage ?? resolvedDefaultVat;
+
     return {
         // --- Grouped Data Structure ---
         quotation: {
@@ -40,7 +59,7 @@ function initQuotationForm(config = {}) {
             discounted_price: 0,
             air_freight: 0,
             shipping: config.oldQuotationRevision?.shipping || 0,
-            vat_percentage: config.oldQuotationRevision?.vat_percentage ?? 15,
+            vat_percentage: defaultVatPercentage,
             vat_amount: 0,
             margin_percentage: 0,
             total: 0,
@@ -66,6 +85,7 @@ function initQuotationForm(config = {}) {
         showProductPricingWarning: false,
         showSaveDropdown: false,
         lastExchangeRate: config.oldQuotationRevision?.exchange_rate || '',
+        vatPercentages,
 
         // Modals
         specificationModal: QuotationHelpers.createEmptyModal('specification'),
@@ -82,13 +102,14 @@ function initQuotationForm(config = {}) {
         csrfToken: config.csrfToken || '',
         mode: config.mode || 'create',
         hasPriceCalculator: config.hasPriceCalculator ?? true,
+        dateFormat: config.companySettings?.date_format || 'd/m/Y',
 
         format2(value) {
             return QuotationHelpers.format2(value);
         },
 
         formatToApi(dateStr) {
-            return QuotationHelpers.formatToApi(dateStr);
+            return QuotationHelpers.formatToApi(dateStr, this.dateFormat);
         },
 
         // ========================================================================
@@ -183,21 +204,22 @@ function initQuotationForm(config = {}) {
         // ========================================================================
 
         formatToApi(dateStr) {
-            return QuotationHelpers.formatToApi(dateStr);
+            return QuotationHelpers.formatToApi(dateStr, this.dateFormat);
         },
 
         formatToDisplay(isoStr) {
-            return QuotationHelpers.formatToDisplay(isoStr);
+            return QuotationHelpers.formatToDisplay(isoStr, this.dateFormat);
         },
 
         updateValidityAuto() {
             try {
                 if (!this.autoCalculateValidity || !this.quotation_revision.date) return;
 
-                const parts = this.quotation_revision.date.split(/[\/]/);
+                const iso = this.formatToApi(this.quotation_revision.date);
+                if (!iso) return;
+                const parts = iso.split('-');
                 if (parts.length !== 3) return;
-
-                const [dd, mm, yyyy] = parts;
+                const [yyyy, mm, dd] = parts;
                 const base = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
                 if (isNaN(base)) return;
 
@@ -207,7 +229,7 @@ function initQuotationForm(config = {}) {
                 const y = base.getFullYear();
                 const m = String(base.getMonth() + 1).padStart(2, '0');
                 const d = String(base.getDate()).padStart(2, '0');
-                this.quotation_revision.validity = `${d}/${m}/${y}`;
+                this.quotation_revision.validity = this.formatToDisplay(`${y}-${m}-${d}`) || this.quotation_revision.validity;
             } catch (e) {
                 console.warn('Validity auto-calc failed:', e);
             }

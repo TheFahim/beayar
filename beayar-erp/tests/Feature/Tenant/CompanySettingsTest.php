@@ -74,6 +74,8 @@ it('allows owner to update settings with valid data', function () {
             'currency_symbol' => '$',
             'quotation_prefix' => 'QTN-',
             'quotation_number_format' => 'QTN-{YYYY}-{SEQUENCE}',
+            'vat_percentages' => [0, 5, 10],
+            'vat_default_percentage' => 10,
         ]);
 
     $response->assertRedirect(route('tenant.company-settings.edit', $company->id));
@@ -98,6 +100,8 @@ it('rejects invalid currency code', function () {
             'currency_symbol' => '?',
             'quotation_prefix' => '',
             'quotation_number_format' => '{CUSTOMER_NO}-{YY}-{SEQUENCE}',
+            'vat_percentages' => [0, 5, 10],
+            'vat_default_percentage' => 10,
         ]);
 
     $response->assertSessionHasErrors('currency');
@@ -114,6 +118,8 @@ it('rejects invalid date format', function () {
             'currency_symbol' => '৳',
             'quotation_prefix' => '',
             'quotation_number_format' => '{CUSTOMER_NO}-{YY}-{SEQUENCE}',
+            'vat_percentages' => [0, 5, 10],
+            'vat_default_percentage' => 10,
         ]);
 
     $response->assertSessionHasErrors('date_format');
@@ -163,6 +169,8 @@ it('prevents non-owner non-admin from updating settings', function () {
             'currency_symbol' => '$',
             'quotation_prefix' => 'HACK-',
             'quotation_number_format' => 'HACK-{SEQUENCE}',
+            'vat_percentages' => [0, 5, 10],
+            'vat_default_percentage' => 10,
         ]);
 
     $response->assertForbidden();
@@ -193,6 +201,8 @@ it('persists settings after update', function () {
             'currency_symbol' => '€',
             'quotation_prefix' => 'INV-',
             'quotation_number_format' => 'INV/{MM}/{YY}/{SEQUENCE}',
+            'vat_percentages' => [0, 5, 8],
+            'vat_default_percentage' => 8,
         ]);
 
     // Reload and verify

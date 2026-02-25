@@ -27,6 +27,9 @@ class CompanySettingsRequest extends FormRequest
             'currency_symbol' => ['required', 'string', 'max:5'],
             'quotation_prefix' => ['nullable', 'string', 'max:20'],
             'quotation_number_format' => ['required', 'string', 'max:100'],
+            'vat_percentages' => ['required', 'array', 'min:1'],
+            'vat_percentages.*' => ['required', 'numeric', 'min:0', 'max:100'],
+            'vat_default_percentage' => ['required', 'numeric', 'min:0', 'max:100', Rule::in($this->input('vat_percentages', []))],
         ];
     }
 

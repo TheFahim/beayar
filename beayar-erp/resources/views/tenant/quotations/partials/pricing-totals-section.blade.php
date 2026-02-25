@@ -105,10 +105,9 @@
                                 x-model.number="quotation_revision.vat_percentage" 
                                 class="w-20 py-1.5 pl-2 pr-6 text-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:text-white shadow-sm transition-all"
                                 @change="calculateTotals()">
-                                <option value="0">0%</option>
-                                <option value="5">5%</option>
-                                <option value="10">10%</option>
-                                <option value="15">15%</option>
+                                <template x-for="percentage in vatPercentages" :key="percentage">
+                                    <option :value="percentage" x-text="`${percentage}%`"></option>
+                                </template>
                             </select>
                             <div class="text-right flex-1">
                                 <input type="hidden" name="quotation_revision[vat_amount]" x-model="quotation_revision.vat_amount">

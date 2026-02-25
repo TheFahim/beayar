@@ -27,6 +27,8 @@ class TenantCompany extends Model
         'currency_symbol' => '৳',
         'quotation_prefix' => '',
         'quotation_number_format' => '{CUSTOMER_NO}-{YY}-{SEQUENCE}',
+        'vat_percentages' => [0, 5, 10, 15],
+        'vat_default_percentage' => 15,
     ];
 
     /**

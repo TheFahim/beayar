@@ -10,22 +10,20 @@ const QuotationHelpers = {
         return isNaN(parsed) ? defaultValue : parsed;
     },
 
-    // Date formatting utilities
-    formatToApi(dateStr) {
+    formatToApi(dateStr, format = 'd/m/Y') {
         if (!dateStr || typeof dateStr !== 'string') return '';
-        const parts = dateStr.split(/[\/\-\.]/);
-        if (parts.length !== 3) return '';
-        const [dd, mm, yyyy] = parts;
-        const d = this.parseNumber(dd), m = this.parseNumber(mm), y = this.parseNumber(yyyy);
-        if (!d || !m || !y) return '';
+        const parsed = this.parseDisplayDate(dateStr, format);
+        if (!parsed) return '';
+        const { d, m, y } = parsed;
         const iso = new Date(y, m - 1, d);
         if (isNaN(iso)) return '';
+        if (iso.getFullYear() !== y || iso.getMonth() + 1 !== m || iso.getDate() !== d) return '';
         const mStr = String(m).padStart(2, '0');
         const dStr = String(d).padStart(2, '0');
         return `${y}-${mStr}-${dStr}`;
     },
 
-    formatToDisplay(isoStr) {
+    formatToDisplay(isoStr, format = 'd/m/Y') {
         if (!isoStr || typeof isoStr !== 'string') return '';
         const parts = isoStr.split(/[-]/);
         if (parts.length !== 3) return '';
@@ -33,9 +31,69 @@ const QuotationHelpers = {
         const y = this.parseNumber(yyyy), m = this.parseNumber(mm), d = this.parseNumber(dd);
         const iso = new Date(y, m - 1, d);
         if (isNaN(iso)) return '';
+        if (iso.getFullYear() !== y || iso.getMonth() + 1 !== m || iso.getDate() !== d) return '';
         const mStr = String(m).padStart(2, '0');
         const dStr = String(d).padStart(2, '0');
-        return `${dStr}/${mStr}/${yyyy}`;
+        if (format === 'd-m-Y') return `${dStr}-${mStr}-${y}`;
+        if (format === 'Y-m-d') return `${y}-${mStr}-${dStr}`;
+        if (format === 'm/d/Y') return `${mStr}/${dStr}/${y}`;
+        if (format === 'd M, Y') return `${dStr} ${this.getMonthName(m)}, ${y}`;
+        return `${dStr}/${mStr}/${y}`;
+    },
+
+    parseDisplayDate(dateStr, format = 'd/m/Y') {
+        const cleaned = dateStr.trim();
+        let d;
+        let m;
+        let y;
+
+        if (format === 'd-m-Y') {
+            const parts = cleaned.split('-');
+            if (parts.length !== 3) return null;
+            [d, m, y] = parts;
+        } else if (format === 'Y-m-d') {
+            const parts = cleaned.split('-');
+            if (parts.length !== 3) return null;
+            [y, m, d] = parts;
+        } else if (format === 'm/d/Y') {
+            const parts = cleaned.split('/');
+            if (parts.length !== 3) return null;
+            [m, d, y] = parts;
+        } else if (format === 'd/m/Y') {
+            const parts = cleaned.split('/');
+            if (parts.length !== 3) return null;
+            [d, m, y] = parts;
+        } else if (format === 'd M, Y') {
+            const match = cleaned.match(/^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})$/);
+            if (!match) return null;
+            d = match[1];
+            const monthIndex = this.getMonthIndex(match[2]);
+            if (monthIndex === -1) return null;
+            m = String(monthIndex + 1);
+            y = match[3];
+        } else {
+            const parts = cleaned.split(/[\/\-\.]/);
+            if (parts.length !== 3) return null;
+            [d, m, y] = parts;
+        }
+
+        const day = this.parseNumber(d);
+        const month = this.parseNumber(m);
+        const year = this.parseNumber(y);
+        if (!day || !month || !year) return null;
+        return { d: day, m: month, y: year };
+    },
+
+    getMonthIndex(monthStr) {
+        if (!monthStr || typeof monthStr !== 'string') return -1;
+        const name = monthStr.slice(0, 3).toLowerCase();
+        const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+        return months.indexOf(name);
+    },
+
+    getMonthName(month) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return months[month - 1] || '';
     },
 
     // Currency utilities

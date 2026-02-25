@@ -164,43 +164,43 @@
                                         Tags</h3>
                                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{CUSTOMER_NO}</code>
+                                            <button type="button" data-tag="{CUSTOMER_NO}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{CUSTOMER_NO}</button>
                                             <span class="text-gray-500">Customer code</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{SEQUENCE}</code>
+                                            <button type="button" data-tag="{SEQUENCE}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{SEQUENCE}</button>
                                             <span class="text-gray-500">Auto-increment</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{PREFIX}</code>
+                                            <button type="button" data-tag="{PREFIX}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{PREFIX}</button>
                                             <span class="text-gray-500">Your prefix</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{YYYY}</code>
+                                            <button type="button" data-tag="{YYYY}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{YYYY}</button>
                                             <span class="text-gray-500">Full year</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{YY}</code>
+                                            <button type="button" data-tag="{YY}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{YY}</button>
                                             <span class="text-gray-500">Short year</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{MM}</code>
+                                            <button type="button" data-tag="{MM}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{MM}</button>
                                             <span class="text-gray-500">Month</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{DD}</code>
+                                            <button type="button" data-tag="{DD}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{DD}</button>
                                             <span class="text-gray-500">Day</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs">
-                                            <code
-                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400">{ID}</code>
+                                            <button type="button" data-tag="{ID}"
+                                                class="bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-600 font-mono text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">{ID}</button>
                                             <span class="text-gray-500">Total count</span>
                                         </div>
                                     </div>
@@ -217,6 +217,64 @@
                                             class="font-mono">ACME</code>, sequence <code class="font-mono">001</code>
                                     </p>
                                 </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-200 dark:border-gray-700">
+
+                        @php
+                            $vatPercentages = old('vat_percentages', $settings['vat_percentages'] ?? [0, 5, 10, 15]);
+                            $vatDefaultFallback = (is_array($vatPercentages) && count($vatPercentages))
+                                ? $vatPercentages[array_key_last($vatPercentages)]
+                                : 0;
+                            $vatDefaultValue = old('vat_default_percentage', $settings['vat_default_percentage'] ?? $vatDefaultFallback);
+                        @endphp
+
+                        <div>
+                            <div class="flex items-center justify-between gap-4 mb-3">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">VAT Percentages</h2>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Used in quotation VAT dropdown.</p>
+                                </div>
+                                <button type="button" id="add-vat-percentage"
+                                    class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300 transition-colors">
+                                    Add
+                                </button>
+                            </div>
+                            <div class="flex flex-wrap gap-2" id="vat-percentages-list">
+                                @foreach($vatPercentages as $percentage)
+                                    <div class="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1">
+                                        <input type="number" name="vat_percentages[]" min="0" max="100" step="0.01"
+                                            value="{{ $percentage }}"
+                                            class="w-20 bg-transparent border-0 p-0 text-sm focus:ring-0 dark:text-white"
+                                            placeholder="0" required>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">%</span>
+                                        <button type="button"
+                                            class="h-6 w-6 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 vat-remove">
+                                            ×
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('vat_percentages')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                            @error('vat_percentages.*')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
+                            <div class="mt-4">
+                                <label for="vat-default-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Default VAT Percentage</label>
+                                <select id="vat-default-select" name="vat_default_percentage"
+                                    class="mt-1 w-40 py-1.5 pl-2 pr-8 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:text-white shadow-sm transition-all">
+                                    @foreach($vatPercentages as $percentage)
+                                        <option value="{{ $percentage }}" @selected((string) $percentage === (string) $vatDefaultValue)>
+                                            {{ $percentage }}%
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('vat_default_percentage')
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -265,7 +323,110 @@
             document.getElementById('format-preview').textContent = preview || '—';
         }
 
-        // Run on load
-        document.addEventListener('DOMContentLoaded', updatePreview);
+        function insertTag(tag) {
+            const input = document.getElementById('quotation_number_format');
+            if (!input) return;
+            const start = input.selectionStart ?? input.value.length;
+            const end = input.selectionEnd ?? input.value.length;
+            const value = input.value;
+            input.value = value.slice(0, start) + tag + value.slice(end);
+            const cursor = start + tag.length;
+            input.setSelectionRange(cursor, cursor);
+            input.focus();
+            updatePreview();
+        }
+
+        function createVatRow(value = '') {
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1';
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.name = 'vat_percentages[]';
+            input.min = '0';
+            input.max = '100';
+            input.step = '0.01';
+            input.value = value;
+            input.placeholder = '0';
+            input.required = true;
+            input.className = 'w-20 bg-transparent border-0 p-0 text-sm focus:ring-0 dark:text-white';
+            input.addEventListener('input', () => syncVatDefaultOptions());
+
+            const suffix = document.createElement('span');
+            suffix.className = 'text-xs text-gray-500 dark:text-gray-400';
+            suffix.textContent = '%';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'h-6 w-6 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 vat-remove';
+            removeButton.textContent = '×';
+            removeButton.addEventListener('click', () => {
+                row.remove();
+                syncVatDefaultOptions();
+            });
+
+            row.appendChild(input);
+            row.appendChild(suffix);
+            row.appendChild(removeButton);
+
+            return row;
+        }
+
+        function getVatValues() {
+            return Array.from(document.querySelectorAll('input[name="vat_percentages[]"]'))
+                .map((input) => input.value)
+                .filter((value) => value !== '');
+        }
+
+        function syncVatDefaultOptions() {
+            const select = document.getElementById('vat-default-select');
+            if (!select) return;
+            const currentValue = select.value;
+            const values = getVatValues();
+            select.innerHTML = '';
+            values.forEach((value) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = `${value}%`;
+                if (String(value) === String(currentValue)) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            if (values.length && !select.value) {
+                select.value = values[values.length - 1];
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePreview();
+            document.querySelectorAll('[data-tag]').forEach((button) => {
+                button.addEventListener('click', () => insertTag(button.dataset.tag));
+            });
+
+            const vatList = document.getElementById('vat-percentages-list');
+            const addVatButton = document.getElementById('add-vat-percentage');
+
+            if (vatList) {
+                vatList.querySelectorAll('.vat-remove').forEach((button) => {
+                    button.addEventListener('click', (event) => {
+                        event.currentTarget.closest('div')?.remove();
+                        syncVatDefaultOptions();
+                    });
+                });
+                vatList.querySelectorAll('input[name="vat_percentages[]"]').forEach((input) => {
+                    input.addEventListener('input', () => syncVatDefaultOptions());
+                });
+            }
+
+            if (vatList && addVatButton) {
+                addVatButton.addEventListener('click', () => {
+                    vatList.appendChild(createVatRow(''));
+                    syncVatDefaultOptions();
+                });
+            }
+
+            syncVatDefaultOptions();
+        });
     </script>
 </x-dashboard.layout.default>

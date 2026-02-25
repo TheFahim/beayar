@@ -52,7 +52,7 @@
 
         <div>
             <x-ui.form.input type="text" x-model="quotation_revision.validity" name="quotation_revision[validity]"
-                label="Validity (Valid Until)" placeholder="DD/MM/YYYY"
+                label="Validity (Valid Until)" placeholder="{{ $datePlaceholder }}"
                 class="quotation-datepicker w-full px-1.5 text-xs" required />
             <div class="flex items-center justify-between gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
                 <label class="inline-flex items-center">
