@@ -312,7 +312,7 @@ class CompanySettingsService
         'd-m-Y' => 'DD-MM-YYYY (25-02-2026)',
         'Y-m-d' => 'YYYY-MM-DD (2026-02-25)',
         'm/d/Y' => 'MM/DD/YYYY (02/25/2026)',
-        'd M, Y' => 'DD Mon, YYYY (25 Feb, 2026)',
+        // 'd M, Y' => 'DD Mon, YYYY (25 Feb, 2026)',
         'd/m/Y' => 'DD/MM/YYYY (25/02/2026)',
     ];
 
@@ -369,6 +369,34 @@ class CompanySettingsService
     public function getAvailableDateFormats(): array
     {
         return self::AVAILABLE_DATE_FORMATS;
+    }
+
+    /**
+     * Convert date from company format to database format (Y-m-d).
+     *
+     * @param  string  $date  The date string in company format
+     * @param  string  $companyDateFormat  The company's date format
+     * @return string|null  The date in Y-m-d format or null if invalid
+     */
+    public function convertDateToDbFormat(string $date, string $companyDateFormat): ?string
+    {
+        try {
+            $dateTime = \DateTime::createFromFormat($companyDateFormat, $date);
+            return $dateTime ? $dateTime->format('Y-m-d') : null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the company's date format setting.
+     *
+     * @return string  The date format (defaults to 'd/m/Y' if not set)
+     */
+    public function getCompanyDateFormat(TenantCompany $company): string
+    {
+        $settings = $this->getSettings($company);
+        return $settings['date_format'] ?? 'd/m/Y';
     }
 
     /**

@@ -30,6 +30,10 @@ class QuotationRequest extends FormRequest
             $quotationCurrencies[] = $exchangeRateCurrency;
         }
 
+        // Get company date format
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $validDateFormats = array_keys(CompanySettingsService::AVAILABLE_DATE_FORMATS);
+
         return [
             // Main quotation fields
             'quotation' => ['required', 'array'],
@@ -52,8 +56,8 @@ class QuotationRequest extends FormRequest
                 'exists:quotation_revisions,id',
             ],
             'quotation_revision.type' => ['required', 'string', 'in:normal,via'],
-            'quotation_revision.date' => ['required', 'date_format:d/m/Y'],
-            'quotation_revision.validity' => ['required', 'date_format:d/m/Y'], // Removed after_or_equal check to simplify for now
+            'quotation_revision.date' => ['required', 'date_format:' . implode(',', $validDateFormats)],
+            'quotation_revision.validity' => ['required', 'date_format:' . implode(',', $validDateFormats)], // Removed after_or_equal check to simplify for now
             'quotation_revision.currency' => ['required', 'string', Rule::in($quotationCurrencies)],
             'quotation_revision.exchange_rate' => [
                 'required_if:quotation_revision.type,via',
@@ -102,5 +106,65 @@ class QuotationRequest extends FormRequest
             'quotation_products.*.margin_value' => ['nullable', 'numeric', 'min:0'],
             'quotation_products.*.unit_price' => ['required', 'numeric', 'min:0'],
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($validator->errors()->isEmpty()) {
+                $this->convertDatesToDbFormat();
+            }
+        });
+    }
+
+    /**
+     * Convert dates from company format to database format.
+     *
+     * @return void
+     */
+    protected function convertDatesToDbFormat(): void
+    {
+        $company = $this->user()?->currentCompany;
+        if (!$company) {
+            return;
+        }
+
+        $settings = $company->getSettings();
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+
+        $companySettingsService = new CompanySettingsService();
+
+        // Convert quotation revision dates
+        $quotationRevision = $this->input('quotation_revision', []);
+        
+        if (isset($quotationRevision['date'])) {
+            $convertedDate = $companySettingsService->convertDateToDbFormat(
+                $quotationRevision['date'],
+                $dateFormat
+            );
+            if ($convertedDate) {
+                $this->merge([
+                    'quotation_revision.date' => $convertedDate
+                ]);
+            }
+        }
+
+        if (isset($quotationRevision['validity'])) {
+            $convertedValidity = $companySettingsService->convertDateToDbFormat(
+                $quotationRevision['validity'],
+                $dateFormat
+            );
+            if ($convertedValidity) {
+                $this->merge([
+                    'quotation_revision.validity' => $convertedValidity
+                ]);
+            }
+        }
     }
 }
