@@ -1,6 +1,6 @@
 <x-layouts.app>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div class=" max-w-6xl mx-auto">
+        <div class=" max-w-7xl mx-auto">
             @if(session('error'))
                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <strong class="font-bold">Error!</strong>
