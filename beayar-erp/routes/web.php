@@ -15,6 +15,7 @@ use App\Http\Controllers\Tenant\BillController;
 use App\Http\Controllers\Tenant\BrandOriginController;
 use App\Http\Controllers\Tenant\ChallanController;
 use App\Http\Controllers\Tenant\CustomerController;
+use App\Http\Controllers\Tenant\FeedbackController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\QuotationController;
 use App\Http\Controllers\Tenant\ReceivedBillController;
@@ -105,6 +106,9 @@ Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.con
     Route::post('/images', [ImageController::class, 'store'])->name('tenant.images.store');
     Route::put('/images/{id}', [ImageController::class, 'update'])->name('tenant.images.update');
     Route::delete('/images/{id}', [ImageController::class, 'destroy'])->name('tenant.images.destroy');
+
+    // Feedback
+    Route::resource('feedback', FeedbackController::class)->names('tenant.feedback');
 
     // Product Specifications
     Route::get('/products/search', [QuotationController::class, 'searchProduct'])->name('tenant.products.search');

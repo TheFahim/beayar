@@ -44,7 +44,7 @@
         @endif
 
         {{-- Tenant Section --}}
-        @if(Auth::user()->getCurrentCompanyId())
+        @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                 <x-ui.svg.dashboard class="h-5 w-5" />
@@ -52,7 +52,7 @@
             </x-dashboard.common.sidebar-link>
         </li>
 
-        @if(Auth::user()->getCurrentCompanyId() && Auth::user()->isOwnerOf(Auth::user()->getCurrentCompanyId()))
+        @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId() && \Illuminate\Support\Facades\Auth::user()->isOwnerOf(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId()))
             <li>
                 <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.show') }}">
                     <x-ui.svg.company class="h-5 w-5" />
@@ -99,7 +99,7 @@
             </ul>
         </li>
 
-        @if(Auth::user()->getCurrentCompanyId())
+        @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
         @canany(['view_customers', 'view_images', 'view_products'])
         <li>
             <button type="button"
@@ -180,7 +180,16 @@
         </li>
         @endcan
 
-        @if(Auth::user()->isOwnerOf(Auth::user()->getCurrentCompanyId()))
+        @canany(['view_feedback', 'create_feedback'])
+        <li>
+            <x-dashboard.common.sidebar-link url="{{ route('tenant.feedback.index') }}">
+                <x-ui.svg.dashboard class="h-5 w-5" />
+                <span class="flex-1 ms-3 whitespace-nowrap">Feedback</span>
+            </x-dashboard.common.sidebar-link>
+        </li>
+        @endcanany
+
+        @if(\Illuminate\Support\Facades\Auth::user()->isOwnerOf(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId()))
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.subscription.index') }}">
                 <x-ui.svg.home class="h-5 w-5" />
@@ -192,14 +201,14 @@
         @endif
 
         {{-- Fallback for development if no roles set --}}
-        @if(!Auth::user()->getCurrentCompanyId() && !Auth::user()->hasRole('super_admin'))
+        @if(!\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId() && !\Illuminate\Support\Facades\Auth::user()->hasRole('super_admin'))
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
                 <x-ui.svg.dashboard class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        @if(Auth::user()->subscription && Auth::user()->getCurrentCompanyId())
+        @if(\Illuminate\Support\Facades\Auth::user()->subscription && \Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
         <li>
             <button type="button"
                 class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"

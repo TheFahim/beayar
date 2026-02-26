@@ -53,6 +53,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit_bills',
             'view_finance',
 
+            // Feedback
+            'view_feedback',
+            'create_feedback',
+            'edit_feedback',
+            'delete_feedback',
+
             // Settings & Members
             'manage_settings',
             'manage_members',
@@ -77,6 +83,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view_challans', 'create_challans', 'edit_challans',
                 'view_customers', 'create_customers', 'edit_customers',
                 'view_bills', 'create_bills', 'edit_bills',
+                'view_feedback', 'create_feedback',
             ],
         ];
 
