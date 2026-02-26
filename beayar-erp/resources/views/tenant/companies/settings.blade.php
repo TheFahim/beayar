@@ -107,9 +107,16 @@
                                         @foreach($quotationCurrencies as $code)
                                             @php
                                                 $symbol = $currencies[$code] ?? '';
+                                                $name = $currencyNames[$code] ?? '';
+                                                $displayText = $code;
+                                                if ($symbol && $symbol !== $code) {
+                                                    $displayText = "{$code} ({$symbol})";
+                                                } elseif ($name) {
+                                                    $displayText = "{$code} ({$name})";
+                                                }
                                             @endphp
                                             <option value="{{ $code }}" data-symbol="{{ $symbol }}" {{ $selectedCurrency === $code ? 'selected' : '' }}>
-                                                {{ $symbol ? "{$code} ({$symbol})" : $code }}
+                                                {{ $displayText }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -156,18 +163,32 @@
                                     open: false,
                                     selected: {{ json_encode($quotationCurrencies) }},
                                     allCurrencies: {{ json_encode($currencies) }},
+                                    currencyNames: {{ json_encode($currencyNames) }},
+                                    highlightedIndex: -1,
 
                                     init() {
                                         this.$nextTick(() => syncCurrencySelectOptions());
                                     },
 
                                     get filteredCurrencies() {
-                                        if (this.search === '') return {};
+                                        if (this.search === '') {
+                                            // Show all available currencies when search is empty
+                                            const result = {};
+                                            for (const [code, symbol] of Object.entries(this.allCurrencies)) {
+                                                if (!this.selected.includes(code)) {
+                                                    result[code] = symbol;
+                                                }
+                                            }
+                                            return result;
+                                        }
                                         const query = this.search.toLowerCase();
                                         const result = {};
                                         for (const [code, symbol] of Object.entries(this.allCurrencies)) {
                                             if (!this.selected.includes(code)) {
-                                                 if (code.toLowerCase().includes(query) || (symbol && symbol.toLowerCase().includes(query))) {
+                                                const name = this.currencyNames[code] || '';
+                                                if (code.toLowerCase().includes(query) ||
+                                                    (symbol && symbol.toLowerCase().includes(query)) ||
+                                                    (name && name.toLowerCase().includes(query))) {
                                                     result[code] = symbol;
                                                 }
                                             }
@@ -175,11 +196,16 @@
                                         return result;
                                     },
 
+                                    get filteredCurrencyList() {
+                                        return Object.entries(this.filteredCurrencies);
+                                    },
+
                                     add(code) {
                                         if (!this.selected.includes(code)) {
                                             this.selected.push(code);
                                             this.search = '';
                                             this.open = false;
+                                            this.highlightedIndex = -1;
                                             this.$nextTick(() => syncCurrencySelectOptions());
                                         }
                                     },
@@ -189,6 +215,36 @@
                                             this.selected = this.selected.filter(c => c !== code);
                                             this.$nextTick(() => syncCurrencySelectOptions());
                                         }
+                                    },
+
+                                    highlightPrevious() {
+                                        const list = this.filteredCurrencyList;
+                                        if (list.length === 0) return;
+                                        this.highlightedIndex = this.highlightedIndex <= 0 ? list.length - 1 : this.highlightedIndex - 1;
+                                        this.scrollToHighlighted();
+                                    },
+
+                                    highlightNext() {
+                                        const list = this.filteredCurrencyList;
+                                        if (list.length === 0) return;
+                                        this.highlightedIndex = this.highlightedIndex >= list.length - 1 ? 0 : this.highlightedIndex + 1;
+                                        this.scrollToHighlighted();
+                                    },
+
+                                    selectHighlighted() {
+                                        const list = this.filteredCurrencyList;
+                                        if (this.highlightedIndex >= 0 && this.highlightedIndex < list.length) {
+                                            this.add(list[this.highlightedIndex][0]);
+                                        }
+                                    },
+
+                                    scrollToHighlighted() {
+                                        this.$nextTick(() => {
+                                            const highlighted = this.$refs.dropdown?.querySelector('.highlighted');
+                                            if (highlighted) {
+                                                highlighted.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                                            }
+                                        });
                                     }
                                 }">
                                     <label
@@ -215,21 +271,35 @@
 
                                     {{-- Search Input --}}
                                     <div class="relative" @click.away="open = false">
-                                        <input type="text" x-model="search" @focus="open = true"
+                                        <input type="text" x-model="search"
+                                            @focus="open = true; highlightedIndex = -1"
                                             @keydown.escape="open = false"
+                                            @keydown.arrow-down.prevent="highlightNext()"
+                                            @keydown.arrow-up.prevent="highlightPrevious()"
+                                            @keydown.enter.prevent="selectHighlighted()"
                                             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
-                                            placeholder="Search to add currency (e.g. USD, Euro)...">
+                                            placeholder="Search to add currency (e.g. SAR, Saudi, Riyal)...">
 
                                         <div x-show="open && Object.keys(filteredCurrencies).length > 0"
+                                            x-ref="dropdown"
                                             class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
                                             style="display: none;">
-                                            <template x-for="(symbol, code) in filteredCurrencies" :key="code">
+                                            <template x-for="(symbol, code, index) in filteredCurrencies" :key="code">
                                                 <div class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
-                                                    @click="add(code)">
+                                                    :class="{ 'highlighted bg-blue-50 dark:bg-blue-900/20': index === highlightedIndex }"
+                                                    @click="add(code)"
+                                                    @mouseenter="highlightedIndex = index">
                                                     <span class="block truncate">
                                                         <span x-text="code" class="font-medium"></span>
-                                                        <span x-show="symbol" x-text="` (${symbol})`"
+                                                        <span x-show="currencyNames[code]" x-text="` (${currencyNames[code]})`"
                                                             class="text-gray-500 dark:text-gray-400"></span>
+                                                        <span x-show="symbol && !currencyNames[code]" x-text="` (${symbol})`"
+                                                            class="text-gray-500 dark:text-gray-400"></span>
+                                                    </span>
+                                                    <span x-show="index === highlightedIndex" class="absolute inset-y-0 right-0 flex items-center pr-4">
+                                                        <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
                                                     </span>
                                                 </div>
                                             </template>
@@ -240,8 +310,7 @@
                                             No matching currencies found.
                                         </div>
                                     </div>
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Search for currencies
-                                        supported by the exchange rate provider.</p>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Search for currencies by code, name, or symbol (e.g. SAR, Saudi, Riyal).</p>
                                     @error('quotation_currencies')
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
@@ -439,6 +508,7 @@
 
     <script>
         const currencyMap = @json($currencies);
+        const currencyNames = @json($currencyNames);
         const initialQuotationCurrencies = @json($quotationCurrencies);
 
         function updateCurrencySymbol(select) {
@@ -470,8 +540,20 @@
             codes.forEach((code) => {
                 const option = document.createElement('option');
                 option.value = code;
-                option.dataset.symbol = currencyMap[code] || '';
-                option.textContent = currencyMap[code] ? `${code} (${currencyMap[code]})` : code;
+                const symbol = currencyMap[code] || '';
+                const name = currencyNames[code] || '';
+
+                // Determine display text: prioritize symbol, then name, then code
+                let displayText = code;
+                if (symbol && symbol !== code) {
+                    displayText = `${code} (${symbol})`;
+                } else if (name) {
+                    displayText = `${code} (${name})`;
+                }
+
+                option.dataset.symbol = symbol;
+                option.textContent = displayText;
+
                 if (code === currentValue) {
                     option.selected = true;
                 }

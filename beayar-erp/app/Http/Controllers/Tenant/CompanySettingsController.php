@@ -29,13 +29,15 @@ class CompanySettingsController extends Controller
 
         $settings = $this->settingsService->getSettings($company);
         $currencies = $this->settingsService->getAvailableCurrencies();
-        
+        $currencyNames = $this->settingsService->getCurrencyNames();
+
         // Fetch all supported currencies from API
         $apiRates = $this->exchangeRateService->getRates();
         if ($apiRates['success']) {
             foreach ($apiRates['rates'] as $code => $rate) {
                 if (!isset($currencies[$code])) {
-                    $currencies[$code] = ''; // No symbol available
+                    // Use currency code as fallback symbol if not in our predefined list
+                    $currencies[$code] = $code;
                 }
             }
         }
@@ -47,6 +49,7 @@ class CompanySettingsController extends Controller
             'company',
             'settings',
             'currencies',
+            'currencyNames',
             'dateFormats',
         ));
     }
