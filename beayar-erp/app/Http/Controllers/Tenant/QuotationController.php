@@ -97,13 +97,13 @@ class QuotationController extends Controller
             $revisionNo = $quotation->getActiveRevision()?->revision_no ?? 'R00';
 
             return redirect()->route('tenant.quotations.index')
-                ->with('success', 'Quotation created successfully with revision '.$revisionNo);
+                ->with('success', 'Quotation created successfully with revision ' . $revisionNo);
         } catch (\Exception $e) {
-            Log::error('Quotation creation failed: '.$e->getMessage());
+            Log::error('Quotation creation failed: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to create quotation: '.$e->getMessage());
+                ->with('error', 'Failed to create quotation: ' . $e->getMessage());
         }
     }
 
@@ -216,7 +216,7 @@ class QuotationController extends Controller
      */
     public function update(QuotationUpdateRequest $request, Quotation $quotation)
     {
-        if (! $quotation->isEditable()) {
+        if (!$quotation->isEditable()) {
             return redirect()->back()->with('error', 'Cannot modify quotation because it has associated bills.');
         }
 
@@ -241,11 +241,11 @@ class QuotationController extends Controller
             return redirect()->route('tenant.quotations.index')
                 ->with('success', 'Quotation updated successfully!');
         } catch (\Exception $e) {
-            Log::error('Quotation update failed: '.$e->getMessage());
+            Log::error('Quotation update failed: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to update quotation: '.$e->getMessage());
+                ->with('error', 'Failed to update quotation: ' . $e->getMessage());
         }
     }
 
@@ -359,7 +359,7 @@ class QuotationController extends Controller
      */
     public function destroy(Quotation $quotation)
     {
-        if (! $quotation->isDeletable()) {
+        if (!$quotation->isDeletable()) {
             $message = $quotation->hasBills()
                 ? 'Cannot delete quotation because it has associated bills.'
                 : 'Cannot delete quotation. A challan has been created from this quotation.';
@@ -378,7 +378,7 @@ class QuotationController extends Controller
             DB::rollBack();
 
             return redirect()->route('tenant.quotations.index')
-                ->with('error', 'Failed to delete quotation: '.$e->getMessage());
+                ->with('error', 'Failed to delete quotation: ' . $e->getMessage());
         }
     }
 
@@ -413,10 +413,10 @@ class QuotationController extends Controller
                 ->with('success', 'Revision deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Failed to delete revision {$revision->id}: ".$e->getMessage());
+            Log::error("Failed to delete revision {$revision->id}: " . $e->getMessage());
 
             return redirect()->route('tenant.quotations.edit', $quotation->id)
-                ->with('error', 'Failed to delete revision: '.$e->getMessage());
+                ->with('error', 'Failed to delete revision: ' . $e->getMessage());
         }
     }
 
@@ -468,7 +468,7 @@ class QuotationController extends Controller
         $tenantCompanyId = auth()->user()->current_tenant_company_id;
         $product = Product::where('tenant_company_id', $tenantCompanyId)->find($productId);
 
-        if (! $product) {
+        if (!$product) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -487,11 +487,14 @@ class QuotationController extends Controller
     }
 
     /**
-     * Get current exchange rate for a specific currency to BDT.
+     * Get current exchange rate for a specific currency to Base Currency.
      */
     public function getExchangeRate(Request $request)
     {
-        return response()->json($this->exchangeRateService->getRates());
+        $companySettings = $this->companySettingsService->getSettings(auth()->user()->currentCompany);
+        $baseCurrency = $companySettings['exchange_rate_currency'] ?? 'BDT';
+
+        return response()->json($this->exchangeRateService->getRates($baseCurrency));
     }
 
     /**
@@ -539,7 +542,7 @@ class QuotationController extends Controller
             ]);
 
             $specifications = [];
-            if (! empty($validated['specifications'][0]['description'])) {
+            if (!empty($validated['specifications'][0]['description'])) {
                 $specification = $product->specifications()->create([
                     'description' => $validated['specifications'][0]['description'],
                 ]);
@@ -567,7 +570,7 @@ class QuotationController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create product: '.$e->getMessage(),
+                'message' => 'Failed to create product: ' . $e->getMessage(),
                 'errors' => [],
             ], 422);
         }

@@ -34,6 +34,8 @@ class QuotationPriceCalculationTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+
         // Create User
         $this->user = User::factory()->create([
             'current_tenant_company_id' => null,
@@ -48,6 +50,15 @@ class QuotationPriceCalculationTest extends TestCase
             'owner_id' => $this->user->id,
             'tenant_id' => $this->tenant->id,
         ]);
+
+        $this->company->members()->attach($this->user->id, [
+            'role' => 'company_admin',
+            'is_active' => true,
+            'joined_at' => now(),
+        ]);
+
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('company_admin');
 
         $this->user->update(['current_tenant_company_id' => $this->company->id]);
 

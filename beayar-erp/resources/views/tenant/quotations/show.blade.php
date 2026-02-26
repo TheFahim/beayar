@@ -1,4 +1,9 @@
 <x-dashboard.layout.default :title="($activeRevision->revision_no !== 'R00' ? 'Revised ' : '') . 'Commercial Quotation - ' . $quotation->quotation_no">
+@php
+    $companySettings = $quotation->company ? $quotation->company->settings : null;
+    $baseCurrency = isset($companySettings['exchange_rate_currency']) ? $companySettings['exchange_rate_currency'] : 'BDT';
+    $baseCurrencySymbol = \App\Services\CompanySettingsService::AVAILABLE_CURRENCIES[$baseCurrency] ?? $baseCurrency;
+@endphp
     <div x-data="{ isTechnical: false }" x-init="$watch('isTechnical', value => document.title = (value ? '{{ $activeRevision->revision_no !== 'R00' ? 'Revised ' : '' }}Technical Quotation - ' : '{{ $activeRevision->revision_no !== 'R00' ? 'Revised ' : '' }}Commercial Quotation - ') + '{{ $quotation->quotation_no }}')">
         <style>
             .screen-footer {
@@ -521,7 +526,7 @@
                                                                 <td class="border text-right border-gray-300"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->discount_amount, 2) }}
-                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : '৳' }}
+                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
                                                                 </td>
                                                             </tr>
                                                             <tr x-show="!isTechnical">
@@ -533,7 +538,7 @@
                                                                 <td class="border text-right border-gray-300"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->subtotal - $activeRevision->discount_amount, 2) }}
-                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : '৳' }}
+                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -546,7 +551,7 @@
                                                                 <td class="border text-right border-gray-300"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->shipping, 2) }}
-                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : '৳' }}
+                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -559,7 +564,7 @@
                                                                 <td class="border text-right border-gray-300"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->vat_amount, 2) }}
-                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : '৳' }}
+                                                                    {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -720,7 +725,7 @@
                 'date' => $activeRevision->date->format('d/m/Y'),
                 'validity' => date('d/m/Y', strtotime($activeRevision->validity)),
                 'validityDays' => $activeRevision->date->diffInDays(\Carbon\Carbon::parse($activeRevision->validity)),
-                'currency' => $activeRevision->type == 'via' ? $activeRevision->currency : 'BDT',
+                'currency' => $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrency,
                 'products' => $preparedProducts,
                 'subtotal' => $activeRevision->subtotal,
                 'discount_amount' => $activeRevision->discount_amount,

@@ -21,18 +21,19 @@ class ExchangeRateService
      *
      * @return array{success: bool, rates: array, last_updated: string, fallback?: bool, message?: string}
      */
-    public function getRates(): array
+    public function getRates(string $baseCurrency = 'BDT'): array
     {
         // Try to retrieve valid rates from cache first
-        $cached = \Illuminate\Support\Facades\Cache::get('exchange_rates');
+        $cacheKey = 'exchange_rates_' . $baseCurrency;
+        $cached = \Illuminate\Support\Facades\Cache::get($cacheKey);
         if ($cached && !($cached['fallback'] ?? false)) {
             return $cached;
         }
 
         try {
-            $data = $this->fetchRatesFromApi();
+            $data = $this->fetchRatesFromApi($baseCurrency);
 
-            if (! $this->isValidApiResponse($data)) {
+            if (!$this->isValidApiResponse($data)) {
                 throw new \Exception('Invalid API response format or missing currency rates.');
             }
 
@@ -44,24 +45,24 @@ class ExchangeRateService
             ];
 
             // Cache successful response for 12 hours
-            \Illuminate\Support\Facades\Cache::put('exchange_rates', $result, 43200);
+            \Illuminate\Support\Facades\Cache::put($cacheKey, $result, 43200);
 
             return $result;
         } catch (\Exception $e) {
-            Log::warning('Exchange rate API unavailable: '.$e->getMessage());
+            Log::warning('Exchange rate API unavailable: ' . $e->getMessage());
 
             // If we have stale cache (even if expired or marked fallback previously but valid data exists?), use it?
             // For now, just return fallback if fetch fails and no valid cache.
-            return $this->getFallbackResponse();
+            return $this->getFallbackResponse($baseCurrency);
         }
     }
 
     /**
      * Fetch rates from the external API.
      */
-    private function fetchRatesFromApi(): array
+    private function fetchRatesFromApi(string $baseCurrency): array
     {
-        $url = 'https://api.exchangerate-api.com/v4/latest/BDT';
+        $url = 'https://api.exchangerate-api.com/v4/latest/' . $baseCurrency;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -72,7 +73,7 @@ class ExchangeRateService
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($httpCode !== 200 || ! $response) {
+        if ($httpCode !== 200 || !$response) {
             throw new \Exception('Failed to fetch exchange rates from API.');
         }
 
@@ -106,11 +107,11 @@ class ExchangeRateService
     /**
      * Get fallback rates response.
      */
-    public function getFallbackResponse(): array
+    public function getFallbackResponse(string $baseCurrency = 'BDT'): array
     {
         return [
             'success' => true,
-            'rates' => self::FALLBACK_RATES,
+            'rates' => $this->getFallbackRates($baseCurrency),
             'last_updated' => date('Y-m-d'),
             'fallback' => true,
             'message' => 'Using fallback rates due to API unavailability.',
@@ -120,8 +121,26 @@ class ExchangeRateService
     /**
      * Get fallback rates only.
      */
-    public function getFallbackRates(): array
+    public function getFallbackRates(string $baseCurrency = 'BDT'): array
     {
-        return self::FALLBACK_RATES;
+        $rates = self::FALLBACK_RATES;
+        $rates['BDT'] = 1.0;
+
+        if ($baseCurrency === 'BDT') {
+            unset($rates['BDT']);
+            return $rates;
+        }
+
+        $baseRate = $rates[$baseCurrency] ?? 1.0;
+        $converted = [];
+        foreach ($rates as $currency => $rate) {
+            if ($currency !== $baseCurrency) {
+                // 1 USD = 121.50 BDT, 1 INR = 1.45 BDT
+                // So 1 USD = (121.50 / 1.45) INR
+                $converted[$currency] = round($rate / $baseRate, 4);
+            }
+        }
+
+        return $converted;
     }
 }

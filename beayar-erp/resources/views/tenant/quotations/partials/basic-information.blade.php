@@ -47,8 +47,9 @@
         $quotationCurrencies = ['USD', 'EUR', 'RMB', 'INR', 'BDT'];
     }
     $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
-    if (!in_array('BDT', $quotationCurrencies, true)) {
-        $quotationCurrencies[] = 'BDT';
+    $exchangeRateCurrency = $companySettings['exchange_rate_currency'] ?? 'BDT';
+    if (!in_array($exchangeRateCurrency, $quotationCurrencies, true)) {
+        $quotationCurrencies[] = $exchangeRateCurrency;
     }
 @endphp
 
@@ -80,8 +81,8 @@
                 label="Currency" class="w-full px-1.5 text-xs" @change="onCurrencyChange()"
                 x-bind:required="quotation_revision.type === 'via'">
                 @foreach($quotationCurrencies as $code)
-                    @if($code === 'BDT')
-                        <option value="BDT" x-show="quotation_revision.type === 'normal'">BDT</option>
+                    @if($code === $exchangeRateCurrency)
+                        <option value="{{ $exchangeRateCurrency }}" x-show="quotation_revision.type === 'normal'">{{ $exchangeRateCurrency }}</option>
                     @else
                         <option value="{{ $code }}">{{ $code }}</option>
                     @endif
@@ -112,7 +113,7 @@
 
         <div x-show="quotation_revision.type === 'normal'" x-transition>
             <x-ui.form.input x-model="quotation_revision.exchange_rate" name="quotation_revision[exchange_rate]"
-                label="Exchange Rate (BDT)" placeholder="Ex. 121.50" class="w-full px-1.5 text-xs" type="number"
+                label="Exchange Rate ({{ $companySettings['exchange_rate_currency'] ?? 'BDT' }})" placeholder="Ex. 121.50" class="w-full px-1.5 text-xs" type="number"
                 step="0.01" />
             <div x-show="exchangeRateLoading" class="text-sm text-blue-600 mt-1">
                 <span class="flex items-center">

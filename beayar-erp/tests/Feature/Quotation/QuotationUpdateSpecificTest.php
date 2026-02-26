@@ -35,17 +35,49 @@ class QuotationUpdateSpecificTest extends TestCase
     {
         parent::setUp();
 
-        // Setup User and Company
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+
+        // Setup User, Tenant, and Company
         $this->user = User::factory()->create([
             'current_tenant_company_id' => null,
             'current_scope' => 'company',
         ]);
 
+        $tenant = \App\Models\Tenant::create(['user_id' => $this->user->id, 'name' => 'Test Tenant']);
+
+        $plan = \App\Models\Plan::firstOrCreate(['slug' => 'pro'], [
+            'name' => 'Pro',
+            'description' => 'Test Plan',
+            'base_price' => 10,
+            'billing_cycle' => 'monthly',
+            'limits' => ['employees' => 5],
+            'is_active' => true,
+        ]);
+
+        \App\Models\Subscription::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $this->user->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
+        ]);
+
         $this->company = TenantCompany::create([
+            'tenant_id' => $tenant->id,
             'name' => 'Test Company',
             'email' => 'test@company.com',
             'owner_id' => $this->user->id,
         ]);
+
+        $this->company->members()->attach($this->user->id, [
+            'role' => 'company_admin',
+            'is_active' => true,
+            'joined_at' => now(),
+        ]);
+
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('company_admin');
 
         $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
@@ -53,6 +85,7 @@ class QuotationUpdateSpecificTest extends TestCase
         $customerCompany = CustomerCompany::create([
             'tenant_company_id' => $this->company->id,
             'name' => 'Test Customer Company',
+            'address' => 'Test Address',
         ]);
 
         $this->customer = Customer::create([
@@ -61,6 +94,7 @@ class QuotationUpdateSpecificTest extends TestCase
             'customer_no' => 'C-0001',
             'name' => 'Test Customer',
             'email' => 'customer@test.com',
+            'address' => 'Test Address',
         ]);
 
         // Setup Status
@@ -99,6 +133,8 @@ class QuotationUpdateSpecificTest extends TestCase
             'subtotal' => 1000,
             'total' => 1150,
             'created_by' => $this->user->id,
+            'terms_conditions' => 'Test terms',
+            'saved_as' => 'draft',
         ]);
 
         $this->revision->products()->create([

@@ -35,6 +35,8 @@ class QuotationRevisionActivationTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+
         // Create user and tenant
         $this->user = User::factory()->create();
         $tenant = Tenant::create(['user_id' => $this->user->id, 'name' => 'Test Tenant']);
@@ -70,7 +72,13 @@ class QuotationRevisionActivationTest extends TestCase
             'joined_at' => now(),
         ]);
 
-        $this->user->update(['current_tenant_company_id' => $this->company->id]);
+        $this->user->update([
+            'current_tenant_company_id' => $this->company->id,
+            'current_scope' => 'company',
+        ]);
+
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('company_admin');
 
         // Authenticate
         $this->actingAs($this->user);

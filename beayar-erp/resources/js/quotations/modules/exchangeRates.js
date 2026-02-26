@@ -35,7 +35,7 @@ export default {
 
     if (currency && this.allExchangeRates[currency]) {
       this.quotation_revision.exchange_rate = this.allExchangeRates[currency];
-      this.exchangeRateMessage = `Rate: 1 ${currency} = ${this.quotation_revision.exchange_rate} BDT (${this.lastUpdated})`;
+      this.exchangeRateMessage = `Rate: 1 ${currency} = ${this.quotation_revision.exchange_rate} ${this.exchangeRateCurrency} (${this.lastUpdated})`;
       this.updateAllBdtBuyingValues();
     } else {
       this.quotation_revision.exchange_rate = '';
@@ -52,7 +52,7 @@ export default {
       const currency = this.quotation_revision.currency;
       const exchangeRate = this.quotation_revision.exchange_rate;
 
-      if (currency && currency !== 'BDT') {
+      if (currency && currency !== this.exchangeRateCurrency) {
         if (row.foreign_currency_buying && exchangeRate) {
           this.calculateForeignCurrencyEquivalent(index);
           this.addVisualFeedback(`product-${index}`, 'bg-green-100 dark:bg-green-900/20 border border-green-400', 1500);

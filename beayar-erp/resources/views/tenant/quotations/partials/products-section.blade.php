@@ -40,14 +40,17 @@
                     {{-- Product Base Information Section --}}
                     <div class="px-4 pb-3">
                         <div class="mb-3 flex items-center gap-2">
-                             <div class="w-1 h-5 bg-blue-500 rounded-full"></div>
-                             <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">Product Information</h4>
+                            <div class="w-1 h-5 bg-blue-500 rounded-full"></div>
+                            <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">
+                                Product Information</h4>
                         </div>
 
-                        <div class="grid grid-cols-12 gap-4 border border-gray-200 dark:border-gray-700 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
+                        <div
+                            class="grid grid-cols-12 gap-4 border border-gray-200 dark:border-gray-700 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
                             {{-- 1. Product Selection --}}
                             <div class="col-span-12 md:col-span-4">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Product <span class="text-red-500">*</span>
                                 </label>
                                 <div class="flex gap-2">
@@ -55,9 +58,10 @@
                                         <x-ui.form.searchable-select
                                             x-bind:name="'quotation_products[' + index + '][product_id]'"
                                             x-model="row.product_id" apiEndpoint="{{ route('tenant.products.search') }}"
-                                            displayTemplate="{name}" :searchFields="['name']" placeholder="Search products..."
-                                            noResultsText="No products found." class="w-full text-sm" :showImages="true"
-                                            imageField="image" imagePath="path" :perPage="20"
+                                            displayTemplate="{name}" :searchFields="['name']"
+                                            placeholder="Search products..." noResultsText="No products found."
+                                            class="w-full text-sm" :showImages="true" imageField="image"
+                                            imagePath="path" :perPage="20"
                                             @option-selected="handleProductSelection($event, index)" />
                                     </div>
                                     <button type="button" @click="openCreateProductModal(index)"
@@ -73,17 +77,19 @@
 
                             {{-- 2. Size --}}
                             <div class="col-span-12 md:col-span-2">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Size
                                 </label>
-                                <input type="text" :name="'quotation_products[' + index + '][size]'"
-                                    x-model="row.size" placeholder="Size"
+                                <input type="text" :name="'quotation_products[' + index + '][size]'" x-model="row.size"
+                                    placeholder="Size"
                                     class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                             {{-- 3. Specification --}}
                             <div class="col-span-12 md:col-span-3">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Specification
                                 </label>
                                 <div class="relative">
@@ -94,8 +100,8 @@
                                         :title="getSelectedSpecificationText(row) || 'Select specification'">
                                         <span class="truncate flex-1"
                                             x-html="getSelectedSpecificationSummary(row)"></span>
-                                        <svg class="w-4 h-4 ml-2 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 ml-2 flex-shrink-0 text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 9l-7 7-7-7"></path>
                                         </svg>
@@ -113,18 +119,17 @@
 
                             {{-- 3. Brand/Origin --}}
                             <div class="col-span-12 md:col-span-3">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Brand/Origin
                                 </label>
                                 <div x-data="brandOriginSearchableSelect({
                                     value: row.brand_origin_id,
                                     endpoint: '{{ route('tenant.brand-origins.search') }}'
-                                })" x-init="init" class="relative"
-                                    @click.away="open = false">
+                                })" x-init="init" class="relative" @click.away="open = false">
 
                                     {{-- Hidden input for form submission --}}
-                                    <input type="hidden"
-                                        :name="'quotation_products[' + index + '][brand_origin_id]'"
+                                    <input type="hidden" :name="'quotation_products[' + index + '][brand_origin_id]'"
                                         x-bind:value="selectedValue">
 
                                     {{-- Visible search input --}}
@@ -136,9 +141,8 @@
                                         {{-- Dropdown Arrow --}}
                                         <div
                                             class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400"
-                                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                fill="none" viewBox="0 0 20 20">
+                                            <svg class="w-4 h-4 text-gray-400" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2"
                                                     d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
@@ -159,13 +163,11 @@
                                         <div class="max-h-60 overflow-y-auto relative">
                                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
                                                 <template x-if="loading">
-                                                    <li
-                                                        class="px-4 py-3 text-gray-500 flex items-center gap-2">
+                                                    <li class="px-4 py-3 text-gray-500 flex items-center gap-2">
                                                         <svg class="w-4 h-4 animate-spin" fill="none"
                                                             viewBox="0 0 24 24">
-                                                            <circle class="opacity-25" cx="12"
-                                                                cy="12" r="10" stroke="currentColor"
-                                                                stroke-width="4"></circle>
+                                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                                stroke="currentColor" stroke-width="4"></circle>
                                                             <path class="opacity-75" fill="currentColor"
                                                                 d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                                             </path>
@@ -181,8 +183,7 @@
                                                             new brand origin</button>
                                                     </li>
                                                 </template>
-                                                <template x-for="(option, index) in filteredOptions"
-                                                    :key="option.id">
+                                                <template x-for="(option, index) in filteredOptions" :key="option.id">
                                                     <li
                                                         class="px-4 py-3 cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-200 group">
                                                         <div class="flex items-center justify-between">
@@ -191,38 +192,31 @@
                                                                     x-text="option.name">
                                                                 </div>
                                                                 <div class="text-xs text-gray-500 dark:text-gray-400"
-                                                                    x-text="option.address"
-                                                                    x-show="option.address">
+                                                                    x-text="option.address" x-show="option.address">
                                                                 </div>
                                                             </div>
                                                             <div
                                                                 class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                                                 <!-- Edit Button -->
-                                                                <button type="button"
-                                                                    @click="editBrandOrigin(option)"
+                                                                <button type="button" @click="editBrandOrigin(option)"
                                                                     class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors duration-200"
                                                                     title="Edit company">
                                                                     <svg class="w-4 h-4" fill="none"
-                                                                        stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round"
-                                                                            stroke-linejoin="round"
-                                                                            stroke-width="2"
+                                                                            stroke-linejoin="round" stroke-width="2"
                                                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                                         </path>
                                                                     </svg>
                                                                 </button>
                                                                 <!-- Delete Button -->
-                                                                <button type="button"
-                                                                    @click="deleteBrandOrigin(option)"
+                                                                <button type="button" @click="deleteBrandOrigin(option)"
                                                                     class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200"
                                                                     title="Delete company">
                                                                     <svg class="w-4 h-4" fill="none"
-                                                                        stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round"
-                                                                            stroke-linejoin="round"
-                                                                            stroke-width="2"
+                                                                            stroke-linejoin="round" stroke-width="2"
                                                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
                                                                         </path>
                                                                     </svg>
@@ -232,7 +226,8 @@
                                                     </li>
                                                 </template>
 
-                                                {{-- Spacer to make room for fixed button when there are more than 3 items --}}
+                                                {{-- Spacer to make room for fixed button when there are more than 3
+                                                items --}}
                                                 <template x-if="filteredOptions.length > 3">
                                                     <li class="h-14"></li>
                                                 </template>
@@ -242,8 +237,7 @@
                                         {{-- Fixed Create Brand Origin Button - appears after 3 records --}}
                                         <div x-show="!loading && filteredOptions.length > 3"
                                             class="absolute bottom-0 left-0 right-0 border-t-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
-                                            <button type="button"
-                                                @click="$dispatch('open-brand-origin-modal')"
+                                            <button type="button" @click="$dispatch('open-brand-origin-modal')"
                                                 class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -257,8 +251,7 @@
                                         {{-- Regular Create Brand Origin Button - shows when 3 or fewer items --}}
                                         <div x-show="!loading && filteredOptions.length <= 3 && filteredOptions.length > 0"
                                             class="border-t-2 border-gray-200 dark:border-gray-600">
-                                            <button type="button"
-                                                @click="$dispatch('open-brand-origin-modal')"
+                                            <button type="button" @click="$dispatch('open-brand-origin-modal')"
                                                 class="w-full px-4 py-3 text-left text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-800 font-medium transition-colors duration-200 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -287,7 +280,8 @@
 
                             {{-- 4. Additional Specification --}}
                             <div class="col-span-12 md:col-span-3">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Additional Specification
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][add_spec]'"
@@ -297,7 +291,8 @@
 
                             {{-- 5. Delivery Time --}}
                             <div class="col-span-12 md:col-span-2">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Delivery Time
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][delivery_time]'"
@@ -307,17 +302,19 @@
 
                             {{-- 6. Unit --}}
                             <div class="col-span-12 md:col-span-2">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Unit
                                 </label>
-                                <input type="text" :name="'quotation_products[' + index + '][unit]'"
-                                    x-model="row.unit" placeholder="Unit"
+                                <input type="text" :name="'quotation_products[' + index + '][unit]'" x-model="row.unit"
+                                    placeholder="Unit"
                                     class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                             {{-- 7. Quantity --}}
                             <div class="col-span-12 md:col-span-2">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Quantity
                                 </label>
                                 <input type="number" :name="'quotation_products[' + index + '][quantity]'"
@@ -327,13 +324,13 @@
                             </div>
 
                             <div class="col-span-12 md:col-span-3">
-                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                <label
+                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                     Requ/PR No.
                                 </label>
                                 <input type="text" :name="'quotation_products[' + index + '][requision_no]'"
                                     x-model.number="row.requision_no" placeholder=""
-                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
-                                />
+                                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors" />
                             </div>
 
                         </div>
@@ -350,11 +347,13 @@
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2">
                                 <div class="w-1 h-5 bg-green-500 rounded-full"></div>
-                                <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">
+                                <h4
+                                    class="text-sm font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-wide">
                                     Price Calculation
                                 </h4>
                                 @unless($hasPriceCalculator)
-                                    <span class="ml-2 text-[10px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-700">
+                                    <span
+                                        class="ml-2 text-[10px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-700">
                                         Free Plan
                                     </span>
                                 @endunless
@@ -362,9 +361,13 @@
 
                             <button type="button" @click="showAdvanced = !showAdvanced"
                                 class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 transition-colors">
-                                <span x-text="showAdvanced ? 'Hide Advanced Calculator' : 'Advanced Price Calculation'"></span>
-                                <svg class="w-3 h-3 transition-transform duration-200" :class="showAdvanced ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                <span
+                                    x-text="showAdvanced ? 'Hide Advanced Calculator' : 'Advanced Price Calculation'"></span>
+                                <svg class="w-3 h-3 transition-transform duration-200"
+                                    :class="showAdvanced ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                         </div>
@@ -374,7 +377,8 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 {{-- Foreign Currency Buying --}}
                                 <div class="relative">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                    <label
+                                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                         <span x-text="getForeignCurrencyLabel()"></span>
                                     </label>
                                     <div class="relative">
@@ -383,7 +387,7 @@
                                             x-model.number="row.foreign_currency_buying" placeholder="0.0000"
                                             class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
                                             @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" />
-                                        <div x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'"
+                                        <div x-show="quotation_revision.currency && quotation_revision.currency !== exchangeRateCurrency"
                                             class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                                             <span x-text="quotation_revision.currency"></span>
                                         </div>
@@ -392,8 +396,9 @@
 
                                 {{-- BDT Equivalent --}}
                                 <div class="relative">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        BDT Equivalent
+                                    <label
+                                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        {{ $companySettings['exchange_rate_currency'] ?? 'BDT' }} Equivalent
                                     </label>
                                     <div class="relative">
                                         <input type="number" step="0.01"
@@ -401,27 +406,23 @@
                                             x-model.number="row.bdt_buying" placeholder="0.00"
                                             class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
                                             @input="calculateBdtToForeignEquivalent(index); calculateTotals()" />
-                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                                            BDT
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+                                            x-text="exchangeRateCurrency">
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- Final Unit Price --}}
                                 <div class="relative">
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                    <label
+                                        class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                         Final Unit Price
                                     </label>
                                     <div class="relative">
                                         <input type="number" step="0.01"
                                             :name="'quotation_products[' + index + '][unit_price]'"
-                                            @if($hasPriceCalculator)
-                                                x-bind:value="format2(row.unit_price)"
-                                                readonly
-                                            @else
-                                                x-model.number="row.unit_price"
-                                            @endif
-                                            placeholder="0.00"
+                                            @if($hasPriceCalculator) x-bind:value="format2(row.unit_price)" readonly
+                                            @else x-model.number="row.unit_price" @endif placeholder="0.00"
                                             class="w-full px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 dark:bg-green-900/20 dark:border-green-800 dark:text-green-100 font-semibold text-green-700 transition-colors"
                                             @input="calculateTotals()" />
                                     </div>
@@ -442,7 +443,8 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                     {{-- 1. USD (Foreign Currency) --}}
                                     <div class="relative">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             <span x-text="getForeignCurrencyLabel()"></span>
                                         </label>
                                         <div class="relative">
@@ -451,7 +453,7 @@
                                                 x-model.number="row.foreign_currency_buying" placeholder="0.0000"
                                                 class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
                                                 @input="calculateForeignCurrencyEquivalent(index); calculateTotals()" />
-                                            <div x-show="quotation_revision.currency && quotation_revision.currency !== 'BDT'"
+                                            <div x-show="quotation_revision.currency && quotation_revision.currency !== exchangeRateCurrency"
                                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                                                 <span x-text="quotation_revision.currency"></span>
                                             </div>
@@ -460,8 +462,9 @@
 
                                     {{-- 2. BDT Equivalent --}}
                                     <div class="relative">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                            BDT Equivalent
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            {{ $companySettings['exchange_rate_currency'] ?? 'BDT' }} Equivalent
                                         </label>
                                         <div class="relative">
                                             <input type="number" step="0.01"
@@ -469,27 +472,29 @@
                                                 x-model.number="row.bdt_buying" placeholder="0.00"
                                                 class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors"
                                                 @input="calculateBdtToForeignEquivalent(index); calculateTotals()" />
-                                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                                                BDT
+                                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+                                                x-text="exchangeRateCurrency">
                                             </div>
                                         </div>
                                     </div>
 
                                     {{-- 3. Weight Field --}}
                                     <div class="{{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Weight (kg)
                                         </label>
                                         <input type="number" step="0.01"
-                                            :name="'quotation_products[' + index + '][weight]'" x-model.number="row.weight"
-                                            placeholder="0.00"
+                                            :name="'quotation_products[' + index + '][weight]'"
+                                            x-model.number="row.weight" placeholder="0.00"
                                             class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
                                             @input="calculateAirSeaFreight(index); calculateTotals()" {{ $readonlyAttr }} />
                                     </div>
 
                                     {{-- 4. Air/Sea Freight Rate --}}
                                     <div class="{{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Freight Rate
                                             <span x-show="quotation_revision.type === 'via'" class="normal-case">
                                                 (<span x-text="getForeignCurrencyLabel()"></span>)
@@ -504,7 +509,8 @@
 
                                     {{-- 5. Air/Sea Freight Total --}}
                                     <div class="relative {{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Freight Total
                                         </label>
                                         <input type="number" step="0.01"
@@ -516,7 +522,8 @@
 
                                     {{-- 6. Tax Percentage --}}
                                     <div class="{{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Tax (%) / VAT
                                         </label>
                                         <input type="number" step="0.01"
@@ -528,18 +535,22 @@
 
                                     {{-- 7. Tax Amount --}}
                                     <div class="relative {{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Tax Amount
                                         </label>
-                                        <input type="number" step="0.01" :name="'quotation_products[' + index + '][tax]'"
-                                            x-model.number="row.tax" placeholder="0.00"
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][tax]'" x-model.number="row.tax"
+                                            placeholder="0.00"
                                             class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                            @input="calculateTaxPercentage(index); calculateUnitPrice(index); calculateTotals()" {{ $readonlyAttr }} />
+                                            @input="calculateTaxPercentage(index); calculateUnitPrice(index); calculateTotals()"
+                                            {{ $readonlyAttr }} />
                                     </div>
 
                                     {{-- 8. AIT Percentage --}}
                                     <div class="{{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             AIT (%)
                                         </label>
                                         <input type="number" step="0.01"
@@ -551,30 +562,35 @@
 
                                     {{-- 9. AIT Amount --}}
                                     <div class="relative {{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             AIT Amount
                                         </label>
-                                        <input type="number" step="0.01" :name="'quotation_products[' + index + '][att]'"
-                                            x-model.number="row.att" placeholder="0.00"
+                                        <input type="number" step="0.01"
+                                            :name="'quotation_products[' + index + '][att]'" x-model.number="row.att"
+                                            placeholder="0.00"
                                             class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
-                                            @input="calculateAttPercentage(index); calculateUnitPrice(index); calculateTotals()" {{ $readonlyAttr }} />
+                                            @input="calculateAttPercentage(index); calculateUnitPrice(index); calculateTotals()"
+                                            {{ $readonlyAttr }} />
                                     </div>
 
                                     {{-- 10. Margin Percentage --}}
                                     <div class="{{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Margin (%)
                                         </label>
                                         <input type="number" step="0.01"
-                                            :name="'quotation_products[' + index + '][margin]'" x-model.number="row.margin"
-                                            placeholder="0.00"
+                                            :name="'quotation_products[' + index + '][margin]'"
+                                            x-model.number="row.margin" placeholder="0.00"
                                             class="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors {{ $disabledClass }}"
                                             @input="calculateMarginValue(index); calculateTotals()" {{ $readonlyAttr }} />
                                     </div>
 
                                     {{-- 11. Margin Value --}}
                                     <div class="relative {{ $disabledClass }}">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             Margin Value
                                         </label>
                                         <input type="number" step="0.01"
@@ -586,19 +602,15 @@
 
                                     {{-- 12. Final Unit Price --}}
                                     <div class="relative">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                            Final Unit Price (BDT)
+                                        <label
+                                            class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                                            Final Unit Price ({{ $companySettings['exchange_rate_currency'] ?? 'BDT' }})
                                         </label>
                                         <div class="relative">
                                             <input type="number" step="0.01"
                                                 :name="'quotation_products[' + index + '][unit_price]'"
-                                                @if($hasPriceCalculator)
-                                                    x-bind:value="format2(row.unit_price)"
-                                                    readonly
-                                                @else
-                                                    x-model.number="row.unit_price"
-                                                @endif
-                                                placeholder="0.00"
+                                                @if($hasPriceCalculator) x-bind:value="format2(row.unit_price)" readonly
+                                                @else x-model.number="row.unit_price" @endif placeholder="0.00"
                                                 class="w-full px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-lg focus:ring-1 focus:ring-green-500 focus:border-green-500 dark:bg-green-900/20 dark:border-green-800 dark:text-green-100 font-semibold text-green-700 transition-colors"
                                                 @input="calculateTotals()" />
                                         </div>
@@ -613,13 +625,15 @@
                         <div
                             class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Line Total</span>
+                                <span
+                                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Line
+                                    Total</span>
                                 <div class="text-right">
                                     <!-- BDT Line Total (always shown) -->
                                     <div class="text-lg font-bold text-gray-800 dark:text-white"
                                         x-text="'৳ ' + (calculateLineTotal(row) || 0).toFixed(2)"></div>
                                     <!-- Foreign Currency Line Total (for Via quotations) -->
-                                    <div x-show="quotation_revision.type === 'via' && quotation_revision.currency && quotation_revision.currency !== 'BDT'"
+                                    <div x-show="quotation_revision.type === 'via' && quotation_revision.currency && quotation_revision.currency !== exchangeRateCurrency"
                                         class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5"
                                         x-text="getForeignCurrencyLineTotal(row)"></div>
                                 </div>
@@ -631,8 +645,7 @@
 
             {{-- Empty State --}}
             <div x-show="quotation_products.length === 0" class="text-center py-8">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
                     </path>

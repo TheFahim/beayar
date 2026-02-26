@@ -10,10 +10,13 @@
     </x-dashboard.ui.bread-crumb>
 
     {{-- Main container with a single, unified Alpine.js scope --}}
-    <div class="max-w-full" x-data="quotationsPageData('{{ route('tenant.quotations.index') }}', '{{ request('date_from') }}', '{{ request('date_to') }}')" x-init="initDateRangePicker()">
+    <div class="max-w-full"
+        x-data="quotationsPageData('{{ route('tenant.quotations.index') }}', '{{ request('date_from') }}', '{{ request('date_to') }}')"
+        x-init="initDateRangePicker()">
         @php
             $hasActiveFilters = collect(['search', 'status', 'type', 'saved_as', 'date_from', 'date_to'])->contains(fn($key) => request()->filled($key));
             $showFilters = $quotations->isNotEmpty() || $hasActiveFilters;
+            $baseCurrency = auth()->user()?->currentCompany?->settings['exchange_rate_currency'] ?? 'BDT';
         @endphp
         <!-- Unified Header and Filter Section -->
         <x-ui.card>
@@ -63,7 +66,8 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
                             <input type="text" name="search" x-ref="searchInput"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                                placeholder="Quotation no, customer, company, requisition no..." value="{{ request('search') }}">
+                                placeholder="Quotation no, customer, company, requisition no..."
+                                value="{{ request('search') }}">
                         </div>
 
                         <!-- Status Filter -->
@@ -162,8 +166,8 @@
                                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                     viewBox="0 0 24 24">
-                                    <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="M3 9h13a5 5 0 0 1 0 10H7M3 9l4-4M3 9l4 4" />
+                                    <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9h13a5 5 0 0 1 0 10H7M3 9l4-4M3 9l4 4" />
                                 </svg>
 
                             </button>
@@ -230,8 +234,7 @@
                                     <!-- Main Quotation Row -->
                                     <tr class="quotation-row hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 hover:shadow-lg hover:scale-[1.01]"
                                         data-quotation-id="{{ $quotation->id }}">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $index + 1 }}
                                         </td>
 
@@ -267,9 +270,9 @@
                                             <div class="flex flex-col gap-1 max-w-xs">
                                                 @php
                                                     $products = collect();
-                                                    if(isset($quotation->revisions[0]) && $quotation->revisions[0]->products) {
-                                                        foreach($quotation->revisions[0]->products as $qp) {
-                                                            if($qp->product) {
+                                                    if (isset($quotation->revisions[0]) && $quotation->revisions[0]->products) {
+                                                        foreach ($quotation->revisions[0]->products as $qp) {
+                                                            if ($qp->product) {
                                                                 $products->push($qp->product->name);
                                                             }
                                                         }
@@ -277,9 +280,10 @@
                                                     // Keep only first 2 unique consecutive products
                                                     $shown = collect();
                                                     $prev = null;
-                                                    foreach($products as $name) {
-                                                        if($shown->count() >= 2) break;
-                                                        if($name !== $prev) {
+                                                    foreach ($products as $name) {
+                                                        if ($shown->count() >= 2)
+                                                            break;
+                                                        if ($name !== $prev) {
                                                             $shown->push($name);
                                                             $prev = $name;
                                                         }
@@ -287,7 +291,9 @@
                                                 @endphp
                                                 @if($shown->isNotEmpty())
                                                     @foreach($shown as $name)
-                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 truncate" title="{{ $name }}">
+                                                        <span
+                                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 truncate"
+                                                            title="{{ $name }}">
                                                             {{ $name }}
                                                         </span>
                                                     @endforeach
@@ -296,26 +302,26 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 dark:text-gray-100">
                                                 {{ $quotation->revisions[0]->date->format('d M Y') ?? '' }}
                                             </div>
                                             {{-- @if($quotation->revisions[0]->createdBy)
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    {{ $quotation->revisions[0]->createdBy->name }}
-                                                </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $quotation->revisions[0]->createdBy->name }}
+                                            </div>
                                             @endif --}}
                                         </td>
 
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                                {{$quotation->type !== 'normal' ?  $quotation->revisions[0]->currency : '' }}
+                                                {{$quotation->type !== 'normal' ? $quotation->revisions[0]->currency : '' }}
                                                 {{ number_format($quotation->revisions[0]->total, 2) }}
                                             </div>
                                             @if ($quotation->type !== 'normal')
                                                 <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    BDT: {{ number_format($quotation->revisions[0]->total * $quotation->revisions[0]->exchange_rate, 2) }}
+                                                    {{ $baseCurrency }}:
+                                                    {{ number_format($quotation->revisions[0]->total * $quotation->revisions[0]->exchange_rate, 2) }}
                                                 </div>
                                             @endif
 
@@ -326,19 +332,19 @@
 
                                                 {{ $quotation->revisions[0]->revision_no }}
                                                 @php
-                                                    $statusColors = [
-                                                        'in_progress' =>
-                                                            'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
-                                                        'active' =>
-                                                            'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-                                                        'completed' =>
-                                                            'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-                                                        'cancelled' =>
-                                                            'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
-                                                    ];
-                                                    $colors =
-                                                        $statusColors[$quotation->status] ??
-                                                        'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
+                                                $statusColors = [
+                                                'in_progress' =>
+                                                'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
+                                                'active' =>
+                                                'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
+                                                'completed' =>
+                                                'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
+                                                'cancelled' =>
+                                                'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
+                                                ];
+                                                $colors =
+                                                $statusColors[$quotation->status] ??
+                                                'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
                                                 @endphp
                                                 <span
                                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $colors }} status-badge">
@@ -348,7 +354,8 @@
                                             <div
                                                 class="inline-flex items-center w-6 h-6 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:scale-110 transition-all duration-200 expand-btn">
                                                 <span
-                                                    class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">{{ $quotation->revisions_count }}
+                                                    class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">{{
+                                                    $quotation->revisions_count }}
                                                     revision(s)</span>
                                             </div>
                                         </td> --}}
@@ -370,37 +377,36 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="relative inline-block text-left" x-data="{
-                                                open: false,
-                                                menuWidth: 224,
-                                                margin: 8,
-                                                top: 0,
-                                                left: 0,
-                                                menuHeight: 0,
-                                                measureMenu() {
-                                                    const el = this.$refs.menu;
-                                                    if (el) this.menuHeight = el.offsetHeight;
-                                                },
-                                                computePositions() {
-                                                    const rect = this.$refs.btn.getBoundingClientRect();
-                                                    const vw = window.innerWidth,
-                                                        vh = window.innerHeight;
-                                                    let left = rect.right - this.menuWidth;
-                                                    left = Math.min(left, vw - this.menuWidth - this.margin);
-                                                    left = Math.max(left, this.margin);
-                                                    let top = rect.bottom + this.margin;
-                                                    const overflowBottom = top + this.menuHeight > vh - this.margin;
-                                                    if (overflowBottom) {
-                                                        top = Math.max(rect.top - this.menuHeight - this.margin, this.margin);
-                                                    }
-                                                    this.left = left;
-                                                    this.top = top;
-                                                },
-                                                updatePosition() {
-                                                    this.measureMenu();
-                                                    this.computePositions();
-                                                }
-                                            }"
-                                                @keydown.escape.window="open = false"
+                                                        open: false,
+                                                        menuWidth: 224,
+                                                        margin: 8,
+                                                        top: 0,
+                                                        left: 0,
+                                                        menuHeight: 0,
+                                                        measureMenu() {
+                                                            const el = this.$refs.menu;
+                                                            if (el) this.menuHeight = el.offsetHeight;
+                                                        },
+                                                        computePositions() {
+                                                            const rect = this.$refs.btn.getBoundingClientRect();
+                                                            const vw = window.innerWidth,
+                                                                vh = window.innerHeight;
+                                                            let left = rect.right - this.menuWidth;
+                                                            left = Math.min(left, vw - this.menuWidth - this.margin);
+                                                            left = Math.max(left, this.margin);
+                                                            let top = rect.bottom + this.margin;
+                                                            const overflowBottom = top + this.menuHeight > vh - this.margin;
+                                                            if (overflowBottom) {
+                                                                top = Math.max(rect.top - this.menuHeight - this.margin, this.margin);
+                                                            }
+                                                            this.left = left;
+                                                            this.top = top;
+                                                        },
+                                                        updatePosition() {
+                                                            this.measureMenu();
+                                                            this.computePositions();
+                                                        }
+                                                    }" @keydown.escape.window="open = false"
                                                 @resize.window="if (open) updatePosition()"
                                                 @scroll.window="if (open) updatePosition()">
                                                 <button type="button" x-ref="btn"
@@ -479,8 +485,8 @@
                                                                 };
                                                                 $advanceId =
                                                                     $quotation->latestBillType === 'advance'
-                                                                        ? $quotation->latestBillId
-                                                                        : $quotation->parentBillId;
+                                                                    ? $quotation->latestBillId
+                                                                    : $quotation->parentBillId;
                                                             @endphp
 
                                                             @if ($quotation->canCreateBill && $isActiveRevision)

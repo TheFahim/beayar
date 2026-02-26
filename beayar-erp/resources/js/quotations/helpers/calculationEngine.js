@@ -1,7 +1,7 @@
 const CalculationEngine = {
     // Currency mode detection
-    isViaForeignCurrency(type, currency) {
-        return type === 'via' && currency && currency !== 'BDT';
+    isViaForeignCurrency(type, currency, baseCurrency = 'BDT') {
+        return type === 'via' && currency && currency !== baseCurrency;
     },
 
     // Get unit cost in BDT for a product row
@@ -157,9 +157,9 @@ const CalculationEngine = {
     },
 
     // Calculate line total for a product row
-    calculateLineTotal(row, quotationType, currency, exchangeRate) {
+    calculateLineTotal(row, quotationType, currency, exchangeRate, baseCurrency = 'BDT') {
         const quantity = QuotationHelpers.parseFloat(row.quantity);
-        const isViaForeign = this.isViaForeignCurrency(quotationType, currency);
+        const isViaForeign = this.isViaForeignCurrency(quotationType, currency, baseCurrency);
         const rate = QuotationHelpers.parseFloat(exchangeRate);
 
         // Early return for empty via foreign rows

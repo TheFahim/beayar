@@ -52,6 +52,9 @@ function initQuotationForm(config = {}) {
     const companyDefaultCurrency = config.companySettings?.currency
         ? String(config.companySettings.currency).trim().toUpperCase()
         : normalizedQuotationCurrencies[0] || 'USD';
+    const exchangeRateCurrency = config.companySettings?.exchange_rate_currency
+        ? String(config.companySettings.exchange_rate_currency).trim().toUpperCase()
+        : 'BDT';
 
     return {
         // --- Grouped Data Structure ---
@@ -104,6 +107,7 @@ function initQuotationForm(config = {}) {
         vatPercentages,
         quotationCurrencies: normalizedQuotationCurrencies,
         companyDefaultCurrency,
+        exchangeRateCurrency,
 
         // Modals
         specificationModal: QuotationHelpers.createEmptyModal('specification'),
@@ -130,12 +134,12 @@ function initQuotationForm(config = {}) {
             const available = Array.isArray(this.quotationCurrencies) && this.quotationCurrencies.length
                 ? this.quotationCurrencies
                 : ['USD', 'EUR', 'RMB', 'INR', 'BDT'];
-            const nonBdt = available.filter((currency) => currency !== 'BDT');
+            const nonBdt = available.filter((currency) => currency !== this.exchangeRateCurrency);
             const base = this.companyDefaultCurrency || nonBdt[0] || 'USD';
             if (type === 'via') {
-                return nonBdt[0] || (base === 'BDT' ? 'USD' : base);
+                return nonBdt[0] || (base === this.exchangeRateCurrency ? 'USD' : base);
             }
-            return base || 'BDT';
+            return base || this.exchangeRateCurrency;
         },
 
         formatToApi(dateStr) {

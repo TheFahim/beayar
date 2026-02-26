@@ -8,7 +8,8 @@ export default {
       row,
       this.quotation_revision.type,
       this.quotation_revision.currency,
-      this.quotation_revision.exchange_rate
+      this.quotation_revision.exchange_rate,
+      this.exchangeRateCurrency
     );
   },
 
@@ -16,7 +17,8 @@ export default {
   calculateTotals() {
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
     const exchangeRate = QuotationHelpers.parseFloat(this.quotation_revision.exchange_rate);
 
@@ -81,7 +83,7 @@ export default {
     const exchangeRate = QuotationHelpers.parseFloat(this.quotation_revision.exchange_rate);
     const currency = this.quotation_revision.currency;
 
-    if (currency && currency !== 'BDT') {
+    if (currency && currency !== this.exchangeRateCurrency) {
       row.bdt_buying = foreignAmount && exchangeRate
         ? parseFloat((foreignAmount * exchangeRate).toFixed(2))
         : 0;
@@ -99,7 +101,7 @@ export default {
     const exchangeRate = QuotationHelpers.parseFloat(this.quotation_revision.exchange_rate);
     const currency = this.quotation_revision.currency;
 
-    if (currency && currency !== 'BDT') {
+    if (currency && currency !== this.exchangeRateCurrency) {
       if (bdtAmount && exchangeRate) {
         row.foreign_currency_buying = parseFloat((bdtAmount / exchangeRate).toFixed(2));
         if (typeof this.addFieldFeedback === 'function') {
@@ -128,7 +130,8 @@ export default {
 
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
     const exchangeRate = QuotationHelpers.parseFloat(this.quotation_revision.exchange_rate);
 
@@ -207,7 +210,8 @@ export default {
 
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
 
     if (amountField === 'tax') {
@@ -232,7 +236,8 @@ export default {
 
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
 
     if (amountField === 'tax') {
@@ -269,7 +274,8 @@ export default {
 
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
 
     row.margin_value = CalculationEngine.calculateMarginAmount(row, marginPercentage, isViaForeign);
@@ -284,7 +290,8 @@ export default {
 
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
 
     row.margin = CalculationEngine.calculateMarginPercentage(row, marginValue, isViaForeign);
@@ -312,7 +319,7 @@ export default {
 
   // Labels/display
   getForeignCurrencyLabel() {
-    return this.quotation_revision.currency && this.quotation_revision.currency !== 'BDT'
+    return this.quotation_revision.currency && this.quotation_revision.currency !== this.exchangeRateCurrency
       ? this.quotation_revision.currency
       : 'Foreign Currency';
   },
@@ -320,17 +327,19 @@ export default {
   getFinalUnitPriceLabel() {
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
     return isViaForeign
       ? `Final Unit Price (${this.quotation_revision.currency})`
-      : 'Final Unit Price (BDT)';
+      : `Final Unit Price (${this.exchangeRateCurrency})`;
   },
 
   getBdtEquivalentUnitPrice(row) {
     const isViaForeign = CalculationEngine.isViaForeignCurrency(
       this.quotation_revision.type,
-      this.quotation_revision.currency
+      this.quotation_revision.currency,
+      this.exchangeRateCurrency
     );
     const exchangeRate = QuotationHelpers.parseFloat(this.quotation_revision.exchange_rate);
 
@@ -341,7 +350,7 @@ export default {
   },
 
   getForeignCurrencyLineTotal(row) {
-    if (!CalculationEngine.isViaForeignCurrency(this.quotation_revision.type, this.quotation_revision.currency)) {
+    if (!CalculationEngine.isViaForeignCurrency(this.quotation_revision.type, this.quotation_revision.currency, this.exchangeRateCurrency)) {
       return 0;
     }
 

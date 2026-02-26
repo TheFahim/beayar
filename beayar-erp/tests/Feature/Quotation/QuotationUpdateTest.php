@@ -36,17 +36,49 @@ class QuotationUpdateTest extends TestCase
     {
         parent::setUp();
 
-        // Setup User and Company
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+
+        // Setup User, Tenant, and Company
         $this->user = User::factory()->create([
             'current_tenant_company_id' => null,
             'current_scope' => 'company',
         ]);
 
+        $tenant = \App\Models\Tenant::create(['user_id' => $this->user->id, 'name' => 'Test Tenant']);
+
+        $plan = \App\Models\Plan::firstOrCreate(['slug' => 'pro'], [
+            'name' => 'Pro',
+            'description' => 'Test Plan',
+            'base_price' => 10,
+            'billing_cycle' => 'monthly',
+            'limits' => ['employees' => 5],
+            'is_active' => true,
+        ]);
+
+        \App\Models\Subscription::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $this->user->id,
+            'plan_id' => $plan->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
+        ]);
+
         $this->company = TenantCompany::create([
+            'tenant_id' => $tenant->id,
             'name' => 'Test Company',
             'email' => 'test@company.com',
             'owner_id' => $this->user->id,
         ]);
+
+        $this->company->members()->attach($this->user->id, [
+            'role' => 'company_admin',
+            'is_active' => true,
+            'joined_at' => now(),
+        ]);
+
+        setPermissionsTeamId($this->company->id);
+        $this->user->assignRole('company_admin');
 
         $this->user->update(['current_tenant_company_id' => $this->company->id]);
 
@@ -54,6 +86,7 @@ class QuotationUpdateTest extends TestCase
         $customerCompany = CustomerCompany::create([
             'tenant_company_id' => $this->company->id,
             'name' => 'Test Customer Company',
+            'address' => 'Test Address',
         ]);
 
         $this->customer = Customer::create([
@@ -62,6 +95,7 @@ class QuotationUpdateTest extends TestCase
             'customer_no' => 'C-0001',
             'name' => 'Test Customer',
             'email' => 'customer@test.com',
+            'address' => 'Test Customer Address',
         ]);
 
         // Setup Status
@@ -105,6 +139,7 @@ class QuotationUpdateTest extends TestCase
             'saved_as' => 'draft',
             'is_active' => true,
             'created_by' => $this->user->id,
+            'terms_conditions' => 'Test terms and conditions',
         ]);
 
         // Setup Product for Revision
@@ -165,6 +200,8 @@ class QuotationUpdateTest extends TestCase
                     ],
                 ],
             ]);
+
+        dump(session()->all());
 
         $response->assertRedirect(route('tenant.quotations.index'));
         $response->assertSessionHas('success');
@@ -383,6 +420,7 @@ class QuotationUpdateTest extends TestCase
     public function test_can_update_normal_quotation_without_exchange_rate()
     {
         // Tests that normal quotations work without exchange_rate
+        $this->withoutExceptionHandling();
         $response = $this->actingAs($this->user)
             ->put(route('tenant.quotations.update', $this->quotation), [
                 'quotation' => [
@@ -411,6 +449,8 @@ class QuotationUpdateTest extends TestCase
                 ],
             ]);
 
+        dump(session()->all());
+
         $response->assertRedirect(route('tenant.quotations.index'));
         $response->assertSessionHas('success');
     }
@@ -423,11 +463,30 @@ class QuotationUpdateTest extends TestCase
             'current_scope' => 'company',
         ]);
 
+        $otherTenant = \App\Models\Tenant::create(['user_id' => $otherUser->id, 'name' => 'Other Tenant']);
+        \App\Models\Subscription::create([
+            'tenant_id' => $otherTenant->id,
+            'user_id' => $otherUser->id,
+            'plan_id' => \App\Models\Plan::first()->id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'price' => 0,
+        ]);
+
         $otherCompany = TenantCompany::create([
+            'tenant_id' => $otherTenant->id,
             'name' => 'Other Company',
             'email' => 'other@company.com',
             'owner_id' => $otherUser->id,
         ]);
+
+        $otherCompany->members()->attach($otherUser->id, [
+            'role' => 'company_admin',
+            'is_active' => true,
+            'joined_at' => now(),
+        ]);
+        setPermissionsTeamId($otherCompany->id);
+        $otherUser->assignRole('company_admin');
 
         $otherUser->update(['current_tenant_company_id' => $otherCompany->id]);
 
@@ -449,6 +508,7 @@ class QuotationUpdateTest extends TestCase
                     'subtotal' => 1000,
                     'total' => 1150,
                     'saved_as' => 'draft',
+                    'terms_conditions' => 'Test terms',
                 ],
                 'quotation_products' => [
                     [
@@ -459,8 +519,8 @@ class QuotationUpdateTest extends TestCase
                 ],
             ]);
 
-        // Should be forbidden or not found (tenant scope returns 404)
-        $response->assertStatus(404);
+        // Should be forbidden
+        $response->assertStatus(403);
     }
 
     public function test_fails_validation_when_quotation_no_is_missing()
@@ -482,6 +542,7 @@ class QuotationUpdateTest extends TestCase
                     'subtotal' => 1000,
                     'total' => 1150,
                     'saved_as' => 'draft',
+                    'terms_conditions' => 'Test terms',
                 ],
                 'quotation_products' => [
                     [

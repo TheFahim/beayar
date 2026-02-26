@@ -30,13 +30,13 @@ class QuotationService
     public function createRevision(Quotation $quotation, array $data, User $user): QuotationRevision
     {
         $revision = $quotation->revisions()->create([
-            'revision_no' => $data['revision_no'] ?? 'R'.($quotation->revisions()->count()),
+            'revision_no' => $data['revision_no'] ?? 'R' . ($quotation->revisions()->count()),
             'date' => now(),
             'subtotal' => $data['subtotal'],
             'total' => $data['total'],
             'created_by' => $user->id,
             'is_active' => true,
-            // Add other fields
+            'terms_conditions' => $data['terms_conditions'] ?? '',
         ]);
 
         // Disable other revisions if this is active

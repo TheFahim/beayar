@@ -47,6 +47,7 @@ class QuotationServiceTest extends TestCase
         $customerCompany = \App\Models\CustomerCompany::create([
             'tenant_company_id' => $this->company->id,
             'name' => 'Test Customer Company',
+            'address' => 'Test Address',
         ]);
 
         $this->customer = Customer::create([
@@ -54,6 +55,7 @@ class QuotationServiceTest extends TestCase
             'customer_company_id' => $customerCompany->id,
             'name' => 'Test Customer',
             'email' => 'customer@test.com',
+            'address' => 'Test Address',
         ]);
 
         $this->status = QuotationStatus::create([
@@ -68,8 +70,10 @@ class QuotationServiceTest extends TestCase
             'customer_id' => $this->customer->id,
             'status_id' => $this->status->id,
             'po_no' => 'PO-123',
+            'ship_to' => 'Test Address',
             'subtotal' => 1000,
             'total' => 1100,
+            'terms_conditions' => 'Test terms',
             'products' => [
                 [
                     'product_name' => 'Test Product',
@@ -103,8 +107,10 @@ class QuotationServiceTest extends TestCase
         $data = [
             'customer_id' => $this->customer->id,
             'status_id' => $this->status->id,
+            'ship_to' => 'Test Address',
             'subtotal' => 100,
             'total' => 100,
+            'terms_conditions' => 'Test terms',
         ];
         $quotation = $this->service->createQuotation($this->user, $data);
         $oldRevision = $quotation->revisions->first();
@@ -114,6 +120,7 @@ class QuotationServiceTest extends TestCase
             'subtotal' => 200,
             'total' => 200,
             'revision_no' => 'R2',
+            'terms_conditions' => 'Test terms',
         ];
         $newRevision = $this->service->createRevision($quotation, $newData, $this->user);
 

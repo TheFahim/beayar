@@ -132,6 +132,25 @@
                                     @enderror
                                 </div>
 
+                                {{-- Exchange Rate Currency --}}
+                                <div>
+                                    <label for="exchange_rate_currency"
+                                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Exchange
+                                        Rate Currency
+                                        <span class="text-red-500">*</span></label>
+                                    <select name="exchange_rate_currency" id="exchange_rate_currency"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3">
+                                        @foreach($allCurrencies ?? $currencies as $code => $symbol)
+                                            <option value="{{ $code }}" {{ old('exchange_rate_currency', $settings['exchange_rate_currency'] ?? 'BDT') === $code ? 'selected' : '' }}>
+                                                {{ $symbol ? "{$code} ({$symbol})" : $code }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('exchange_rate_currency')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                                 <div class="md:col-span-2" x-data="{
                                     search: '',
                                     open: false,
@@ -172,19 +191,22 @@
                                         }
                                     }
                                 }">
-                                    <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Quotation Currencies <span class="text-red-500">*</span></label>
+                                    <label
+                                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Quotation
+                                        Currencies <span class="text-red-500">*</span></label>
 
                                     {{-- Selected Tags --}}
                                     <div class="flex flex-wrap gap-2 mb-3">
                                         <template x-for="code in selected" :key="code">
-                                            <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5">
-                                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-200" x-text="code"></span>
+                                            <div
+                                                class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5">
+                                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-200"
+                                                    x-text="code"></span>
                                                 <input type="hidden" name="quotation_currencies[]" :value="code">
                                                 <button type="button"
                                                     class="h-6 w-6 rounded-md flex items-center justify-center transition-colors"
                                                     :class="code === 'BDT' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'"
-                                                    :disabled="code === 'BDT'"
-                                                    @click="remove(code)">
+                                                    :disabled="code === 'BDT'" @click="remove(code)">
                                                     ×
                                                 </button>
                                             </div>
@@ -193,9 +215,7 @@
 
                                     {{-- Search Input --}}
                                     <div class="relative" @click.away="open = false">
-                                        <input type="text"
-                                            x-model="search"
-                                            @focus="open = true"
+                                        <input type="text" x-model="search" @focus="open = true"
                                             @keydown.escape="open = false"
                                             class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
                                             placeholder="Search to add currency (e.g. USD, Euro)...">
@@ -208,18 +228,20 @@
                                                     @click="add(code)">
                                                     <span class="block truncate">
                                                         <span x-text="code" class="font-medium"></span>
-                                                        <span x-show="symbol" x-text="` (${symbol})`" class="text-gray-500 dark:text-gray-400"></span>
+                                                        <span x-show="symbol" x-text="` (${symbol})`"
+                                                            class="text-gray-500 dark:text-gray-400"></span>
                                                     </span>
                                                 </div>
                                             </template>
                                         </div>
                                         <div x-show="open && search !== '' && Object.keys(filteredCurrencies).length === 0"
-                                             class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 px-3 text-sm text-gray-500 dark:text-gray-400"
-                                             style="display: none;">
+                                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 px-3 text-sm text-gray-500 dark:text-gray-400"
+                                            style="display: none;">
                                             No matching currencies found.
                                         </div>
                                     </div>
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Search for currencies supported by the exchange rate provider.</p>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Search for currencies
+                                        supported by the exchange rate provider.</p>
                                     @error('quotation_currencies')
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
@@ -349,7 +371,8 @@
                             <div class="flex items-center justify-between gap-4 mb-3">
                                 <div>
                                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">VAT Percentages</h2>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Used in quotation VAT dropdown.</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Used in quotation VAT dropdown.
+                                    </p>
                                 </div>
                                 <button type="button" id="add-vat-percentage"
                                     class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300 transition-colors">
@@ -358,7 +381,8 @@
                             </div>
                             <div class="flex flex-wrap gap-2" id="vat-percentages-list">
                                 @foreach($vatPercentages as $percentage)
-                                    <div class="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1">
+                                    <div
+                                        class="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1">
                                         <input type="number" name="vat_percentages[]" min="0" max="100" step="0.01"
                                             value="{{ $percentage }}"
                                             class="w-20 bg-transparent border-0 p-0 text-sm focus:ring-0 dark:text-white"
@@ -378,7 +402,9 @@
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                             <div class="mt-4">
-                                <label for="vat-default-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Default VAT Percentage</label>
+                                <label for="vat-default-select"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Default VAT
+                                    Percentage</label>
                                 <select id="vat-default-select" name="vat_default_percentage"
                                     class="mt-1 w-40 py-1.5 pl-2 pr-8 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:text-white shadow-sm transition-all">
                                     @foreach($vatPercentages as $percentage)

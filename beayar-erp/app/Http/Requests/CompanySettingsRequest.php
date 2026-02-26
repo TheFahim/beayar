@@ -29,8 +29,9 @@ class CompanySettingsRequest extends FormRequest
             return $cleaned !== '' ? $cleaned : null;
         }, $currencies))));
 
-        if (!in_array('BDT', $normalized, true)) {
-            $normalized[] = 'BDT';
+        $exchangeCurrency = $this->input('exchange_rate_currency', 'BDT');
+        if (!in_array($exchangeCurrency, $normalized, true)) {
+            $normalized[] = $exchangeCurrency;
         }
 
         $this->merge([
@@ -54,6 +55,7 @@ class CompanySettingsRequest extends FormRequest
             'date_format' => ['required', 'string', Rule::in($validDateFormats)],
             'currency' => ['required', 'string', Rule::in($quotationCurrencies)],
             'currency_symbol' => ['required', 'string', 'max:5'],
+            'exchange_rate_currency' => ['required', 'string', Rule::in($validCurrencies)],
             'quotation_currencies' => [
                 'required',
                 'array',
@@ -63,13 +65,14 @@ class CompanySettingsRequest extends FormRequest
                         return;
                     }
                     $hasForeign = false;
+                    $exchangeRateCurrency = $this->input('exchange_rate_currency', 'BDT');
                     foreach ($value as $currency) {
-                        if (is_string($currency) && strtoupper($currency) !== 'BDT') {
+                        if (is_string($currency) && strtoupper($currency) !== strtoupper($exchangeRateCurrency)) {
                             $hasForeign = true;
                             break;
                         }
                     }
-                    if (! $hasForeign) {
+                    if (!$hasForeign) {
                         $fail('Add at least one foreign currency for quotations.');
                     }
                 },

@@ -24,8 +24,10 @@ class QuotationRequest extends FormRequest
             $quotationCurrencies = array_keys(CompanySettingsService::AVAILABLE_CURRENCIES);
         }
         $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
-        if (!in_array('BDT', $quotationCurrencies, true)) {
-            $quotationCurrencies[] = 'BDT';
+
+        $exchangeRateCurrency = $settings['exchange_rate_currency'] ?? 'BDT';
+        if (!in_array($exchangeRateCurrency, $quotationCurrencies, true)) {
+            $quotationCurrencies[] = $exchangeRateCurrency;
         }
 
         return [
