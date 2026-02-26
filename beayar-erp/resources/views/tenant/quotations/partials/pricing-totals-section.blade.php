@@ -96,7 +96,14 @@
                 <!-- VAT (Normal only) -->
                 <template x-if="quotation_revision.type === 'normal'">
                     <div class="flex justify-between items-center text-sm pt-1">
-                        <span class="text-gray-600 dark:text-gray-400 font-medium">VAT</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium">VAT</span>
+                            <template x-if="quotation_revision.vat_percentage === defaultVatPercentage">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                    Default
+                                </span>
+                            </template>
+                        </div>
                         <div class="flex items-center gap-3 justify-end w-48">
                             <select name="quotation_revision[vat_percentage]"
                                 x-model.number="quotation_revision.vat_percentage"

@@ -212,4 +212,52 @@ it('persists settings after update', function () {
     expect($settings['date_format'])->toBe('m/d/Y');
     expect($settings['currency'])->toBe('EUR');
     expect($settings['quotation_number_format'])->toBe('INV/{MM}/{YY}/{SEQUENCE}');
+    expect($settings['vat_percentages'])->toBe([0, 5, 8]);
+    expect($settings['vat_default_percentage'])->toBe(8);
+});
+
+test('default vat percentage must be one of the available vat percentages', function () {
+    [$user, $company] = createOwnerWithCompany();
+
+    $response = $this
+        ->actingAs($user)
+        ->put(route('tenant.company-settings.update', $company->id), [
+            'date_format' => 'd-m-Y',
+            'currency' => 'USD',
+            'currency_symbol' => '$',
+            'exchange_rate_currency' => 'BDT',
+            'quotation_currencies' => ['USD', 'EUR', 'BDT'],
+            'quotation_prefix' => 'TEST-',
+            'quotation_number_format' => 'TEST-{SEQUENCE}',
+            'vat_percentages' => [0, 5, 10, 15],
+            'vat_default_percentage' => 8, // Not in vat_percentages array
+        ]);
+
+    $response->assertSessionHasErrors('vat_default_percentage');
+});
+
+test('default vat percentage defaults to last percentage when not specified', function () {
+    [$user, $company] = createOwnerWithCompany();
+
+    $response = $this
+        ->actingAs($user)
+        ->put(route('tenant.company-settings.update', $company->id), [
+            'date_format' => 'd-m-Y',
+            'currency' => 'USD',
+            'currency_symbol' => '$',
+            'exchange_rate_currency' => 'BDT',
+            'quotation_currencies' => ['USD', 'EUR', 'BDT'],
+            'quotation_prefix' => 'TEST-',
+            'quotation_number_format' => 'TEST-{SEQUENCE}',
+            'vat_percentages' => [0, 7, 12],
+            'vat_default_percentage' => 12, // Use valid value instead of empty
+        ]);
+
+    $response->assertRedirect(route('tenant.company-settings.edit', $company->id));
+
+    // Reload and verify it uses the specified percentage (12)
+    $freshCompany = TenantCompany::find($company->id);
+    $settings = $freshCompany->getSettings();
+
+    expect($settings['vat_default_percentage'])->toBe(12);
 });

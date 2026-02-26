@@ -439,16 +439,23 @@
                         <div>
                             <div class="flex items-center justify-between gap-4 mb-3">
                                 <div>
-                                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">VAT Percentages</h2>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Used in quotation VAT dropdown.
+                                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">VAT Settings</h2>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Configure VAT percentages and default rate for quotations.
                                     </p>
                                 </div>
                                 <button type="button" id="add-vat-percentage"
                                     class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300 transition-colors">
-                                    Add
+                                    Add VAT
                                 </button>
                             </div>
-                            <div class="flex flex-wrap gap-2" id="vat-percentages-list">
+                            
+                            <!-- VAT Percentages Section -->
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Available VAT Percentages <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="flex flex-wrap gap-2" id="vat-percentages-list">
                                 @foreach($vatPercentages as $percentage)
                                     <div
                                         class="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-1">
@@ -470,12 +477,24 @@
                             @error('vat_percentages.*')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
-                            <div class="mt-4">
-                                <label for="vat-default-select"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Default VAT
-                                    Percentage</label>
+                            
+                            <!-- Default VAT Percentage Section -->
+                            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                                <div class="flex items-start gap-2 mb-3">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <label for="vat-default-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Default VAT Percentage <span class="text-red-500">*</span>
+                                        </label>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            This VAT rate will be automatically selected when creating new quotations.
+                                        </p>
+                                    </div>
+                                </div>
                                 <select id="vat-default-select" name="vat_default_percentage"
-                                    class="mt-1 w-40 py-1.5 pl-2 pr-8 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:text-white shadow-sm transition-all">
+                                    class="w-full md:w-48 py-2 pl-3 pr-10 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:text-white shadow-sm transition-all">
                                     @foreach($vatPercentages as $percentage)
                                         <option value="{{ $percentage }}" @selected((string) $percentage === (string) $vatDefaultValue)>
                                             {{ $percentage }}%
@@ -485,6 +504,7 @@
                                 @error('vat_default_percentage')
                                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
+                            </div>
                             </div>
                         </div>
                     </div>

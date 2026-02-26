@@ -105,6 +105,7 @@ function initQuotationForm(config = {}) {
         showSaveDropdown: false,
         lastExchangeRate: config.oldQuotationRevision?.exchange_rate || '',
         vatPercentages,
+        defaultVatPercentage,
         quotationCurrencies: normalizedQuotationCurrencies,
         companyDefaultCurrency,
         exchangeRateCurrency,
