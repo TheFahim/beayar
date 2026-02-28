@@ -76,7 +76,6 @@
                 'exchange_rate' => '',
                 'discount' => 0,
                 'shipping' => 0,
-                'vat_percentage' => 15,
                 'saved_as' => 'draft',
                 'terms_conditions' => '',
             ])
