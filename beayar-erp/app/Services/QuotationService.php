@@ -14,6 +14,25 @@ use Illuminate\Support\Facades\DB;
 
 class QuotationService
 {
+    private function parseRevisionDate(?string $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            // Fallback to legacy d/m/Y
+        }
+
+        try {
+            return Carbon::createFromFormat('d/m/Y', $value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     /**
      * Create a new quotation with its first revision and products.
      */
@@ -143,14 +162,8 @@ class QuotationService
     ): QuotationRevision {
         $revisionNo = $this->generateRevisionNo($quotation);
 
-        // Convert dates from d/m/Y to Y-m-d
-        $date = date('Y-m-d');
-        // Handle validity date format
-        try {
-            $validity = Carbon::createFromFormat('d/m/Y', $revisionData['validity'])->format('Y-m-d');
-        } catch (\Exception $e) {
-            $validity = null;
-        }
+        $date = $this->parseRevisionDate($revisionData['date'] ?? null) ?? date('Y-m-d');
+        $validity = $this->parseRevisionDate($revisionData['validity'] ?? null);
 
         $revision = QuotationRevision::create([
             'quotation_id' => $quotation->id,
@@ -187,18 +200,8 @@ class QuotationService
      */
     private function updateRevision(QuotationRevision $revision, array $revisionData): void
     {
-        // Convert dates from d/m/Y to Y-m-d
-        try {
-            $date = Carbon::createFromFormat('d/m/Y', $revisionData['date'])->format('Y-m-d');
-        } catch (\Exception $e) {
-            $date = $revisionData['date']; // Fallback
-        }
-
-        try {
-            $validity = Carbon::createFromFormat('d/m/Y', $revisionData['validity'])->format('Y-m-d');
-        } catch (\Exception $e) {
-            $validity = $revisionData['validity']; // Fallback
-        }
+        $date = $this->parseRevisionDate($revisionData['date'] ?? null) ?? ($revisionData['date'] ?? null);
+        $validity = $this->parseRevisionDate($revisionData['validity'] ?? null) ?? ($revisionData['validity'] ?? null);
 
         $revision->update([
             'date' => $date,

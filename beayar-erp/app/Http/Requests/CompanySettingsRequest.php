@@ -53,6 +53,7 @@ class CompanySettingsRequest extends FormRequest
 
         return [
             'date_format' => ['required', 'string', Rule::in($validDateFormats)],
+            'header_style' => ['nullable', 'string', Rule::in(['style_1', 'style_2', 'style_3', 'style_4', 'style_5'])],
             'currency' => ['required', 'string', Rule::in($quotationCurrencies)],
             'currency_symbol' => ['required', 'string', 'max:5'],
             'exchange_rate_currency' => ['required', 'string', Rule::in($validCurrencies)],

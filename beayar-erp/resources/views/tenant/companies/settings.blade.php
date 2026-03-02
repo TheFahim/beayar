@@ -448,7 +448,7 @@
                                     Add VAT
                                 </button>
                             </div>
-                            
+
                             <!-- VAT Percentages Section -->
                             <div class="space-y-3">
                                 <div>
@@ -477,7 +477,7 @@
                             @error('vat_percentages.*')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
-                            
+
                             <!-- Default VAT Percentage Section -->
                             <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
                                 <div class="flex items-start gap-2 mb-3">
@@ -506,6 +506,125 @@
                                 @enderror
                             </div>
                             </div>
+                        </div>
+
+                        <hr class="border-gray-200 dark:border-gray-700">
+
+                        {{-- Header Style Section --}}
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">PDF Header Style</h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Select the header layout design for quotation/invoice PDFs.</p>
+
+                            @php
+                                $headerStyle = old('header_style', $settings['header_style'] ?? 'style_1');
+                            @endphp
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {{-- Style 1: Standard --}}
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" name="header_style" value="style_1" {{ $headerStyle === 'style_1' ? 'checked' : '' }} class="peer sr-only">
+                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Standard</span>
+                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                                            <div class="flex justify-between items-center gap-2">
+                                                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">Logo</div>
+                                                <div class="text-right flex-1">
+                                                    <div class="text-xs font-bold text-gray-800 dark:text-white">Company Name</div>
+                                                    <div class="text-[10px] text-gray-500">Address | Email</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                {{-- Style 2: Inverted Standard --}}
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" name="header_style" value="style_2" {{ $headerStyle === 'style_2' ? 'checked' : '' }} class="peer sr-only">
+                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Inverted</span>
+                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                                            <div class="flex justify-between items-center gap-2">
+                                                <div class="flex-1">
+                                                    <div class="text-xs font-bold text-gray-800 dark:text-white">Company Name</div>
+                                                    <div class="text-[10px] text-gray-500">Address | Email</div>
+                                                </div>
+                                                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">Logo</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                {{-- Style 3: Centered / Letterhead --}}
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" name="header_style" value="style_3" {{ $headerStyle === 'style_3' ? 'checked' : '' }} class="peer sr-only">
+                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Centered</span>
+                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                                            <div class="text-center">
+                                                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded mx-auto mb-1 flex items-center justify-center text-xs text-gray-500">Logo</div>
+                                                <div class="text-xs font-bold text-gray-800 dark:text-white">Company Name</div>
+                                                <div class="text-[10px] text-gray-500">Address | Email | Phone</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                {{-- Style 4: Corporate Bar --}}
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" name="header_style" value="style_4" {{ $headerStyle === 'style_4' ? 'checked' : '' }} class="peer sr-only">
+                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Corporate Bar</span>
+                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                                            <div class="bg-blue-800 p-2 flex items-center gap-2">
+                                                <div class="w-6 h-6 bg-white/20 rounded flex items-center justify-center text-[8px] text-white">Logo</div>
+                                                <div class="text-xs font-bold text-white">Company Name</div>
+                                            </div>
+                                            <div class="p-2 text-center text-[10px] text-gray-500">Address | Email | Phone</div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                {{-- Style 5: Minimal / Logo Only --}}
+                                <label class="relative cursor-pointer group">
+                                    <input type="radio" name="header_style" value="style_5" {{ $headerStyle === 'style_5' ? 'checked' : '' }} class="peer sr-only">
+                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Minimal</span>
+                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                                            <div class="flex justify-center">
+                                                <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">Logo</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            @error('header_style')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 

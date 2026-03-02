@@ -1,9 +1,13 @@
 <x-dashboard.layout.default :title="($activeRevision->revision_no !== 'R00' ? 'Revised ' : '') . 'Commercial Quotation - ' . $quotation->quotation_no">
-@php
-    $companySettings = $quotation->company ? $quotation->company->settings : null;
-    $baseCurrency = isset($companySettings['exchange_rate_currency']) ? $companySettings['exchange_rate_currency'] : 'BDT';
-    $baseCurrencySymbol = \App\Services\CompanySettingsService::AVAILABLE_CURRENCIES[$baseCurrency] ?? $baseCurrency;
-@endphp
+    @php
+        $companySettings = $quotation->company ? $quotation->company->settings : null;
+        $baseCurrency = isset($companySettings['exchange_rate_currency'])
+            ? $companySettings['exchange_rate_currency']
+            : 'BDT';
+        $baseCurrencySymbol =
+            \App\Services\CompanySettingsService::AVAILABLE_CURRENCIES[$baseCurrency] ?? $baseCurrency;
+        $headerStyle = $companySettings['header_style'] ?? 'style_1';
+    @endphp
     <div x-data="{ isTechnical: false }" x-init="$watch('isTechnical', value => document.title = (value ? '{{ $activeRevision->revision_no !== 'R00' ? 'Revised ' : '' }}Technical Quotation - ' : '{{ $activeRevision->revision_no !== 'R00' ? 'Revised ' : '' }}Commercial Quotation - ') + '{{ $quotation->quotation_no }}')">
         <style>
             .screen-footer {
@@ -214,7 +218,8 @@
                 </div>
 
                 {{-- Invoice card (this will be printed) --}}
-                <div id="q-invoice" class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg text-gray-900">
+                <div id="q-invoice"
+                    class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg text-gray-900">
                     <div class="print-watermark hidden"></div>
 
                     <div class="px-6 py-6">
@@ -223,33 +228,205 @@
                                 <tr>
                                     <td>
                                         {{-- Header --}}
-                                        <div class="flex justify-between items-start gap-3">
-                                            <div class="flex gap-4 items-center">
-                                                @if($quotation->company && $quotation->company->logo)
-                                                    <img src="{{ asset('storage/' . $quotation->company->logo) }}" alt="{{ $quotation->company->name }}"
-                                                        class="h-20 w-auto" />
-                                                @else
-                                                    <div>Company Logo Unavailable</div>
-                                                @endif
-                                            </div>
-                                            <div class="leading-tight text-right">
-                                                @if($quotation->company)
-                                                    <div class="text-sm font-bold text-gray-800">{{ $quotation->company->name }}</div>
-                                                    <div class="text-xs text-gray-600 whitespace-pre-line">{{ $quotation->company->address }}</div>
-                                                    @if($quotation->company->email)
-                                                        <div class="text-xs text-gray-600">{{ $quotation->company->email }}</div>
+                                        @switch($headerStyle)
+                                            @case('style_1')
+                                                {{-- Style 1: Standard - Logo Left, Company Details Right --}}
+                                                <div class="flex justify-between items-start gap-3">
+                                                    <div class="flex gap-4 items-center">
+                                                        @if ($quotation->company && $quotation->company->logo)
+                                                            <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                                alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
+                                                        @else
+                                                            <div class="text-lg font-bold text-gray-800">
+                                                                {{ $quotation->company->name ?? 'Company' }}</div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="leading-tight text-right">
+                                                        @if ($quotation->company)
+                                                            @if ($quotation->company->logo)
+                                                                <div class="text-sm font-bold text-gray-800">
+                                                                    {{ $quotation->company->name }}</div>
+                                                            @endif
+                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                                {{ $quotation->company->address }}</div>
+                                                            @if ($quotation->company->email)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->email }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->phone)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->phone }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->bin_no)
+                                                                <div class="text-xs text-gray-600">BIN:
+                                                                    {{ $quotation->company->bin_no }}</div>
+                                                            @endif
+                                                        @else
+                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                @break
+
+                                            @case('style_2')
+                                                {{-- Style 2: Inverted Standard - Company Details Left, Logo Right --}}
+                                                <div class="flex justify-between items-start gap-3">
+                                                    <div class="leading-tight text-left">
+                                                        @if ($quotation->company)
+                                                            <div class="text-sm font-bold text-gray-800">
+                                                                {{ $quotation->company->name }}</div>
+                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                                {{ $quotation->company->address }}</div>
+                                                            @if ($quotation->company->email)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->email }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->phone)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->phone }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->bin_no)
+                                                                <div class="text-xs text-gray-600">BIN:
+                                                                    {{ $quotation->company->bin_no }}</div>
+                                                            @endif
+                                                        @else
+                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="flex gap-4 items-center">
+                                                        @if ($quotation->company && $quotation->company->logo)
+                                                            <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                                alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
+                                                        @else
+                                                            <div class="text-lg font-bold text-gray-800">
+                                                                {{ $quotation->company->name ?? 'Company' }}</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                @break
+
+                                            @case('style_3')
+                                                {{-- Style 3: Centered / Letterhead --}}
+                                                <div class="text-center">
+                                                    @if ($quotation->company && $quotation->company->logo)
+                                                        <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                            alt="{{ $quotation->company->name }}" class="h-16 w-auto mx-auto mb-2" />
                                                     @endif
-                                                    @if($quotation->company->phone)
-                                                        <div class="text-xs text-gray-600">{{ $quotation->company->phone }}</div>
+                                                    @if ($quotation->company)
+                                                        <div class="text-base font-bold text-gray-800">
+                                                            {{ $quotation->company->name }}</div>
+                                                        <div class="text-xs text-gray-600 mt-1">
+                                                            @if($quotation->company->address)
+                                                                <span>{{ $quotation->company->address }}</span>
+                                                            @endif
+                                                            @if($quotation->company->email || $quotation->company->phone)
+                                                                <span class="mx-1">|</span>
+                                                            @endif
+                                                            @if($quotation->company->email)
+                                                                <span>{{ $quotation->company->email }}</span>
+                                                            @endif
+                                                            @if($quotation->company->phone)
+                                                                <span class="mx-1">|</span>
+                                                                <span>{{ $quotation->company->phone }}</span>
+                                                            @endif
+                                                            @if($quotation->company->bin_no)
+                                                                <span class="mx-1">|</span>
+                                                                <span>BIN: {{ $quotation->company->bin_no }}</span>
+                                                            @endif
+                                                        </div>
+                                                    @else
+                                                        <div class="text-xs text-gray-600">Company Information Unavailable</div>
                                                     @endif
-                                                    @if($quotation->company->bin_no)
-                                                        <div class="text-xs text-gray-600">BIN: {{ $quotation->company->bin_no }}</div>
+                                                </div>
+                                                @break
+
+                                            @case('style_4')
+                                                {{-- Style 4: Corporate Bar --}}
+                                                <div>
+                                                    <div class="bg-blue-800 px-4 py-3 flex items-center gap-4 -mx-6 -mt-6 mb-3" style="width: calc(100% + 48px);">
+                                                        @if ($quotation->company && $quotation->company->logo)
+                                                            <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                                alt="{{ $quotation->company->name }}" class="h-10 w-auto brightness-0 invert" />
+                                                        @endif
+                                                        @if ($quotation->company)
+                                                            <div class="text-white">
+                                                                <div class="text-base font-bold">{{ $quotation->company->name }}</div>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-center text-xs text-gray-600 mt-2">
+                                                        @if ($quotation->company)
+                                                            @if($quotation->company->address)
+                                                                <span>{{ $quotation->company->address }}</span>
+                                                            @endif
+                                                            @if($quotation->company->email)
+                                                                <span class="mx-1">|</span>
+                                                                <span>{{ $quotation->company->email }}</span>
+                                                            @endif
+                                                            @if($quotation->company->phone)
+                                                                <span class="mx-1">|</span>
+                                                                <span>{{ $quotation->company->phone }}</span>
+                                                            @endif
+                                                            @if($quotation->company->bin_no)
+                                                                <span class="mx-1">|</span>
+                                                                <span>BIN: {{ $quotation->company->bin_no }}</span>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                @break
+
+                                            @case('style_5')
+                                                {{-- Style 5: Minimal / Logo Only --}}
+                                                <div class="flex justify-center items-center">
+                                                    @if ($quotation->company && $quotation->company->logo)
+                                                        <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                            alt="{{ $quotation->company->name }}" class="h-16 w-auto" />
+                                                    @else
+                                                        <div class="text-xl font-bold text-gray-800">
+                                                            {{ $quotation->company->name ?? 'Company' }}</div>
                                                     @endif
-                                                @else
-                                                    <div class="text-xs text-gray-600">Company Information Unavailable</div>
-                                                @endif
-                                            </div>
-                                        </div>
+                                                </div>
+                                                @break
+
+                                            @default
+                                                {{-- Default: Style 1 --}}
+                                                <div class="flex justify-between items-start gap-3">
+                                                    <div class="flex gap-4 items-center">
+                                                        @if ($quotation->company && $quotation->company->logo)
+                                                            <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                                alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
+                                                        @else
+                                                            <div class="text-lg font-bold text-gray-800">
+                                                                {{ $quotation->company->name ?? 'Company' }}</div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="leading-tight text-right">
+                                                        @if ($quotation->company)
+                                                            @if ($quotation->company->logo)
+                                                                <div class="text-sm font-bold text-gray-800">
+                                                                    {{ $quotation->company->name }}</div>
+                                                            @endif
+                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                                {{ $quotation->company->address }}</div>
+                                                            @if ($quotation->company->email)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->email }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->phone)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->phone }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->bin_no)
+                                                                <div class="text-xs text-gray-600">BIN:
+                                                                    {{ $quotation->company->bin_no }}</div>
+                                                            @endif
+                                                        @else
+                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                        @endswitch
                                     </td>
                                 </tr>
                             </thead>
@@ -278,7 +455,8 @@
                                                             {{ $quotation->customer->address }}
                                                         </div>
                                                         <div class="text-xs text-gray-600">
-                                                            {{ $quotation->customer->phone? 'Cell: '. $quotation->customer->phone : 'N/A' }}</div>
+                                                            {{ $quotation->customer->phone ? 'Cell: ' . $quotation->customer->phone : 'N/A' }}
+                                                        </div>
                                                         <div class="text-xs text-gray-600">
                                                             {{ $quotation->customer->email }}</div>
                                                         @if ($quotation->customer->attention)
@@ -687,12 +865,12 @@
                 if ($prevImagePath !== $currentImagePath) {
                     $imageRowspan = 1;
                     for ($j = $i + 1; $j < $count; $j++) {
-                         $nextImagePath = $products[$j]->product->image->path ?? null;
-                         if ($nextImagePath === $currentImagePath) {
-                             $imageRowspan++;
-                         } else {
-                             break;
-                         }
+                        $nextImagePath = $products[$j]->product->image->path ?? null;
+                        if ($nextImagePath === $currentImagePath) {
+                            $imageRowspan++;
+                        } else {
+                            break;
+                        }
                     }
                     $item['image_rowspan'] = $imageRowspan;
                     $prevImagePath = $currentImagePath;
@@ -730,7 +908,7 @@
                 'discount_amount' => $activeRevision->discount_amount,
                 'shipping' => $activeRevision->shipping,
                 'vat_amount' => $activeRevision->vat_amount,
-                'vat_percentage' => (int)$activeRevision->vat_percentage,
+                'vat_percentage' => (int) $activeRevision->vat_percentage,
                 'total' => $activeRevision->total,
                 'terms_conditions' => $activeRevision->terms_conditions ?: $quotation->terms_conditions,
                 'seal_url' => asset('assets/images/seal.jpg'),
@@ -754,7 +932,6 @@
                     printDelay: 500,
                 });
             });
-
         </script>
     </div>
 </x-dashboard.layout.default>

@@ -142,7 +142,7 @@ class QuotationRequest extends FormRequest
 
         // Convert quotation revision dates
         $quotationRevision = $this->input('quotation_revision', []);
-        
+
         if (isset($quotationRevision['date'])) {
             $convertedDate = $companySettingsService->convertDateToDbFormat(
                 $quotationRevision['date'],
