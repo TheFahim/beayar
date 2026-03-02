@@ -1,12 +1,12 @@
 <x-dashboard.layout.default title="Create Customer">
     <div class="max-w-5xl mx-auto py-8">
         <!-- Breadcrumb -->
-        <nav class="mb-8 flex items-center text-sm text-gray-500">
-            <a href="{{ route('tenant.customers.index') }}" class="hover:text-gray-900 transition-colors">Customers</a>
+        <nav class="mb-8 flex items-center text-sm text-gray-500 dark:text-gray-400">
+            <a href="{{ route('tenant.customers.index') }}" class="hover:text-gray-900 dark:hover:text-white transition-colors">Customers</a>
             <svg class="w-3 h-3 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-            <span class="text-gray-900 font-medium">New Customer</span>
+            <span class="text-gray-900 dark:text-white font-medium">New Customer</span>
         </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -15,20 +15,20 @@
                 <form method="POST" action="{{ route('tenant.customers.store') }}" id="createCustomerForm">
                     @csrf
 
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                         <!-- Header -->
-                        <div class="px-8 py-6 border-b border-gray-100">
-                            <h1 class="text-2xl font-semibold text-gray-900">Create Customer</h1>
-                            <p class="text-gray-500 mt-1">Add a new customer to your organization.</p>
+                        <div class="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
+                            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Create Customer</h1>
+                            <p class="text-gray-500 dark:text-gray-400 mt-1">Add a new customer to your organization.</p>
                         </div>
 
                         <div class="p-8 space-y-8">
                             <!-- Company Selection -->
                             <div class="space-y-4">
-                                <h3 class="text-sm font-medium text-gray-900 uppercase tracking-wider">Company Details</h3>
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider">Company Details</h3>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Company <span class="text-red-500">*</span>
                                     </label>
 
@@ -46,10 +46,10 @@
                                                 @input.debounce.300ms="filterOptions"
                                                 @blur="checkSelection"
                                                 placeholder="Select or search company..."
-                                                class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                                class="w-full pl-4 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                                 required>
 
-                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                                 </svg>
@@ -64,14 +64,14 @@
                                             x-transition:leave="transition ease-in duration-75"
                                             x-transition:leave-start="opacity-100 transform scale-100"
                                             x-transition:leave-end="opacity-0 transform scale-95"
-                                            class="absolute z-20 w-full mt-2 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden"
+                                            class="absolute z-20 w-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-600 overflow-hidden"
                                             style="display: none;">
 
                                             <div class="max-h-64 overflow-y-auto custom-scrollbar">
-                                                <ul class="py-1 text-sm text-gray-700">
+                                                <ul class="py-1 text-sm text-gray-700 dark:text-gray-300">
                                                     <template x-if="loading">
-                                                        <li class="px-4 py-3 text-gray-500 flex items-center gap-2">
-                                                            <svg class="w-4 h-4 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                                                        <li class="px-4 py-3 text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                                                            <svg class="w-4 h-4 animate-spin text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24">
                                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                                 <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                             </svg>
@@ -80,31 +80,31 @@
                                                     </template>
 
                                                     <template x-if="!loading && filteredOptions.length === 0">
-                                                        <li class="px-4 py-3 text-gray-500 text-center">
+                                                        <li class="px-4 py-3 text-gray-500 dark:text-gray-400 text-center">
                                                             <p class="mb-2">No companies found.</p>
-                                                            <button type="button" @click="openModal" class="text-blue-600 hover:text-blue-700 font-medium text-xs uppercase tracking-wide">
+                                                            <button type="button" @click="openModal" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-xs uppercase tracking-wide">
                                                                 + Create New Company
                                                             </button>
                                                         </li>
                                                     </template>
 
                                                     <template x-for="option in filteredOptions" :key="option.id">
-                                                        <li class="group px-4 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors flex items-center justify-between">
+                                                        <li class="group px-4 py-2.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between">
                                                             <div @click="selectOption(option)" class="flex-1">
-                                                                <div class="font-medium text-gray-900" x-text="option.name"></div>
-                                                                <div class="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
-                                                                    <span x-show="option.company_code" x-text="option.company_code" class="bg-gray-100 px-1.5 py-0.5 rounded"></span>
+                                                                <div class="font-medium text-gray-900 dark:text-white" x-text="option.name"></div>
+                                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-2">
+                                                                    <span x-show="option.company_code" x-text="option.company_code" class="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded"></span>
                                                                     <span x-text="option.address" class="truncate max-w-[200px]"></span>
                                                                 </div>
                                                             </div>
 
                                                             <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <button type="button" @click.stop="editCompany(option)" class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                                                                <button type="button" @click.stop="editCompany(option)" class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
                                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                                     </svg>
                                                                 </button>
-                                                                <button type="button" @click.stop="deleteCompany(option)" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors">
+                                                                <button type="button" @click.stop="deleteCompany(option)" class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
                                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                                     </svg>
@@ -115,8 +115,8 @@
                                                 </ul>
                                             </div>
 
-                                            <div class="border-t border-gray-100 bg-gray-50/50 p-2">
-                                                <button type="button" @click="openModal" class="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-white border border-transparent hover:border-gray-200 rounded-md transition-all">
+                                            <div class="border-t border-gray-100 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 p-2">
+                                                <button type="button" @click="openModal" class="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-gray-700 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 rounded-md transition-all">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                                     </svg>
@@ -131,80 +131,80 @@
                                 </div>
                             </div>
 
-                            <hr class="border-gray-100">
+                            <hr class="border-gray-100 dark:border-gray-700">
 
                             <!-- Customer Information -->
                             <div class="space-y-6">
-                                <h3 class="text-sm font-medium text-gray-900 uppercase tracking-wider">Contact Information</h3>
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wider">Contact Information</h3>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div class="col-span-1 md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer Number</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Number</label>
                                         <input type="text" name="customer_no" value="{{ old('customer_no', $customerNo) }}" readonly
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-200">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 cursor-not-allowed focus:ring-0 focus:border-gray-200 dark:focus:border-gray-600">
                                         @error('customer_no')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Customer Name <span class="text-red-500">*</span></label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customer Name <span class="text-red-500">*</span></label>
                                         <input type="text" name="customer_name" value="{{ old('customer_name') }}" required placeholder="e.g. John Doe"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
                                         @error('customer_name')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                                         <input type="email" name="email" value="{{ old('email') }}" placeholder="john@example.com"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
                                         @error('email')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
                                         <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+1 (555) 000-0000"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
                                         @error('phone')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Attention</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Attention</label>
                                         <input type="text" name="attention" value="{{ old('attention') }}" placeholder="Contact Person"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
                                         @error('attention')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Designation</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Designation</label>
                                         <input type="text" name="designation" value="{{ old('designation') }}" placeholder="Job Title"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
                                         @error('designation')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Department</label>
                                         <input type="text" name="department" value="{{ old('department') }}" placeholder="e.g. Sales"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all">
                                         @error('department')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
                                     <div class="col-span-1 md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Address</label>
                                         <textarea name="address" rows="3" placeholder="Full address"
-                                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black transition-all resize-none">{{ old('address') }}</textarea>
+                                            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-black/5 focus:border-black transition-all resize-none">{{ old('address') }}</textarea>
                                         @error('address')
                                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                                         @enderror
@@ -214,8 +214,8 @@
                         </div>
 
                         <!-- Footer -->
-                        <div class="px-8 py-6 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-4">
-                            <a href="{{ route('tenant.customers.index') }}" class="px-6 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        <div class="px-8 py-6 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700 flex items-center justify-end gap-4">
+                            <a href="{{ route('tenant.customers.index') }}" class="px-6 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                                 Cancel
                             </a>
                             <button type="submit" class="px-6 py-2.5 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 focus:ring-4 focus:ring-gray-200 transition-all shadow-sm">
@@ -228,9 +228,9 @@
 
             <!-- Sidebar / Help / Info -->
             <div class="lg:col-span-4 space-y-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="font-medium text-gray-900 mb-4">Quick Tips</h3>
-                    <ul class="space-y-3 text-sm text-gray-500">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <h3 class="font-medium text-gray-900 dark:text-white mb-4">Quick Tips</h3>
+                    <ul class="space-y-3 text-sm text-gray-500 dark:text-gray-400">
                         <li class="flex gap-3">
                             <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -278,12 +278,12 @@
                     x-transition:leave="ease-in duration-200"
                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-100">
+                    class="relative transform overflow-hidden rounded-xl bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-gray-100 dark:border-gray-600">
 
                     <form @submit.prevent="submitCompany">
-                        <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                            <h3 class="text-lg font-semibold text-gray-900" x-text="isEditing ? 'Edit Company' : 'Add New Company'"></h3>
-                            <button type="button" @click="closeModal" class="text-gray-400 hover:text-gray-500">
+                        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-600 flex items-center justify-between bg-gray-50/50 dark:bg-gray-700/50">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="isEditing ? 'Edit Company' : 'Add New Company'"></h3>
+                            <button type="button" @click="closeModal" class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
@@ -292,61 +292,61 @@
 
                         <div class="px-6 py-6 space-y-5">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Company Code <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Company Code <span class="text-red-500">*</span></label>
                                 <input type="text" x-model="companyForm.company_code" required
                                     @input="companyForm.company_code = $event.target.value.replace(/[^A-Za-z]/g, '').toUpperCase()"
-                                    class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 uppercase font-mono text-sm"
+                                    class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 dark:placeholder-gray-500 uppercase font-mono text-sm"
                                     placeholder="e.g. ABC" maxlength="10">
-                                <p class="text-xs text-gray-500 mt-1">Used for generating customer numbers (e.g. ABC-001).</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Used for generating customer numbers (e.g. ABC-001).</p>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Company Name <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Company Name <span class="text-red-500">*</span></label>
                                 <input type="text" x-model="companyForm.name" required
-                                    class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400"
+                                    class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 dark:placeholder-gray-500"
                                     placeholder="Legal company name">
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
                                     <input type="email" x-model="companyForm.email"
-                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400"
+                                        class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 dark:placeholder-gray-500"
                                         placeholder="contact@company.com">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone</label>
                                     <input type="text" x-model="companyForm.phone"
-                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400"
+                                        class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 dark:placeholder-gray-500"
                                         placeholder="+1 234 567 890">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">BIN No</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">BIN No</label>
                                     <input type="text" x-model="companyForm.bin_no"
-                                        class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400">
+                                        class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 dark:placeholder-gray-500">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Address <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Address <span class="text-red-500">*</span></label>
                                 <textarea x-model="companyForm.address" rows="2" required
-                                    class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 resize-none"
+                                    class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 dark:placeholder-gray-500 resize-none"
                                     placeholder="Company HQ address"></textarea>
                             </div>
 
                             <!-- Error Display -->
-                            <div x-show="Object.keys(errors).length > 0" class="p-3 bg-red-50 rounded-lg text-sm text-red-600">
+                            <div x-show="Object.keys(errors).length > 0" class="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm text-red-600 dark:text-red-400">
                                 <template x-for="(error, field) in errors" :key="field">
                                     <p x-text="error"></p>
                                 </template>
                             </div>
                         </div>
 
-                        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-                            <button type="button" @click="closeModal" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all">
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-600 flex justify-end gap-3">
+                            <button type="button" @click="closeModal" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
                                 Cancel
                             </button>
                             <button type="submit" :disabled="loading" class="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm min-w-[100px] flex justify-center">

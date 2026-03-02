@@ -680,7 +680,14 @@
                                         <div class="mb-3 flex items-center gap-4">
                                             <img src="{{ asset('storage/' . $currentSignature) }}" alt="Current Signature"
                                                 class="h-12 w-auto border border-gray-200 rounded bg-white p-1">
-                                            <span class="text-xs text-gray-500">Current signature</span>
+                                            <div class="flex flex-col gap-1">
+                                                <span class="text-xs text-gray-500">Current signature</span>
+                                                <label class="inline-flex items-center gap-2 text-xs text-red-600 cursor-pointer">
+                                                    <input type="checkbox" name="remove_signature_image" value="1"
+                                                        class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                                    <span>Remove signature</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     @endif
                                     <input type="file" name="signature_image" id="signature_image"
@@ -700,7 +707,14 @@
                                         <div class="mb-3 flex items-center gap-4">
                                             <img src="{{ asset('storage/' . $currentSeal) }}" alt="Current Seal"
                                                 class="h-16 w-auto border border-gray-200 rounded bg-white p-1">
-                                            <span class="text-xs text-gray-500">Current seal</span>
+                                            <div class="flex flex-col gap-1">
+                                                <span class="text-xs text-gray-500">Current seal</span>
+                                                <label class="inline-flex items-center gap-2 text-xs text-red-600 cursor-pointer">
+                                                    <input type="checkbox" name="remove_company_seal_image" value="1"
+                                                        class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                                    <span>Remove seal</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     @endif
                                     <input type="file" name="company_seal_image" id="company_seal_image"

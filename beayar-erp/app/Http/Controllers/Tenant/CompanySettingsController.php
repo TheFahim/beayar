@@ -65,25 +65,37 @@ class CompanySettingsController extends Controller
 
         $settings = $request->validated();
 
-        // Handle signature image upload
-        if ($request->hasFile('signature_image')) {
-            // Delete old signature if exists
-            $currentSettings = $company->getSettings();
+        $currentSettings = $company->getSettings();
+
+        // Handle signature image removal
+        if ($request->boolean('remove_signature_image')) {
             if (!empty($currentSettings['signature_image'])) {
                 Storage::disk('public')->delete($currentSettings['signature_image']);
             }
-            // Store new signature
+            $settings['signature_image'] = null;
+        }
+
+        // Handle signature image upload (overrides removal if a new file is uploaded)
+        if ($request->hasFile('signature_image')) {
+            if (!empty($currentSettings['signature_image'])) {
+                Storage::disk('public')->delete($currentSettings['signature_image']);
+            }
             $settings['signature_image'] = $request->file('signature_image')->store('signatures', 'public');
         }
 
-        // Handle company seal image upload
-        if ($request->hasFile('company_seal_image')) {
-            // Delete old seal if exists
-            $currentSettings = $company->getSettings();
+        // Handle company seal removal
+        if ($request->boolean('remove_company_seal_image')) {
             if (!empty($currentSettings['company_seal_image'])) {
                 Storage::disk('public')->delete($currentSettings['company_seal_image']);
             }
-            // Store new seal
+            $settings['company_seal_image'] = null;
+        }
+
+        // Handle company seal image upload (overrides removal if a new file is uploaded)
+        if ($request->hasFile('company_seal_image')) {
+            if (!empty($currentSettings['company_seal_image'])) {
+                Storage::disk('public')->delete($currentSettings['company_seal_image']);
+            }
             $settings['company_seal_image'] = $request->file('company_seal_image')->store('seals', 'public');
         }
 
