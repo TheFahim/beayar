@@ -10,6 +10,7 @@ use App\Services\ExchangeRateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class CompanySettingsController extends Controller
@@ -62,7 +63,31 @@ class CompanySettingsController extends Controller
         $company = TenantCompany::findOrFail($companyId);
         $this->authorizeCompanyAccess($company);
 
-        $this->settingsService->updateSettings($company, $request->validated());
+        $settings = $request->validated();
+
+        // Handle signature image upload
+        if ($request->hasFile('signature_image')) {
+            // Delete old signature if exists
+            $currentSettings = $company->getSettings();
+            if (!empty($currentSettings['signature_image'])) {
+                Storage::disk('public')->delete($currentSettings['signature_image']);
+            }
+            // Store new signature
+            $settings['signature_image'] = $request->file('signature_image')->store('signatures', 'public');
+        }
+
+        // Handle company seal image upload
+        if ($request->hasFile('company_seal_image')) {
+            // Delete old seal if exists
+            $currentSettings = $company->getSettings();
+            if (!empty($currentSettings['company_seal_image'])) {
+                Storage::disk('public')->delete($currentSettings['company_seal_image']);
+            }
+            // Store new seal
+            $settings['company_seal_image'] = $request->file('company_seal_image')->store('seals', 'public');
+        }
+
+        $this->settingsService->updateSettings($company, $settings);
 
         return redirect()
             ->route('tenant.company-settings.edit', $company->id)

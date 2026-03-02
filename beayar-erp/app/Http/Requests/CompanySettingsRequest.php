@@ -84,6 +84,10 @@ class CompanySettingsRequest extends FormRequest
             'vat_percentages' => ['required', 'array', 'min:1'],
             'vat_percentages.*' => ['required', 'numeric', 'min:0', 'max:100'],
             'vat_default_percentage' => ['required', 'numeric', 'min:0', 'max:100', Rule::in($this->input('vat_percentages', []))],
+            'authorized_person_name' => ['nullable', 'string', 'max:100'],
+            'authorization_label' => ['nullable', 'string', 'max:50'],
+            'signature_image' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
+            'company_seal_image' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
         ];
     }
 

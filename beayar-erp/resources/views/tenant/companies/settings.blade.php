@@ -49,7 +49,7 @@
             <!-- Form Card -->
             <div
                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <form action="{{ route('tenant.company-settings.update', $company->id) }}" method="POST">
+                <form action="{{ route('tenant.company-settings.update', $company->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="p-8 space-y-10">
@@ -625,6 +625,93 @@
                             @error('header_style')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        <hr class="border-gray-200 dark:border-gray-700">
+
+                        {{-- Authorization Settings Section --}}
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Authorization Settings</h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Configure the authorized signature and company seal for quotation PDFs.</p>
+
+                            @php
+                                $authorizedPersonName = old('authorized_person_name', $settings['authorized_person_name'] ?? '');
+                                $authorizationLabel = old('authorization_label', $settings['authorization_label'] ?? 'Authorized By');
+                                $currentSignature = $settings['signature_image'] ?? null;
+                                $currentSeal = $settings['company_seal_image'] ?? null;
+                            @endphp
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {{-- Authorized Person Name --}}
+                                <div>
+                                    <label for="authorized_person_name"
+                                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Authorized Person Name</label>
+                                    <input type="text" name="authorized_person_name" id="authorized_person_name"
+                                        value="{{ $authorizedPersonName }}"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
+                                        placeholder="Mohammad Ataur Rahman">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Name of the person authorizing quotations.</p>
+                                    @error('authorized_person_name')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- Authorization Label --}}
+                                <div>
+                                    <label for="authorization_label"
+                                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Authorization Label</label>
+                                    <input type="text" name="authorization_label" id="authorization_label"
+                                        value="{{ $authorizationLabel }}"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white py-2.5 px-3"
+                                        placeholder="Authorized By">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Label displayed above the signature (e.g., "Authorized By", "Prepared By").</p>
+                                    @error('authorization_label')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                {{-- Signature Image --}}
+                                <div>
+                                    <label for="signature_image"
+                                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Signature Image</label>
+                                    @if($currentSignature)
+                                        <div class="mb-3 flex items-center gap-4">
+                                            <img src="{{ asset('storage/' . $currentSignature) }}" alt="Current Signature"
+                                                class="h-12 w-auto border border-gray-200 rounded bg-white p-1">
+                                            <span class="text-xs text-gray-500">Current signature</span>
+                                        </div>
+                                    @endif
+                                    <input type="file" name="signature_image" id="signature_image"
+                                        accept="image/png,image/jpeg,image/jpg"
+                                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upload a PNG or JPG image of the signature. Recommended size: 200x80px.</p>
+                                    @error('signature_image')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- Company Seal Image --}}
+                                <div>
+                                    <label for="company_seal_image"
+                                        class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Company Seal / Stamp</label>
+                                    @if($currentSeal)
+                                        <div class="mb-3 flex items-center gap-4">
+                                            <img src="{{ asset('storage/' . $currentSeal) }}" alt="Current Seal"
+                                                class="h-16 w-auto border border-gray-200 rounded bg-white p-1">
+                                            <span class="text-xs text-gray-500">Current seal</span>
+                                        </div>
+                                    @endif
+                                    <input type="file" name="company_seal_image" id="company_seal_image"
+                                        accept="image/png,image/jpeg,image/jpg"
+                                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Upload a PNG or JPG image of the company seal. Recommended size: 150x150px.</p>
+                                    @error('company_seal_image')
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
 

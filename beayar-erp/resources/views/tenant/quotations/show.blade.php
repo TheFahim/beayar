@@ -7,6 +7,10 @@
         $baseCurrencySymbol =
             \App\Services\CompanySettingsService::AVAILABLE_CURRENCIES[$baseCurrency] ?? $baseCurrency;
         $headerStyle = $companySettings['header_style'] ?? 'style_1';
+        $authorizedPersonName = $companySettings['authorized_person_name'] ?? 'Mohammad Ataur Rahman';
+        $authorizationLabel = $companySettings['authorization_label'] ?? 'Authorized By';
+        $signatureImage = $companySettings['signature_image'] ?? null;
+        $companySealImage = $companySettings['company_seal_image'] ?? null;
     @endphp
     <div x-data="{ isTechnical: false }" x-init="$watch('isTechnical', value => document.title = (value ? '{{ $activeRevision->revision_no !== 'R00' ? 'Revised ' : '' }}Technical Quotation - ' : '{{ $activeRevision->revision_no !== 'R00' ? 'Revised ' : '' }}Commercial Quotation - ') + '{{ $quotation->quotation_no }}')">
         <style>
@@ -772,17 +776,29 @@
                                                 @endif
                                             </div>
                                             <div class="flex justify-between w-60 text-center mt-10">
+                                                {{-- Company Seal --}}
                                                 <div>
-                                                    <img src="{{ asset('assets/images/seal.jpg') }}" alt="seal"
-                                                        class="mx-auto h-16 w-auto" />
+                                                    @if($companySealImage)
+                                                        <img src="{{ asset('storage/' . $companySealImage) }}" alt="Company Seal"
+                                                            class="mx-auto h-16 w-auto" />
+                                                    @else
+                                                        <img src="{{ asset('assets/images/seal.jpg') }}" alt="seal"
+                                                            class="mx-auto h-16 w-auto" />
+                                                    @endif
                                                 </div>
+                                                {{-- Authorization Signature --}}
                                                 <div>
-                                                    <div class="text-xs text-gray-600 mb-2">Authorized By</div>
+                                                    <div class="text-xs text-gray-600 mb-2">{{ $authorizationLabel }}</div>
                                                     <div>
-                                                        <img src="{{ asset('assets/images/signature.jpg') }}"
-                                                            alt="Signature" class="mx-auto h-12 w-auto" />
+                                                        @if($signatureImage)
+                                                            <img src="{{ asset('storage/' . $signatureImage) }}"
+                                                                alt="Signature" class="mx-auto h-12 w-auto" />
+                                                        @else
+                                                            <img src="{{ asset('assets/images/signature.jpg') }}"
+                                                                alt="Signature" class="mx-auto h-12 w-auto" />
+                                                        @endif
                                                     </div>
-                                                    <p class="text-xs text-gray-600">Mohammad Ataur Rahman</p>
+                                                    <p class="text-xs text-gray-600">{{ $authorizedPersonName }}</p>
                                                 </div>
                                             </div>
 
