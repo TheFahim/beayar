@@ -191,7 +191,7 @@
                 transform: translate(-50%, -50%) rotate(-45deg);
                 width: 70vmin;
                 height: 70vmin;
-                background: url("{{ asset('assets/images/logo.png') }}") center/contain no-repeat;
+                /* background: url("{{ asset('assets/images/logo.png') }}") center/contain no-repeat; */
                 opacity: 0.06;
                 z-index: 0;
                 pointer-events: none;

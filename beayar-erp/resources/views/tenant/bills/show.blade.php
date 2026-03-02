@@ -49,7 +49,7 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%) rotate(-45deg);
-                background: url("{{ asset('assets/images/logo.png') }}") center/contain no-repeat;
+                /* background: url("{{ asset('assets/images/logo.png') }}") center/contain no-repeat; */
                 width: 70vmin;
                 height: 70vmin;
                 opacity: 0.06;

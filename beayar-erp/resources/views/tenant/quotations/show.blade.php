@@ -59,7 +59,7 @@
                     transform: translate(-50%, -50%) rotate(-45deg);
                     width: 70vmin;
                     height: 70vmin;
-                    background: url("{{ $quotation->company && $quotation->company->logo ? asset('storage/' . $quotation->company->logo) : asset('assets/images/logo.png') }}") center/contain no-repeat;
+                    /* background: url("{{ $quotation->company && $quotation->company->logo ? asset('storage/' . $quotation->company->logo) : asset('assets/images/logo.png') }}") center/contain no-repeat; */
                     opacity: 0.06;
                     z-index: 0;
                     pointer-events: none;
@@ -229,8 +229,7 @@
                                                     <img src="{{ asset('storage/' . $quotation->company->logo) }}" alt="{{ $quotation->company->name }}"
                                                         class="h-20 w-auto" />
                                                 @else
-                                                    <img src="{{ asset('assets/images/logo.png') }}" alt="{{ $quotation->company->name ?? 'Company Logo' }}"
-                                                        class="h-20 w-auto" />
+                                                    <div>Company Logo Unavailable</div>
                                                 @endif
                                             </div>
                                             <div class="leading-tight text-right">
