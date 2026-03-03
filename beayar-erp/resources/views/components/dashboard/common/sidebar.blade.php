@@ -171,14 +171,14 @@
             </li>
         @endcan
 
-        @can('view_finance')
+        {{-- @can('view_finance')
         <li>
             <x-dashboard.common.sidebar-link url="{{ route('tenant.finance.index') }}">
                 <x-ui.svg.payment class="h-5 w-5" />
                 <span class="flex-1 ms-3 whitespace-nowrap">Finance</span>
             </x-dashboard.common.sidebar-link>
         </li>
-        @endcan
+        @endcan --}}
 
         @canany(['view_feedback', 'create_feedback'])
         <li>
