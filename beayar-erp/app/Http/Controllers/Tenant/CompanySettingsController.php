@@ -46,10 +46,13 @@ class CompanySettingsController extends Controller
 
         $dateFormats = $this->settingsService->getAvailableDateFormats();
 
+        $allCurrencies = $currencies;
+
         return view('tenant.companies.settings', compact(
             'company',
             'settings',
             'currencies',
+            'allCurrencies',
             'currencyNames',
             'dateFormats',
         ));

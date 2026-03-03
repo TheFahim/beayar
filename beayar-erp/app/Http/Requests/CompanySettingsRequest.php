@@ -54,8 +54,8 @@ class CompanySettingsRequest extends FormRequest
         return [
             'date_format' => ['required', 'string', Rule::in($validDateFormats)],
             'header_style' => ['nullable', 'string', Rule::in(['style_1', 'style_2', 'style_3', 'style_4', 'style_5'])],
-            'currency' => ['required', 'string', Rule::in($quotationCurrencies)],
-            'currency_symbol' => ['required', 'string', 'max:5'],
+            'currency' => ['required', 'string', Rule::in($validCurrencies)],
+            'currency_symbol' => ['nullable', 'string', 'max:5'],
             'exchange_rate_currency' => ['required', 'string', Rule::in($validCurrencies)],
             'quotation_currencies' => [
                 'required',
@@ -99,7 +99,6 @@ class CompanySettingsRequest extends FormRequest
         return [
             'date_format.in' => 'The selected date format is not valid. Choose from: d-m-Y, Y-m-d, m/d/Y, d M, Y, d/m/Y.',
             'currency.in' => 'The selected currency is not valid.',
-            'currency_symbol.max' => 'The currency symbol must not exceed 5 characters.',
             'quotation_prefix.max' => 'The quotation prefix must not exceed 20 characters.',
             'quotation_number_format.max' => 'The quotation number format must not exceed 100 characters.',
         ];
