@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('challan_id')->constrained()->cascadeOnDelete();
             $table->foreignId('quotation_product_id')->constrained()->cascadeOnDelete();
             $table->integer('quantity');
-            $table->text('remarks');
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

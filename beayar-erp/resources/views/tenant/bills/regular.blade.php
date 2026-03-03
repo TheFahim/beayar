@@ -86,7 +86,7 @@
         </div>
     @endif
 
-    <form id="regularBillForm" class="space-y-6" action="{{ route('tenant.bills.store-from-quotation', $quotation) }}" method="POST">
+    <form id="regularBillForm" class="space-y-6" action="{{ route('tenant.bills.store') }}" method="POST">
         @csrf
         <input type="hidden" name="bill_type" value="regular">
         <input type="hidden" name="quotation_id" value="{{ $quotation->id }}">
@@ -177,7 +177,7 @@
                                 <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Available Challans</span>
                                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-700">
                                     <span class="block text-lg font-bold text-blue-800 dark:text-blue-300">
-                                        {{ $challans->count() }}
+                                        {{ $challans?->count() ?? 0 }}
                                     </span>
                                 </div>
                             </div>
@@ -211,7 +211,7 @@
                                         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                                             <div class="flex items-start justify-between mb-3">
                                                 <div class="flex items-center">
-                                                    <input type="checkbox" name="challan_products[]" value="{{ $challan->id }}" 
+                                                    <input type="checkbox" name="challan_products[]" value="{{ $challan->id }}"
                                                         class="challan-checkbox rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
                                                         data-challan-id="{{ $challan->id }}">
                                                     <div>
@@ -219,15 +219,15 @@
                                                         <p class="text-xs text-gray-600 dark:text-gray-400">Date: {{ $challan->date }}</p>
                                                     </div>
                                                 </div>
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $challan->challanProducts->count() }} products</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $challan->challanProducts?->count() ?? 0 }} products</span>
                                             </div>
 
                                             <!-- Challan Products -->
                                             <div class="challan-products ml-6 space-y-2">
-                                                @foreach($challan->challanProducts as $product)
+                                                @forelse($challan->challanProducts ?? [] as $product)
                                                     <div class="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border">
                                                         <div class="flex items-center">
-                                                            <input type="checkbox" name="challan_products[{{ $challan->id }}][{{ $product->id }}][selected]" 
+                                                            <input type="checkbox" name="challan_products[{{ $challan->id }}][{{ $product->id }}][selected]"
                                                                 class="product-checkbox rounded border-gray-300 text-green-600 focus:ring-green-500 mr-2"
                                                                 data-product-id="{{ $product->id }}"
                                                                 data-challan-id="{{ $challan->id }}">
@@ -239,21 +239,25 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex items-center space-x-2">
-                                                            <input type="number" name="challan_products[{{ $challan->id }}][{{ $product->id }}][quantity]" 
+                                                            <input type="number" name="challan_products[{{ $challan->id }}][{{ $product->id }}][quantity]"
                                                                 class="product-quantity w-20 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                                                                 placeholder="Qty" min="0.01" max="{{ $product->quantity - $product->billed_quantity }}" step="0.01"
                                                                 disabled>
-                                                            <input type="number" name="challan_products[{{ $challan->id }}][{{ $product->id }}][unit_price]" 
+                                                            <input type="number" name="challan_products[{{ $challan->id }}][{{ $product->id }}][unit_price]"
                                                                 class="product-price w-24 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                                                                 placeholder="Price" min="0.01" step="0.01"
                                                                 value="{{ $product->unit_price }}" disabled>
-                                                            <input type="number" name="challan_products[{{ $challan->id }}][{{ $product->id }}][tax_percentage]" 
+                                                            <input type="number" name="challan_products[{{ $challan->id }}][{{ $product->id }}][tax_percentage]"
                                                                 class="product-tax w-16 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                                                                 placeholder="Tax %" min="0" max="100" step="0.01"
                                                                 value="{{ $product->tax_percentage }}" disabled>
                                                         </div>
                                                     </div>
-                                                @endforeach
+                                                @empty
+                                                    <div class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
+                                                        No products found in this challan
+                                                    </div>
+                                                @endforelse
                                             </div>
                                         </div>
                                     @endforeach
@@ -290,7 +294,7 @@
                                     <label for="invoice_no" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-1.5">
                                         Invoice Number <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="invoice_no" id="invoice_no" 
+                                    <input type="text" name="invoice_no" id="invoice_no"
                                         class="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                                         placeholder="e.g., REG-001" required>
                                 </div>
@@ -298,7 +302,7 @@
                                     <label for="bill_date" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-1.5">
                                         Bill Date <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="date" name="bill_date" id="bill_date" 
+                                    <input type="date" name="bill_date" id="bill_date"
                                         class="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                                         value="{{ date('Y-m-d') }}" required>
                                 </div>
@@ -306,7 +310,7 @@
                                     <label for="due_date" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-1.5">
                                         Due Date <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="date" name="due_date" id="due_date" 
+                                    <input type="date" name="due_date" id="due_date"
                                         class="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                                         required>
                                 </div>
@@ -405,26 +409,26 @@
                     const quantities = this.closest('.bg-gray-50').querySelectorAll('.product-quantity');
                     const prices = this.closest('.bg-gray-50').querySelectorAll('.product-price');
                     const taxes = this.closest('.bg-gray-50').querySelectorAll('.product-tax');
-                    
+
                     products.forEach(product => {
                         product.checked = this.checked;
                     });
-                    
+
                     quantities.forEach(quantity => {
                         quantity.disabled = !this.checked;
                         if (this.checked && !quantity.value) {
                             quantity.value = quantity.getAttribute('max');
                         }
                     });
-                    
+
                     prices.forEach(price => {
                         price.disabled = !this.checked;
                     });
-                    
+
                     taxes.forEach(tax => {
                         tax.disabled = !this.checked;
                     });
-                    
+
                     updateSelectedCount();
                     calculateTotals();
                 });
@@ -437,21 +441,21 @@
                     const quantity = productRow.querySelector('.product-quantity');
                     const price = productRow.querySelector('.product-price');
                     const tax = productRow.querySelector('.product-tax');
-                    
+
                     quantity.disabled = !this.checked;
                     price.disabled = !this.checked;
                     tax.disabled = !this.checked;
-                    
+
                     if (this.checked && !quantity.value) {
                         quantity.value = quantity.getAttribute('max');
                     }
-                    
+
                     if (!this.checked) {
                         quantity.value = '';
                         price.value = '';
                         tax.value = '';
                     }
-                    
+
                     updateSelectedCount();
                     calculateTotals();
                 });

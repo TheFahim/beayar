@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('challan_no');
             $table->date('date');
             $table->date('delivery_date')->nullable();
-            $table->text('delivery_address');
             $table->string('status')->default('pending');
             $table->timestamps();
         });

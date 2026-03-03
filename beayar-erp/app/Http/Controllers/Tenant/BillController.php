@@ -471,7 +471,7 @@ class BillController extends Controller
 
         $challans = Challan::with([
             'products' => function ($query) {
-                $query->with(['quotationProduct', 'product']);
+                $query->with(['quotationProduct.product']);
             },
         ])
             ->where('quotation_revision_id', $activeRevision->id)

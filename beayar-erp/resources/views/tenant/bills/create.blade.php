@@ -127,7 +127,7 @@
         parentBill: {{ json_encode($parentBill) }},
         existingAdvanceBill: {{ json_encode($existingAdvanceBill) }},
         existingRegularBills: {{ json_encode($existingRegularBills ?? []) }}
-    })" id="billForm" class="space-y-6" :action="billType === 'regular' ? '{{ route('tenant.bills.store') }}' : '{{ route('tenant.bills.store-from-quotation', $quotation) }}'" method="POST"
+    })" id="billForm" class="space-y-6" :action="billType === 'regular' ? '{{ route('tenant.bills.store') }}' : '{{ route('tenant.bills.store') }}'" method="POST"
         @submit.prevent="validateForm">
         @csrf
         <div>
