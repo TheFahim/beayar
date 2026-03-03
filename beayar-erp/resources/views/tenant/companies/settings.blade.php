@@ -47,12 +47,83 @@
 
         <!-- Main Content -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Interactive Tabs Navigation -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="flex space-x-1 p-1" id="settings-tabs" role="tablist">
+                        <button type="button"
+                                class="settings-tab active flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+                                data-tab="regional"
+                                role="tab"
+                                aria-selected="true"
+                                aria-controls="regional-panel">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                            </svg>
+                            Regional Preferences
+                        </button>
+
+                        <button type="button"
+                                class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+                                data-tab="quotation"
+                                role="tab"
+                                aria-selected="false"
+                                aria-controls="quotation-panel">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                            Quotation Format
+                        </button>
+
+                        <button type="button"
+                                class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+                                data-tab="vat"
+                                role="tab"
+                                aria-selected="false"
+                                aria-controls="vat-panel">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke="join="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path>
+                            </svg>
+                            VAT Settings
+                        </button>
+
+                        <button type="button"
+                                class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+                                data-tab="pdf"
+                                role="tab"
+                                aria-selected="false"
+                                aria-controls="pdf-panel">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            PDF Header
+                        </button>
+
+                        <button type="button"
+                                class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
+                                data-tab="authorization"
+                                role="tab"
+                                aria-selected="false"
+                                aria-controls="authorization-panel">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Authorization
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
             <form action="{{ route('tenant.company-settings.update', $company->id) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
                 @method('PUT')
 
+                <!-- Tab Content Container -->
+                <div id="tab-content-container">
+
                 <!-- Regional Preferences Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div id="regional-panel" class="tab-panel" role="tabpanel" aria-labelledby="regional-tab">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
                         <div class="flex items-center space-x-3">
                             <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -495,9 +566,11 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 <!-- Quotation Number Format Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div id="quotation-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="quotation-tab">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
                         <div class="flex items-center space-x-3">
                             <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -621,9 +694,11 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 <!-- VAT Settings Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div id="vat-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="vat-tab">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
@@ -720,8 +795,10 @@
                         </div>
                     </div>
                 </div>
+                </div>
                 <!-- PDF Header Style Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div id="pdf-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="pdf-tab">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
                         <div class="flex items-center space-x-3">
                             <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -743,7 +820,7 @@
                             <!-- Style 1: Standard -->
                             <label class="relative cursor-pointer group">
                                 <input type="radio" name="header_style" value="style_1" {{ $headerStyle === 'style_1' ? 'checked' : '' }} class="peer sr-only">
-                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg">
+                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                     <div class="flex items-center justify-between mb-3">
                                         <span class="text-sm font-semibold text-gray-900 dark:text-white">Standard</span>
                                         <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
@@ -762,10 +839,10 @@
                                 </div>
                             </label>
 
-                            <!-- Style 2: Inverted Standard -->
+                            <!-- Style 2: Inverted -->
                             <label class="relative cursor-pointer group">
                                 <input type="radio" name="header_style" value="style_2" {{ $headerStyle === 'style_2' ? 'checked' : '' }} class="peer sr-only">
-                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg">
+                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                     <div class="flex items-center justify-between mb-3">
                                         <span class="text-sm font-semibold text-gray-900 dark:text-white">Inverted</span>
                                         <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
@@ -787,7 +864,7 @@
                             <!-- Style 3: Centered -->
                             <label class="relative cursor-pointer group">
                                 <input type="radio" name="header_style" value="style_3" {{ $headerStyle === 'style_3' ? 'checked' : '' }} class="peer sr-only">
-                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg">
+                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                     <div class="flex items-center justify-between mb-3">
                                         <span class="text-sm font-semibold text-gray-900 dark:text-white">Centered</span>
                                         <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
@@ -803,6 +880,44 @@
                                     </div>
                                 </div>
                             </label>
+
+                            <!-- Style 4: Corporate Bar -->
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" name="header_style" value="style_4" {{ $headerStyle === 'style_4' ? 'checked' : '' }} class="peer sr-only">
+                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Corporate Bar</span>
+                                        <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                                        <div class="bg-purple-600 p-2 flex items-center gap-2">
+                                            <div class="w-6 h-6 bg-white/20 rounded flex items-center justify-center text-[8px] text-white">Logo</div>
+                                            <div class="text-xs font-bold text-white">Company Name</div>
+                                        </div>
+                                        <div class="p-2 text-center text-[10px] text-gray-500">Address | Email | Phone</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Style 5: Minimal -->
+                            <label class="relative cursor-pointer group">
+                                <input type="radio" name="header_style" value="style_5" {{ $headerStyle === 'style_5' ? 'checked' : '' }} class="peer sr-only">
+                                <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">Minimal</span>
+                                        <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                                        <div class="flex justify-center">
+                                            <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">Logo</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
                         </div>
                         @error('header_style')
                             <p class="mt-4 text-sm text-red-600 dark:text-red-400 flex items-center">
@@ -814,70 +929,11 @@
                         @enderror
                     </div>
                 </div>
-                                <label class="relative cursor-pointer group">
-                                    <input type="radio" name="header_style" value="style_3" {{ $headerStyle === 'style_3' ? 'checked' : '' }} class="peer sr-only">
-                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Centered</span>
-                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </div>
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
-                                            <div class="text-center">
-                                                <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded mx-auto mb-1 flex items-center justify-center text-xs text-gray-500">Logo</div>
-                                                <div class="text-xs font-bold text-gray-800 dark:text-white">Company Name</div>
-                                                <div class="text-[10px] text-gray-500">Address | Email | Phone</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                {{-- Style 4: Corporate Bar --}}
-                                <label class="relative cursor-pointer group">
-                                    <input type="radio" name="header_style" value="style_4" {{ $headerStyle === 'style_4' ? 'checked' : '' }} class="peer sr-only">
-                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Corporate Bar</span>
-                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </div>
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
-                                            <div class="bg-blue-800 p-2 flex items-center gap-2">
-                                                <div class="w-6 h-6 bg-white/20 rounded flex items-center justify-center text-[8px] text-white">Logo</div>
-                                                <div class="text-xs font-bold text-white">Company Name</div>
-                                            </div>
-                                            <div class="p-2 text-center text-[10px] text-gray-500">Address | Email | Phone</div>
-                                        </div>
-                                    </div>
-                                </label>
-
-                                {{-- Style 5: Minimal / Logo Only --}}
-                                <label class="relative cursor-pointer group">
-                                    <input type="radio" name="header_style" value="style_5" {{ $headerStyle === 'style_5' ? 'checked' : '' }} class="peer sr-only">
-                                    <div class="p-4 border-2 rounded-xl transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 peer-checked:ring-2 peer-checked:ring-blue-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-white">Minimal</span>
-                                            <svg class="w-5 h-5 text-blue-500 opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </div>
-                                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
-                                            <div class="flex justify-center">
-                                                <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">Logo</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </label>
-                            </div>
-                            @error('header_style')
-                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
+            </div>
 
                 <!-- Authorization Settings Section -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div id="authorization-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="authorization-tab">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="bg-gradient-to-r from-indigo-500 to-blue-600 px-6 py-4">
                         <div class="flex items-center space-x-3">
                             <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -1284,6 +1340,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 <!-- Form Footer -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6">
@@ -1302,11 +1359,84 @@
                         </button>
                     </div>
                 </div>
+            </div>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.settings-tab');
+            const panels = document.querySelectorAll('.tab-panel');
+
+            function switchTab(targetTab) {
+                // Remove active class from all tabs and panels
+                tabs.forEach(tab => {
+                    tab.classList.remove('active', 'bg-blue-50', 'text-blue-700', 'dark:bg-blue-900/20', 'dark:text-blue-300');
+                    tab.classList.add('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50', 'dark:text-gray-400', 'dark:hover:text-white', 'dark:hover:bg-gray-700');
+                    tab.setAttribute('aria-selected', 'false');
+                });
+
+                panels.forEach(panel => {
+                    panel.classList.add('hidden');
+                    panel.setAttribute('aria-hidden', 'true');
+                });
+
+                // Add active class to target tab and corresponding panel
+                targetTab.classList.add('active', 'bg-blue-50', 'text-blue-700', 'dark:bg-blue-900/20', 'dark:text-blue-300');
+                targetTab.classList.remove('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50', 'dark:text-gray-400', 'dark:hover:text-white', 'dark:hover:bg-gray-700');
+                targetTab.setAttribute('aria-selected', 'true');
+
+                const targetPanelId = targetTab.getAttribute('aria-controls');
+                const targetPanel = document.getElementById(targetPanelId);
+                if (targetPanel) {
+                    targetPanel.classList.remove('hidden');
+                    targetPanel.setAttribute('aria-hidden', 'false');
+                }
+            }
+
+            // Add click event listeners to tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab));
+            });
+
+            // Handle keyboard navigation
+            tabs.forEach(tab => {
+                tab.addEventListener('keydown', (e) => {
+                    let targetTab = null;
+
+                    switch(e.key) {
+                        case 'ArrowLeft':
+                            targetTab = tab.previousElementSibling || tabs[tabs.length - 1];
+                            break;
+                        case 'ArrowRight':
+                            targetTab = tab.nextElementSibling || tabs[0];
+                            break;
+                        case 'Home':
+                            targetTab = tabs[0];
+                            break;
+                        case 'End':
+                            targetTab = tabs[tabs.length - 1];
+                            break;
+                        case 'Enter':
+                        case ' ':
+                            e.preventDefault();
+                            switchTab(tab);
+                            return;
+                    }
+
+                    if (targetTab) {
+                        e.preventDefault();
+                        targetTab.focus();
+                        switchTab(targetTab);
+                    }
+                });
+            });
+        });
+
+        // Original existing scripts
         const currencyMap = @json($currencies);
         const currencyNames = @json($currencyNames);
         const initialQuotationCurrencies = @json($quotationCurrencies);
