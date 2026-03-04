@@ -493,8 +493,9 @@ class BillController extends Controller
 
         if ($challans->isNotEmpty()) {
             $this->calculateRemainingQuantitiesForChallanProducts($challans);
+            $nextInvoiceNo = $this->invoiceNumberGenerator->generate($quotation);
 
-            return view('tenant.bills.regular', compact('quotation', 'activeRevision', 'challans'));
+            return view('tenant.bills.create-regular', compact('quotation', 'activeRevision', 'challans', 'nextInvoiceNo'));
         }
 
         return $this->createAdvanceView($quotation, $activeRevision);
