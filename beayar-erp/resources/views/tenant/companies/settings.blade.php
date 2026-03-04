@@ -58,15 +58,18 @@
         @endif
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+            x-data="{ activeTab: localStorage.getItem('companySettingsActiveTab') || 'regional' }"
+            x-init="$watch('activeTab', value => localStorage.setItem('companySettingsActiveTab', value))">
             <!-- Interactive Tabs Navigation -->
             <div
                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
                 <div class="border-b border-gray-200 dark:border-gray-700">
                     <nav class="flex space-x-1 p-1" id="settings-tabs" role="tablist">
-                        <button type="button"
-                            class="settings-tab active flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
-                            data-tab="regional" role="tab" aria-selected="true" aria-controls="regional-panel">
+                        <button type="button" @click="activeTab = 'regional'"
+                            :class="activeTab === 'regional' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'"
+                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+                            role="tab" :aria-selected="activeTab === 'regional'" aria-controls="regional-panel">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129">
@@ -75,9 +78,10 @@
                             Regional Preferences
                         </button>
 
-                        <button type="button"
-                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
-                            data-tab="quotation" role="tab" aria-selected="false" aria-controls="quotation-panel">
+                        <button type="button" @click="activeTab = 'quotation'"
+                            :class="activeTab === 'quotation' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'"
+                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+                            role="tab" :aria-selected="activeTab === 'quotation'" aria-controls="quotation-panel">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
@@ -86,9 +90,10 @@
                             Quotation Format
                         </button>
 
-                        <button type="button"
-                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
-                            data-tab="vat" role="tab" aria-selected="false" aria-controls="vat-panel">
+                        <button type="button" @click="activeTab = 'vat'"
+                            :class="activeTab === 'vat' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'"
+                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+                            role="tab" :aria-selected="activeTab === 'vat'" aria-controls="vat-panel">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke="join=" round" stroke-width="2"
                                     d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z">
@@ -97,9 +102,10 @@
                             VAT Settings
                         </button>
 
-                        <button type="button"
-                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
-                            data-tab="pdf" role="tab" aria-selected="false" aria-controls="pdf-panel">
+                        <button type="button" @click="activeTab = 'pdf'"
+                            :class="activeTab === 'pdf' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'"
+                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+                            role="tab" :aria-selected="activeTab === 'pdf'" aria-controls="pdf-panel">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
@@ -108,9 +114,10 @@
                             PDF Header
                         </button>
 
-                        <button type="button"
-                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700"
-                            data-tab="authorization" role="tab" aria-selected="false"
+                        <button type="button" @click="activeTab = 'authorization'"
+                            :class="activeTab === 'authorization' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'"
+                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+                            role="tab" :aria-selected="activeTab === 'authorization'"
                             aria-controls="authorization-panel">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -131,7 +138,8 @@
                 <div id="tab-content-container">
 
                     <!-- Regional Preferences Section -->
-                    <div id="regional-panel" class="tab-panel" role="tabpanel" aria-labelledby="regional-tab">
+                    <div id="regional-panel" class="tab-panel" role="tabpanel" aria-labelledby="regional-tab" x-cloak
+                        x-show="activeTab === 'regional'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
@@ -651,7 +659,8 @@
                     </div>
 
                     <!-- Quotation Number Format Section -->
-                    <div id="quotation-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="quotation-tab">
+                    <div id="quotation-panel" class="tab-panel" role="tabpanel" aria-labelledby="quotation-tab" x-cloak
+                        x-show="activeTab === 'quotation'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
@@ -832,7 +841,8 @@
                     </div>
 
                     <!-- VAT Settings Section -->
-                    <div id="vat-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="vat-tab">
+                    <div id="vat-panel" class="tab-panel" role="tabpanel" aria-labelledby="vat-tab" x-cloak
+                        x-show="activeTab === 'vat'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <div class="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
@@ -963,7 +973,8 @@
                         </div>
                     </div>
                     <!-- PDF Header Style Section -->
-                    <div id="pdf-panel" class="tab-panel hidden" role="tabpanel" aria-labelledby="pdf-tab">
+                    <div id="pdf-panel" class="tab-panel" role="tabpanel" aria-labelledby="pdf-tab" x-cloak
+                        x-show="activeTab === 'pdf'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
@@ -1150,8 +1161,8 @@
                     </div>
 
                     <!-- Authorization Settings Section -->
-                    <div id="authorization-panel" class="tab-panel hidden" role="tabpanel"
-                        aria-labelledby="authorization-tab">
+                    <div id="authorization-panel" class="tab-panel" role="tabpanel" aria-labelledby="authorization-tab"
+                        x-cloak x-show="activeTab === 'authorization'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                             <div class="bg-gradient-to-r from-indigo-500 to-blue-600 px-6 py-4">
@@ -1731,74 +1742,7 @@
 
     <script>
         // Tab switching functionality
-        document.addEventListener('DOMContentLoaded', function () {
-            const tabs = document.querySelectorAll('.settings-tab');
-            const panels = document.querySelectorAll('.tab-panel');
 
-            function switchTab(targetTab) {
-                // Remove active class from all tabs and panels
-                tabs.forEach(tab => {
-                    tab.classList.remove('active', 'bg-blue-50', 'text-blue-700', 'dark:bg-blue-900/20', 'dark:text-blue-300');
-                    tab.classList.add('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50', 'dark:text-gray-400', 'dark:hover:text-white', 'dark:hover:bg-gray-700');
-                    tab.setAttribute('aria-selected', 'false');
-                });
-
-                panels.forEach(panel => {
-                    panel.classList.add('hidden');
-                    panel.setAttribute('aria-hidden', 'true');
-                });
-
-                // Add active class to target tab and corresponding panel
-                targetTab.classList.add('active', 'bg-blue-50', 'text-blue-700', 'dark:bg-blue-900/20', 'dark:text-blue-300');
-                targetTab.classList.remove('text-gray-600', 'hover:text-gray-900', 'hover:bg-gray-50', 'dark:text-gray-400', 'dark:hover:text-white', 'dark:hover:bg-gray-700');
-                targetTab.setAttribute('aria-selected', 'true');
-
-                const targetPanelId = targetTab.getAttribute('aria-controls');
-                const targetPanel = document.getElementById(targetPanelId);
-                if (targetPanel) {
-                    targetPanel.classList.remove('hidden');
-                    targetPanel.setAttribute('aria-hidden', 'false');
-                }
-            }
-
-            // Add click event listeners to tabs
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab));
-            });
-
-            // Handle keyboard navigation
-            tabs.forEach(tab => {
-                tab.addEventListener('keydown', (e) => {
-                    let targetTab = null;
-
-                    switch (e.key) {
-                        case 'ArrowLeft':
-                            targetTab = tab.previousElementSibling || tabs[tabs.length - 1];
-                            break;
-                        case 'ArrowRight':
-                            targetTab = tab.nextElementSibling || tabs[0];
-                            break;
-                        case 'Home':
-                            targetTab = tabs[0];
-                            break;
-                        case 'End':
-                            targetTab = tabs[tabs.length - 1];
-                            break;
-                        case 'Enter':
-                        case ' ':
-                            e.preventDefault();
-                            switchTab(tab);
-                            return;
-                    }
-
-                    if (targetTab) {
-                        e.preventDefault();
-                        targetTab.focus();
-                        switchTab(targetTab);
-                    }
-                });
-            });
-        });
 
         // Original existing scripts
         const currencyMap = @json($currencies);

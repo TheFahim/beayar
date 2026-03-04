@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  [x-cloak] {
+    display: none !important;
+  }
+
   h1 {
     @apply text-4xl font-bold;
   }
@@ -22,6 +26,7 @@
     @apply text-base font-medium;
   }
 }
+
 
 @layer utilities {
     .hide-scrollbar::-webkit-scrollbar {
