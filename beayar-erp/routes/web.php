@@ -55,9 +55,7 @@ Route::post('/companies/{company}/switch', [\App\Http\Controllers\CompanyContext
 
 // Tenant Routes (Protected by auth in reazl app)
 Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.context']], function () {
-    Route::get('/dashboard', function () {
-        return view('tenant.dashboard');
-    })->name('tenant.dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])->name('tenant.dashboard');
 
     // Tenant Profile (Only for Tenant Admin/Owner)
     Route::get('/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'show'])->name('tenant.profile.show');
