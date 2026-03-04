@@ -182,7 +182,7 @@
                 class="w-full min-w-full table-fixed text-sm text-left rtl:text-right text-gray-500 dark:text-white datatable">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-300 dark:bg-gray-500 dark:text-gray-400">
                     <tr class="dark:text-white">
-                        <th scope="col" class="px-6 py-3">
+                        <th scope="col" class="w-16 px-6 py-3">
                             <span class="flex items-center">
                                 S/L
                                 <x-ui.svg.sort-column class="w-4 h-4 ms-1" />
@@ -274,8 +274,8 @@
                                         $continueRegular = $latestBill && $latestBill->bill_type === 'regular' && (float) ($latestBill->due ?? 0) > 0 && !$hasAdvance;
 
                                         // Placeholder for Bill URL as Bill module is not fully migrated
-                                        $billUrl = '#'; 
-                                        /* 
+                                        $billUrl = '#';
+                                        /*
                                         $billUrl = $hasAdvance
                                             ? route('tenant.bills.create', ['quotation_id' => $quotation->id, 'parent_bill_id' => $latestAdvance->id])
                                             : route('tenant.bills.create', ['quotation_id' => $quotation->id]);
@@ -407,11 +407,11 @@
                 </template>
 
                 {{-- Bill links are disabled for now --}}
-                {{-- 
+                {{--
                 <a :href="data.billUrl"
                    class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
                    x-text="data.billLabel">
-                </a> 
+                </a>
                 --}}
 
                 <a :href="data.viewUrl"

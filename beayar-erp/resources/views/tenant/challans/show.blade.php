@@ -1,4 +1,12 @@
 <x-dashboard.layout.default :title="'Challan - ' . $challan->challan_no">
+    @php
+        $companySettings = $challan->revision->quotation->company ? $challan->revision->quotation->company->settings : null;
+        $headerStyle = $companySettings['header_style'] ?? 'style_1';
+        $authorizedPersonName = $companySettings['authorized_person_name'] ?? '';
+        $authorizationLabel = $companySettings['authorization_label'] ?? 'Authorized By';
+        $signatureImage = $companySettings['signature_image'] ?? null;
+        $companySealImage = $companySettings['company_seal_image'] ?? null;
+    @endphp
     <style>
         /* Document palette / layout */
         :root {
@@ -333,18 +341,205 @@
 
                 <div class="px-6 py-6">
                     {{-- Header --}}
-                    <div class="flex justify-between items-start gap-3">
-                        <div class="flex gap-4 items-center">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="Company Logo" class="h-20 w-auto" />
-                        </div>
-                        <div class="leading-tight text-right">
-                            <div class="text-xs text-gray-600">Malek Mansion (Ground), 128 Motijheel C/A, Dhaka-1000
+                    @switch($headerStyle)
+                        @case('style_1')
+                            {{-- Style 1: Standard - Logo Left, Company Details Right --}}
+                            <div class="flex justify-between items-start gap-3">
+                                <div class="flex gap-4 items-center">
+                                    @if ($challan->revision->quotation->company && $challan->revision->quotation->company->logo)
+                                        <img src="{{ asset('storage/' . $challan->revision->quotation->company->logo) }}"
+                                            alt="{{ $challan->revision->quotation->company->name }}" class="h-20 w-auto" />
+                                    @else
+                                        <div class="text-lg font-bold text-gray-800">
+                                            {{ $challan->revision->quotation->company->name ?? 'Company' }}</div>
+                                    @endif
+                                </div>
+                                <div class="leading-tight text-right">
+                                    @if ($challan->revision->quotation->company)
+                                        @if ($challan->revision->quotation->company->logo)
+                                            <div class="text-sm font-bold text-gray-800">
+                                                {{ $challan->revision->quotation->company->name }}</div>
+                                        @endif
+                                        <div class="text-xs text-gray-600 whitespace-pre-line">
+                                            {{ $challan->revision->quotation->company->address }}</div>
+                                        @if ($challan->revision->quotation->company->email)
+                                            <div class="text-xs text-gray-600">
+                                                {{ $challan->revision->quotation->company->email }}</div>
+                                        @endif
+                                        @if ($challan->revision->quotation->company->phone)
+                                            <div class="text-xs text-gray-600">
+                                                {{ $challan->revision->quotation->company->phone }}</div>
+                                        @endif
+                                        @if ($challan->revision->quotation->company->bin_no)
+                                            <div class="text-xs text-gray-600">BIN:
+                                                {{ $challan->revision->quotation->company->bin_no }}</div>
+                                        @endif
+                                    @else
+                                        <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="text-xs text-gray-600">ataur@optimech.com.bd, ataur.optimech@gmail.com</div>
-                            <div class="text-xs text-gray-600">+8801841176747, +8801712117558</div>
-                            <div class="text-xs text-gray-600">www.optimech.com.bd</div>
-                        </div>
-                    </div>
+                            @break
+
+                        @case('style_2')
+                            {{-- Style 2: Inverted Standard - Company Details Left, Logo Right --}}
+                            <div class="flex justify-between items-start gap-3">
+                                <div class="leading-tight text-left">
+                                    @if ($challan->revision->quotation->company)
+                                        <div class="text-sm font-bold text-gray-800">
+                                            {{ $challan->revision->quotation->company->name }}</div>
+                                        <div class="text-xs text-gray-600 whitespace-pre-line">
+                                            {{ $challan->revision->quotation->company->address }}</div>
+                                        @if ($challan->revision->quotation->company->email)
+                                            <div class="text-xs text-gray-600">
+                                                {{ $challan->revision->quotation->company->email }}</div>
+                                        @endif
+                                        @if ($challan->revision->quotation->company->phone)
+                                            <div class="text-xs text-gray-600">
+                                                {{ $challan->revision->quotation->company->phone }}</div>
+                                        @endif
+                                        @if ($challan->revision->quotation->company->bin_no)
+                                            <div class="text-xs text-gray-600">BIN:
+                                                {{ $challan->revision->quotation->company->bin_no }}</div>
+                                        @endif
+                                    @else
+                                        <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                    @endif
+                                </div>
+                                <div class="flex gap-4 items-center">
+                                    @if ($challan->revision->quotation->company && $challan->revision->quotation->company->logo)
+                                        <img src="{{ asset('storage/' . $challan->revision->quotation->company->logo) }}"
+                                            alt="{{ $challan->revision->quotation->company->name }}" class="h-20 w-auto" />
+                                    @else
+                                        <div class="text-lg font-bold text-gray-800">
+                                            {{ $challan->revision->quotation->company->name ?? 'Company' }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                            @break
+
+                        @case('style_3')
+                            {{-- Style 3: Centered / Letterhead --}}
+                            <div class="text-center">
+                                @if ($challan->revision->quotation->company && $challan->revision->quotation->company->logo)
+                                    <img src="{{ asset('storage/' . $challan->revision->quotation->company->logo) }}"
+                                        alt="{{ $challan->revision->quotation->company->name }}" class="h-16 w-auto mx-auto mb-2" />
+                                @endif
+                                @if ($challan->revision->quotation->company)
+                                    <div class="text-base font-bold text-gray-800">
+                                        {{ $challan->revision->quotation->company->name }}</div>
+                                    <div class="text-xs text-gray-600 mt-1">
+                                        @if($challan->revision->quotation->company->address)
+                                            <span>{{ $challan->revision->quotation->company->address }}</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->email || $challan->revision->quotation->company->phone)
+                                            <span class="mx-1">|</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->email)
+                                            <span>{{ $challan->revision->quotation->company->email }}</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->phone)
+                                            <span class="mx-1">|</span>
+                                            <span>{{ $challan->revision->quotation->company->phone }}</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->bin_no)
+                                            <span class="mx-1">|</span>
+                                            <span>BIN: {{ $challan->revision->quotation->company->bin_no }}</span>
+                                        @endif
+                                    </div>
+                                @else
+                                    <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                @endif
+                            </div>
+                            @break
+
+                        @case('style_4')
+                            {{-- Style 4: Corporate Bar --}}
+                            <div>
+                                <div class="bg-blue-800 px-4 py-3 flex items-center gap-4 -mx-6 -mt-6 mb-3" style="width: calc(100% + 48px);">
+                                    @if ($challan->revision->quotation->company && $challan->revision->quotation->company->logo)
+                                        <img src="{{ asset('storage/' . $challan->revision->quotation->company->logo) }}"
+                                            alt="{{ $challan->revision->quotation->company->name }}" class="h-10 w-auto brightness-0 invert" />
+                                    @endif
+                                    @if ($challan->revision->quotation->company)
+                                        <div class="text-white">
+                                            <div class="text-base font-bold">{{ $challan->revision->quotation->company->name }}</div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="text-center text-xs text-gray-600 mt-2">
+                                    @if ($challan->revision->quotation->company)
+                                        @if($challan->revision->quotation->company->address)
+                                            <span>{{ $challan->revision->quotation->company->address }}</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->email)
+                                            <span class="mx-1">|</span>
+                                            <span>{{ $challan->revision->quotation->company->email }}</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->phone)
+                                            <span class="mx-1">|</span>
+                                            <span>{{ $challan->revision->quotation->company->phone }}</span>
+                                        @endif
+                                        @if($challan->revision->quotation->company->bin_no)
+                                            <span class="mx-1">|</span>
+                                            <span>BIN: {{ $challan->revision->quotation->company->bin_no }}</span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @break
+
+                        @case('style_5')
+                            {{-- Style 5: Minimal / Logo Only --}}
+                            <div class="flex justify-center items-center">
+                                @if ($challan->revision->quotation->company && $challan->revision->quotation->company->logo)
+                                    <img src="{{ asset('storage/' . $challan->revision->quotation->company->logo) }}"
+                                        alt="{{ $challan->revision->quotation->company->name }}" class="h-16 w-auto" />
+                                @else
+                                    <div class="text-xl font-bold text-gray-800">
+                                        {{ $challan->revision->quotation->company->name ?? 'Company' }}</div>
+                                @endif
+                            </div>
+                            @break
+
+                        @default
+                            {{-- Default: Style 1 --}}
+                            <div class="flex justify-between items-start gap-3">
+                                <div class="flex gap-4 items-center">
+                                    @if ($challan->revision->quotation->company && $challan->revision->quotation->company->logo)
+                                        <img src="{{ asset('storage/' . $challan->revision->quotation->company->logo) }}"
+                                            alt="{{ $challan->revision->quotation->company->name }}" class="h-20 w-auto" />
+                                    @else
+                                        <div class="text-lg font-bold text-gray-800">
+                                            {{ $challan->revision->quotation->company->name ?? 'Company' }}</div>
+                                    @endif
+                                </div>
+                                <div class="leading-tight text-right">
+                                    @if ($challan->revision->quotation->company)
+                                        @if ($challan->revision->quotation->company->logo)
+                                            <div class="text-sm font-bold text-gray-800">
+                                                {{ $challan->revision->quotation->company->name }}</div>
+                                        @endif
+                                        <div class="text-xs text-gray-600 whitespace-pre-line">
+                                            {{ $challan->revision->quotation->company->address }}</div>
+                                        @if ($challan->revision->quotation->company->email)
+                                            <div class="text-xs text-gray-600">
+                                                {{ $challan->revision->quotation->company->email }}</div>
+                                        @endif
+                                        @if ($challan->revision->quotation->company->phone)
+                                            <div class="text-xs text-gray-600">
+                                                {{ $challan->revision->quotation->company->phone }}</div>
+                                        @endif
+                                        @if ($challan->revision->quotation->company->bin_no)
+                                            <div class="text-xs text-gray-600">BIN:
+                                                {{ $challan->revision->quotation->company->bin_no }}</div>
+                                        @endif
+                                    @else
+                                        <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                    @endif
+                                </div>
+                            </div>
+                    @endswitch
 
                     {{-- Info grid --}}
                     <div class="grid grid-cols-3 gap-3 mt-4">
@@ -494,9 +689,7 @@
                         <div class="q-sign">
                             <div class="sig-box">
                                 <div style="height:72px;"></div>
-                                <div style="border-top:2px solid #374151; padding-top:6px; font-weight:700;">Authorized
-                                    By
-                                </div>
+                                <div style="border-top:2px solid #374151; padding-top:6px; font-weight:700;">{{ $authorizationLabel }}</div>
                             </div>
                             <div class="sig-box">
                                 <div style="height:72px;"></div>
@@ -517,9 +710,7 @@
                         <div class="q-sign">
                             <div class="sig-box">
                                 <div style="height:72px;"></div>
-                                <div style="border-top:2px solid #374151; padding-top:6px; font-weight:700;">Authorized
-                                    By
-                                </div>
+                                <div style="border-top:2px solid #374151; padding-top:6px; font-weight:700;">{{ $authorizationLabel }}</div>
                             </div>
                             <div class="sig-box">
                                 <div style="height:72px;"></div>

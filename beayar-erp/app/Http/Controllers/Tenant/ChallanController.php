@@ -296,7 +296,7 @@ class ChallanController extends Controller
      */
     public function show(Challan $challan)
     {
-        $challan->load(['revision.quotation.customer', 'products.quotationProduct.product', 'bills']);
+        $challan->load(['revision.quotation.customer', 'revision.quotation.company', 'products.quotationProduct.product', 'bills']);
 
         $hasBill = $challan->bills()->exists();
         $latestBill = $hasBill ? $challan->bills()->latest()->first() : null;
