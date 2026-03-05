@@ -8,7 +8,6 @@ use App\Models\Subscription;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +15,15 @@ use Spatie\Permission\Models\Role;
 
 class CheckoutController extends Controller
 {
+    /**
+     * Show the comprehensive plan selection interface.
+     */
+    public function planSelection()
+    {
+        $plans = Plan::where('is_active', true)->orderBy('base_price', 'asc')->get();
+        return view('landing.plan-selection', compact('plans'));
+    }
+
     /**
      * Show the checkout/registration form for a given plan.
      */
@@ -91,13 +99,11 @@ class CheckoutController extends Controller
             ];
             $subscription->save();
 
-            // 5. Log the user in
-            Auth::login($user);
-
+            // 5. User created successfully - redirect to login
             DB::commit();
 
-            // 6. Redirect to company creation (onboarding step 2)
-            return redirect()->route('onboarding.company');
+            // 6. Redirect to login page instead of auto-logging in
+            return redirect()->route('login')->with('success', 'Account created successfully! Please log in with your credentials.');
 
         } catch (\Exception $e) {
             DB::rollBack();

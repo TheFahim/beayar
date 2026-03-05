@@ -6,61 +6,9 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Let's get your workspace set up so you can start managing your business.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {{-- Left Column: Subscription Details --}}
-            <div class="lg:col-span-1 space-y-6">
-                <x-ui.card heading="Your Subscription">
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-700">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Current Plan</span>
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 capitalize dark:bg-indigo-900 dark:text-indigo-300">
-                                {{ $subscription->plan_type }}
-                            </span>
-                        </div>
-
-                        <div class="space-y-3">
-                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider dark:text-gray-400">Plan Limits</h4>
-
-                            <div class="flex justify-between text-sm items-center">
-                                <span class="text-gray-600 dark:text-gray-300 flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                    Workspaces
-                                </span>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $subscription->company_limit }}</span>
-                            </div>
-
-                            <div class="flex justify-between text-sm items-center">
-                                <span class="text-gray-600 dark:text-gray-300 flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                    Users / Company
-                                </span>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $subscription->user_limit_per_company }}</span>
-                            </div>
-
-                            <div class="flex justify-between text-sm items-center">
-                                <span class="text-gray-600 dark:text-gray-300 flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    Quotations / Month
-                                </span>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $subscription->quotation_limit_per_month }}</span>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
-                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600 dark:text-gray-300">Status</span>
-                                <span class="flex items-center text-green-600 font-medium dark:text-green-400">
-                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                                    Active
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </x-ui.card>
-            </div>
-
-            {{-- Right Column: Company Form --}}
-            <div class="lg:col-span-2">
+        <div class="grid grid-cols-1 gap-8">
+            {{-- Company Form (full width now) --}}
+            <div>
                 <x-ui.card heading="Create New Workspace">
 
                     @if(session('error'))

@@ -803,7 +803,7 @@
           <li class="flex items-center gap-2.5 text-sm text-slate-300"><svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>Advance/Running Bills</li>
           <li class="flex items-center gap-2.5 text-sm text-slate-300"><svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>Financial Dashboards</li>
         </ul>
-        <a href="/checkout/pro" class="btn-outline text-center text-sm font-semibold text-slate-300 py-3 rounded-xl">Get Pro</a>
+        <a href="/plan-selection" class="btn-outline text-center text-sm font-semibold text-slate-300 py-3 rounded-xl">Get Pro</a>
       </div>
 
       <!-- Pro Plus (FEATURED) -->
@@ -827,7 +827,7 @@
           <li class="flex items-center gap-2.5 text-sm text-slate-200"><svg class="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>Everything in Pro</li>
           <li class="flex items-center gap-2.5 text-sm text-slate-200"><svg class="w-4 h-4 text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>Custom Exchange Rates</li>
         </ul>
-        <a href="/checkout/pro-plus" class="btn-primary text-center text-sm font-semibold text-white py-3 rounded-xl">Get Pro Plus</a>
+        <a href="/plan-selection" class="btn-primary text-center text-sm font-semibold text-white py-3 rounded-xl">Get Pro Plus</a>
       </div>
 
       <!-- Enterprise -->

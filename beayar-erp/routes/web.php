@@ -31,6 +31,7 @@ Route::get('/', function () {
 });
 
 // Checkout Routes (Mock Subscription Flow)
+Route::get('/plan-selection', [CheckoutController::class, 'planSelection'])->name('checkout.plan-selection');
 Route::get('/checkout/{plan}', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::post('/checkout/{plan}', [CheckoutController::class, 'process'])->name('checkout.process');
 
