@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Challan;
 use App\Models\Quotation;
 use App\Models\ReceivedBill;
 use App\Models\SaleTarget;
 use App\Models\TenantCompany;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Number;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -84,7 +83,50 @@ class DashboardController extends Controller
                 ->count();
         }
 
-        // 5. Revenue Overview Chart (Monthly for current year)
+        // 5. Total Quotations
+        $currentQuotations = Quotation::where('tenant_company_id', $tenantId)
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+
+        $previousQuotations = Quotation::where('tenant_company_id', $tenantId)
+            ->whereMonth('created_at', $previousMonthDate->month)
+            ->whereYear('created_at', $previousMonthDate->year)
+            ->count();
+
+        $quotationsTrend = $this->calculateTrend($currentQuotations, $previousQuotations);
+
+        // 6. Challans from Quotations
+        $currentChallans = Challan::where('tenant_company_id', $tenantId)
+            ->whereNotNull('quotation_id')
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+
+        $previousChallans = Challan::where('tenant_company_id', $tenantId)
+            ->whereNotNull('quotation_id')
+            ->whereMonth('created_at', $previousMonthDate->month)
+            ->whereYear('created_at', $previousMonthDate->year)
+            ->count();
+
+        $challansTrend = $this->calculateTrend($currentChallans, $previousChallans);
+
+        // 7. Bills from Quotations
+        $currentBillsFromQuotations = Bill::where('tenant_company_id', $tenantId)
+            ->whereNotNull('quotation_id')
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+
+        $previousBillsFromQuotations = Bill::where('tenant_company_id', $tenantId)
+            ->whereNotNull('quotation_id')
+            ->whereMonth('created_at', $previousMonthDate->month)
+            ->whereYear('created_at', $previousMonthDate->year)
+            ->count();
+
+        $billsFromQuotationsTrend = $this->calculateTrend($currentBillsFromQuotations, $previousBillsFromQuotations);
+
+        // 8. Revenue Overview Chart (Monthly for current year)
         $monthlyRevenue = [];
         $maxRevenue = 0;
 
@@ -113,14 +155,14 @@ class DashboardController extends Controller
             }
         }
 
-        // 6. Recent Quotations
+        // 9. Recent Quotations
         $recentQuotations = Quotation::with('status')
             ->where('tenant_company_id', $tenantId)
             ->latest()
             ->take(3)
             ->get();
 
-        // 7. Cash Flow
+        // 10. Cash Flow
         // Collected: (Total amount from received_bills / Total bill_amount from bills) * 100
         // This is cumulative total, not just this month, based on wording.
         $totalReceived = ReceivedBill::join('bills', 'bills.id', '=', 'received_bills.bill_id')
@@ -148,6 +190,9 @@ class DashboardController extends Controller
             'currentInvoices', 'invoicesTrend',
             'currentPending', 'pendingTrend',
             'activeTeams',
+            'currentQuotations', 'quotationsTrend',
+            'currentChallans', 'challansTrend',
+            'currentBillsFromQuotations', 'billsFromQuotationsTrend',
             'monthlyRevenue',
             'recentQuotations',
             'collectedPercentage', 'targetPercentage',

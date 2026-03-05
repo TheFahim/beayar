@@ -2,9 +2,9 @@
 <x-dashboard.layout.default title="Dashboard">
     <div style="background: linear-gradient(145deg, #111827 0%, #0d1526 100%);" class="p-5 rounded-xl shadow-lg">
         <!-- Stats row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-4">
             <!-- Revenue -->
-            <div class="rounded-xl p-3" style="background:rgba(79,70,229,0.15); border:1px solid rgba(79,70,229,0.2);">
+            {{-- <div class="rounded-xl p-3" style="background:rgba(79,70,229,0.15); border:1px solid rgba(79,70,229,0.2);">
                 <div class="text-xs text-indigo-300 mb-1">Revenue</div>
                 <div class="text-lg font-display font-bold text-white">
                     {{ Number::currency($currentRevenue, 'BDT') }}
@@ -16,7 +16,7 @@
                 @else
                     <div class="text-xs text-gray-400 mt-1">- {{ $revenueTrend['value'] }}%</div>
                 @endif
-            </div>
+            </div> --}}
 
             <!-- Invoices -->
             <div class="rounded-xl p-3" style="background:rgba(20,184,166,0.1); border:1px solid rgba(20,184,166,0.2);">
@@ -32,7 +32,7 @@
             </div>
 
             <!-- Pending Invoices -->
-            <div class="rounded-xl p-3" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2);">
+            {{-- <div class="rounded-xl p-3" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2);">
                 <div class="text-xs text-yellow-300 mb-1">Pending</div>
                 <div class="text-lg font-display font-bold text-white">{{ Number::format($currentPending) }}</div>
                 @if($pendingTrend['direction'] === 'up')
@@ -57,7 +57,7 @@
                 @else
                      <div class="text-xs text-gray-400 mt-1">- {{ $pendingTrend['value'] }}%</div>
                 @endif
-            </div>
+            </div> --}}
 
             <!-- Teams -->
             <div class="rounded-xl p-3" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2);">
@@ -65,10 +65,37 @@
                 <div class="text-lg font-display font-bold text-white">{{ Number::format($activeTeams) }}</div>
                 <div class="text-xs text-slate-400 mt-1">Active</div>
             </div>
+
+            <!-- Quotations -->
+            <div class="rounded-xl p-3" style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2);">
+                <div class="text-xs text-green-300 mb-1">Quotations</div>
+                <div class="text-lg font-display font-bold text-white">{{ Number::format($currentQuotations) }}</div>
+                @if($quotationsTrend['direction'] === 'up')
+                    <div class="text-xs text-green-400 mt-1">▲ {{ $quotationsTrend['value'] }}%</div>
+                @elseif($quotationsTrend['direction'] === 'down')
+                    <div class="text-xs text-red-400 mt-1">▼ {{ $quotationsTrend['value'] }}%</div>
+                @else
+                    <div class="text-xs text-gray-400 mt-1">- {{ $quotationsTrend['value'] }}%</div>
+                @endif
+            </div>
+
+            <!-- Challans from Quotations -->
+            <div class="rounded-xl p-3" style="background:rgba(251,146,60,0.1); border:1px solid rgba(251,146,60,0.2);">
+                <div class="text-xs text-orange-300 mb-1">Challans</div>
+                <div class="text-lg font-display font-bold text-white">{{ Number::format($currentChallans) }}</div>
+                @if($challansTrend['direction'] === 'up')
+                    <div class="text-xs text-green-400 mt-1">▲ {{ $challansTrend['value'] }}%</div>
+                @elseif($challansTrend['direction'] === 'down')
+                    <div class="text-xs text-red-400 mt-1">▼ {{ $challansTrend['value'] }}%</div>
+                @else
+                    <div class="text-xs text-gray-400 mt-1">- {{ $challansTrend['value'] }}%</div>
+                @endif
+            </div>
+
         </div>
 
         <!-- Chart area -->
-        <div class="rounded-xl p-4 mb-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+        {{-- <div class="rounded-xl p-4 mb-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs text-slate-400 font-medium">Revenue Overview · {{ $currentYear }}</span>
                 <span class="text-xs px-2 py-0.5 rounded" style="background:rgba(79,70,229,0.2); color:#818CF8;">Monthly</span>
@@ -83,7 +110,7 @@
                     </div>
                 @endforeach
             </div>
-        </div>
+        </div> --}}
 
         <!-- Bottom rows -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -93,17 +120,32 @@
                 <div class="space-y-1.5">
                     @forelse($recentQuotations as $quotation)
                         @php
-                            // Determine color based on status color if available
+                            // Get saved_as status from first revision
+                            $savedAs = $quotation->revisions->first()?->saved_as ?? 'draft';
+
+                            // Determine saved_as styling
+                            $savedAsClass = $savedAs === 'quotation'
+                                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
+                                : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
+
+                            // Determine workflow status color if available
                             $statusColor = $quotation->status->color ?? 'gray';
-                            // Map status color names to tailwind classes if needed, or use inline style/class
-                            // Assuming 'green', 'red', 'blue' etc. are stored.
-                            // User example: text-green-400
-                            // I'll assume standard tailwind colors.
                             $textColorClass = 'text-' . $statusColor . '-400';
                         @endphp
                         <div class="flex justify-between items-center">
                             <span class="text-xs text-slate-300">{{ $quotation->reference_no }}</span>
-                            <span class="text-xs {{ $textColorClass }}">{{ $quotation->status->name ?? 'Unknown' }}</span>
+                            <div class="flex items-center gap-1">
+                                <!-- Saved As Status (Primary) -->
+                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $savedAsClass }}">
+                                    {{ ucfirst($savedAs) }}
+                                </span>
+                                <!-- Workflow Status (Secondary) -->
+                                @if($quotation->status)
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                        {{ $quotation->status->name }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     @empty
                         <div class="text-xs text-slate-500 text-center py-2">No recent quotations</div>
@@ -112,7 +154,7 @@
             </div>
 
             <!-- Cash Flow -->
-            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
+            {{-- <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
                 <div class="text-xs text-slate-500 mb-2">Cash Flow</div>
                 <div class="space-y-2 mt-1">
                     <!-- Collected -->
@@ -136,7 +178,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </x-dashboard.layout.default>

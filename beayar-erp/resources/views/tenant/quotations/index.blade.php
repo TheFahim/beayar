@@ -227,6 +227,9 @@
                                     <th
                                         class="w-36 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                         Actions</th>
+                                    <th
+                                        class="w-32 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        Status</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -239,12 +242,16 @@
                                         </td>
 
                                         <td class="flex gap-2 items-center py-4 whitespace-nowrap">
-                                            @if ($quotation->revisions[0]->saved_as == 'draft')
-                                                <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
-                                                    Draft
-                                                </span>
-                                            @endif
+                                            <!-- Saved As Status (Primary) -->
+                                            @php
+                                                $savedAs = $quotation->revisions[0]->saved_as ?? 'draft';
+                                                $savedAsClass = $savedAs === 'quotation'
+                                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
+                                                    : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
+                                            @endphp
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ $savedAsClass }}">
+                                                {{ ucfirst($savedAs) }}
+                                            </span>
 
                                             <a href="{{ route('tenant.quotations.show', $quotation) }}"
                                                 class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold transition-colors duration-200">
@@ -545,10 +552,32 @@
                                                 </template>
                                             </div>
                                         </td>
+                                        <!-- Workflow Status Cell -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($quotation->status)
+                                                @php
+                                                    $statusColors = [
+                                                        'Draft' => 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+                                                        'Sent' => 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
+                                                        'Accepted' => 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
+                                                        'Rejected' => 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
+                                                        'Expired' => 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
+                                                    ];
+                                                    $statusColorClass = $statusColors[$quotation->status->name] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
+                                                @endphp
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColorClass }}">
+                                                    {{ $quotation->status->name }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                                    No Status
+                                                </span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="px-6 py-12 text-center">
+                                        <td colspan="11" class="px-6 py-12 text-center">
                                             <div class="flex flex-col items-center justify-center">
                                                 <i
                                                     class="fas fa-folder-open text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>

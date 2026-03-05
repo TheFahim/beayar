@@ -40,7 +40,7 @@ class BillingService
                 'bill_type' => $data['bill_type'] ?? 'regular',
                 'invoice_no' => $data['invoice_no'],
                 'bill_date' => Carbon::createFromFormat('d/m/Y', $data['bill_date'])->format('Y-m-d'),
-                'payment_received_date' => !empty($data['payment_received_date'])
+                'payment_received_date' => ! empty($data['payment_received_date'])
                     ? Carbon::createFromFormat('d/m/Y', $data['payment_received_date'])->format('Y-m-d')
                     : null,
                 'total_amount' => ($activeRevision->total ?? 0),
@@ -96,12 +96,11 @@ class BillingService
             }
 
             // Attach challans via pivot (idempotent)
-            if (!empty($challanIds)) {
+            if (! empty($challanIds)) {
                 $bill->challans()->syncWithoutDetaching(array_keys($challanIds));
             }
 
             // Update bill totals for regular bills
-            $update = [];
             if (($bill->bill_type ?? 'regular') === 'regular') {
                 $vat = (float) ($data['vat'] ?? 0);
                 $finalTotal = ($totalAmount - ($bill->discount ?? 0)) + ($bill->shipping ?? 0) + $vat;
@@ -121,9 +120,7 @@ class BillingService
                 $update['due'] = max(0, $computedDue);
                 $update['bill_percentage'] = $this->calculateBillPercentage($finalTotal, $bill->total_amount ?? 0);
             }
-            if (!empty($update)) {
-                $bill->update($update);
-            }
+            $bill->update($update);
 
             return $bill;
         });
@@ -131,7 +128,7 @@ class BillingService
 
     public function calculateBillPercentage($bill_amount, $total_amount): float
     {
-        if (!is_numeric($bill_amount) || !is_numeric($total_amount)) {
+        if (! is_numeric($bill_amount) || ! is_numeric($total_amount)) {
             throw ValidationException::withMessages([
                 'bill_percentage' => 'Inputs must be numeric',
             ]);
@@ -208,7 +205,7 @@ class BillingService
             }
 
             $parent = Bill::find($data['parent_bill_id'] ?? null);
-            if (!$parent) {
+            if (! $parent) {
                 throw ValidationException::withMessages([
                     'parent_bill_id' => 'Parent bill not found',
                 ]);
@@ -220,7 +217,7 @@ class BillingService
                 ]);
             }
 
-            if (!empty($data['quotation_id']) && $parent->quotation_id != $data['quotation_id']) {
+            if (! empty($data['quotation_id']) && $parent->quotation_id != $data['quotation_id']) {
                 throw ValidationException::withMessages([
                     'quotation_id' => 'Running bill must have same quotation as parent bill',
                 ]);
@@ -233,7 +230,7 @@ class BillingService
                 'bill_type' => 'running',
                 'invoice_no' => $data['invoice_no'],
                 'bill_date' => Carbon::createFromFormat('d/m/Y', $data['bill_date'])->format('Y-m-d'),
-                'payment_received_date' => !empty($data['payment_received_date'])
+                'payment_received_date' => ! empty($data['payment_received_date'])
                     ? Carbon::createFromFormat('d/m/Y', $data['payment_received_date'])->format('Y-m-d')
                     : null,
                 'bill_percentage' => $data['bill_percentage'],
@@ -252,7 +249,7 @@ class BillingService
     {
         return DB::transaction(function () use ($bill, $data) {
             $parent = Bill::find($bill->parent_bill_id);
-            if (!$parent) {
+            if (! $parent) {
                 throw ValidationException::withMessages([
                     'parent_bill_id' => 'Parent bill not found',
                 ]);
@@ -264,7 +261,7 @@ class BillingService
                 ]);
             }
 
-            if (!empty($data['quotation_id']) && $parent->quotation_id != $data['quotation_id']) {
+            if (! empty($data['quotation_id']) && $parent->quotation_id != $data['quotation_id']) {
                 throw ValidationException::withMessages([
                     'quotation_id' => 'Running bill must have same quotation as parent bill',
                 ]);
@@ -273,7 +270,7 @@ class BillingService
             $bill->update([
                 'invoice_no' => $data['invoice_no'],
                 'bill_date' => Carbon::createFromFormat('d/m/Y', $data['bill_date'])->format('Y-m-d'),
-                'payment_received_date' => !empty($data['payment_received_date'])
+                'payment_received_date' => ! empty($data['payment_received_date'])
                     ? Carbon::createFromFormat('d/m/Y', $data['payment_received_date'])->format('Y-m-d')
                     : null,
                 'bill_percentage' => $data['bill_percentage'],
@@ -296,7 +293,7 @@ class BillingService
             $bill->update([
                 'invoice_no' => $data['invoice_no'],
                 'bill_date' => Carbon::createFromFormat('d/m/Y', $data['bill_date'])->format('Y-m-d'),
-                'payment_received_date' => !empty($data['payment_received_date'])
+                'payment_received_date' => ! empty($data['payment_received_date'])
                     ? Carbon::createFromFormat('d/m/Y', $data['payment_received_date'])->format('Y-m-d')
                     : null,
                 'total_amount' => $activeRevision->total ?? $bill->total_amount,
@@ -306,7 +303,7 @@ class BillingService
             ]);
 
             $pivotIds = DB::table('bill_challans')->where('bill_id', $bill->id)->pluck('id')->all();
-            if (!empty($pivotIds)) {
+            if (! empty($pivotIds)) {
                 DB::table('bill_items')->whereIn('bill_challan_id', $pivotIds)->delete();
             }
 
@@ -353,7 +350,7 @@ class BillingService
                 }
             }
 
-            if (!empty($challanIds)) {
+            if (! empty($challanIds)) {
                 $bill->challans()->sync(array_keys($challanIds));
             } else {
                 $bill->challans()->sync([]);
@@ -382,6 +379,23 @@ class BillingService
     }
 
     /**
+     * Create a bill item with snapshot values
+     *
+     * @param  Bill  $bill
+     * @param  array  $itemData
+     * @return BillItem
+     */
+    // Legacy helper removed: bill items are now created per allocation
+
+    /**
+     * Create challan allocations for a bill item
+     *
+     * @param  BillItem  $billItem
+     * @param  array  $allocations
+     */
+    // Legacy allocations storage removed in favor of direct bill_items rows
+
+    /**
      * Validate bill constraints
      *
      * @throws ValidationException
@@ -389,7 +403,7 @@ class BillingService
     private function validateBillConstraints(array $data): void
     {
         // Validate bill_type
-        if (!in_array($data['bill_type'], ['advance', 'regular', 'running'])) {
+        if (! in_array($data['bill_type'], ['advance', 'regular', 'running'])) {
             throw ValidationException::withMessages([
                 'bill_type' => 'Invalid bill type. Must be one of: advance, regular, running',
             ]);
@@ -404,7 +418,7 @@ class BillingService
             }
 
             $parentBill = Bill::find($data['parent_bill_id']);
-            if (!$parentBill) {
+            if (! $parentBill) {
                 throw ValidationException::withMessages([
                     'parent_bill_id' => 'Parent bill not found',
                 ]);
@@ -453,14 +467,14 @@ class BillingService
                     ]);
                 }
             }
-            if (empty($data['items']) || !is_array($data['items'])) {
+            if (empty($data['items']) || ! is_array($data['items'])) {
                 throw ValidationException::withMessages([
                     'items' => 'Items are required for regular bills',
                 ]);
             }
 
             foreach ($data['items'] as $i => $item) {
-                if (empty($item['allocations']) || !is_array($item['allocations'])) {
+                if (empty($item['allocations']) || ! is_array($item['allocations'])) {
                     throw ValidationException::withMessages([
                         "items.$i.allocations" => 'Allocations are required for each item',
                     ]);
@@ -469,14 +483,14 @@ class BillingService
                 foreach ($item['allocations'] as $a => $allocation) {
                     $challanProductId = $allocation['challan_product_id'] ?? null;
                     $billedQty = (float) ($allocation['billed_quantity'] ?? 0);
-                    if (!$challanProductId || $billedQty <= 0) {
+                    if (! $challanProductId || $billedQty <= 0) {
                         throw ValidationException::withMessages([
                             "items.$i.allocations.$a.billed_quantity" => 'Billed quantity must be greater than zero',
                         ]);
                     }
 
                     $cp = ChallanProduct::find($challanProductId);
-                    if (!$cp) {
+                    if (! $cp) {
                         throw ValidationException::withMessages([
                             "items.$i.allocations.$a.challan_product_id" => 'Challan product not found',
                         ]);
@@ -523,15 +537,7 @@ class BillingService
             }
 
             // Check if there are challans for this revision (simplified check)
-            $hasChallans = ChallanProduct::whereHas('challan', function ($q) use ($data) {
-                $q->where('quotation_revision_id', $data['quotation_revision_id']);
-            })->exists();
-
-            if ($hasChallans) {
-                throw ValidationException::withMessages([
-                    'bill_type' => 'Cannot create advance bill - challans already exist for this quotation',
-                ]);
-            }
+            // This would need to be implemented based on your business logic
         }
     }
 }
