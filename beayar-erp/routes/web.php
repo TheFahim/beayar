@@ -19,12 +19,20 @@ use App\Http\Controllers\Tenant\FeedbackController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\QuotationController;
 use App\Http\Controllers\Tenant\ReceivedBillController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
-
-// Auth
+use Illuminate\Support\Facades\Artisan;
+use App\Models\Plan;
 Route::get('/', function () {
-    return redirect('/login');
+    if (Plan::count() === 0) {
+        Artisan::call('db:seed', ['--class' => 'Database\Seeders\PlansSeeder']);
+    }
+    return view('landing.index');
 });
+
+// Checkout Routes (Mock Subscription Flow)
+Route::get('/checkout/{plan}', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout/{plan}', [CheckoutController::class, 'process'])->name('checkout.process');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
