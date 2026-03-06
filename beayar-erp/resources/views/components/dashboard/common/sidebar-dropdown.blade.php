@@ -21,13 +21,13 @@
 
 <div x-data="{ isOpen: {{ $initialState }} }" class="w-full">
     <button type="button"
-        class="group relative flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-in-out {{ $hasActiveChild ? 'text-white bg-slate-700/50' : 'text-slate-400 hover:text-white hover:bg-slate-700/50' }} hover:shadow-lg"
+        class="group relative flex items-center w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ease-in-out {{ $hasActiveChild ? 'text-white bg-blue-500 dark:bg-slate-700/50' : 'text-gray-700 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/50' }} hover:shadow-lg"
         @click="isOpen = !isOpen"
         aria-controls="{{ $targetId }}"
         :aria-expanded="isOpen">
 
         <!-- Icon wrapper -->
-        <div class="{{ $hasActiveChild ? 'text-white' : 'text-slate-500 group-hover:text-slate-300' }} transition-colors duration-200">
+        <div class="{{ $hasActiveChild ? 'text-white' : 'text-gray-600 dark:text-slate-500 group-hover:text-gray-800 dark:group-hover:text-slate-300' }} flex transition-colors duration-200">
             {{ $slot }}
         </div>
 
