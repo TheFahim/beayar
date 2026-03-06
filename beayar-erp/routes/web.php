@@ -41,6 +41,36 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
+// Email Verification Routes
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (Illuminate\Http\Request $request, $id, $hash) {
+    if (! $request->hasValidSignature()) {
+        abort(401, 'Invalid or expired verification link.');
+    }
+
+    $user = \App\Models\User::findOrFail($id);
+
+    if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        abort(401, 'Invalid verification link.');
+    }
+
+    if ($user->hasVerifiedEmail()) {
+        return redirect()->route('login')->with('info', 'Email is already verified. Please log in.');
+    }
+
+    $user->markEmailAsVerified();
+
+    return redirect()->route('login')->with('success', 'Email verified successfully. Please log in.');
+})->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Illuminate\Http\Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 // Password Reset Routes
 Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
@@ -49,8 +79,8 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Onboarding Routes (Protected by auth)
-Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'onboarding', 'as' => 'onboarding.'], function () {
+// Onboarding Routes (Protected by auth and verified)
+Route::group(['middleware' => ['web', 'auth', 'verified'], 'prefix' => 'onboarding', 'as' => 'onboarding.'], function () {
     Route::get('/plan', [\App\Http\Controllers\OnboardingController::class, 'index'])->name('plan');
     Route::post('/plan', [\App\Http\Controllers\OnboardingController::class, 'storePlan'])->name('plan.store');
     Route::get('/company', [\App\Http\Controllers\OnboardingController::class, 'createCompany'])->name('company');
@@ -62,8 +92,8 @@ Route::post('/companies/{company}/switch', [\App\Http\Controllers\CompanyContext
     ->middleware(['web', 'auth'])
     ->name('companies.switch');
 
-// Tenant Routes (Protected by auth in reazl app)
-Route::group(['middleware' => ['web', 'auth', 'onboarding.complete', 'tenant.context']], function () {
+// Tenant Routes (Protected by auth, verified, etc.)
+Route::group(['middleware' => ['web', 'auth', 'verified', 'onboarding.complete', 'tenant.context']], function () {
     Route::get('/dashboard', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])->name('tenant.dashboard');
 
     // Tenant Profile (Only for Tenant Admin/Owner)

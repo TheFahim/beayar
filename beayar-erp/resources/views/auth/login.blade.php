@@ -11,6 +11,22 @@
             </p>
         </div>
 
+        @if (session('success'))
+            <div class="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('status'))
+            <div class="mb-4 p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+                {{ session('status') }}
+            </div>
+        @endif
+        @if (session('info'))
+            <div class="mb-4 p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+                {{ session('info') }}
+            </div>
+        @endif
+
         <form class="space-y-6" action="{{ route('login') }}" method="POST">
             @csrf
             <div>

@@ -60,9 +60,9 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        Auth::login($user);
+        $user->sendEmailVerificationNotification();
 
-        return redirect()->route('onboarding.plan');
+        return redirect()->route('login')->with('success', 'Registration successful. Please check your email to verify your account.');
     }
 
     public function showForgotPassword()

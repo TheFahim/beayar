@@ -243,10 +243,10 @@
                 <input type="radio" name="billing" value="monthly" x-model="billingPeriod" class="radio-custom">
                 <div class="flex-1">
                   <div class="flex items-baseline gap-2">
-                    <span class="text-slate-500 line-through text-sm">US$<span x-text="pricing.monthly.original"></span></span>
-                    <span class="text-white font-semibold text-lg">US$<span x-text="pricing.monthly.subtotal"></span>/mo</span>
+                    <span class="text-slate-500 line-through text-lg">US$<span x-text="pricing.monthly.subtotal"></span>/mo</span>
+                    <span class="text-teal-400 font-semibold text-xl">0 Taka/mo</span>
                   </div>
-                  <span class="text-xs text-green-400">You're saving US$<span x-text="pricing.monthly.savings"></span></span>
+                  <span class="text-xs text-green-400">100% Free Forever</span>
                 </div>
               </label>
 
@@ -256,10 +256,10 @@
                 <input type="radio" name="billing" value="annually" x-model="billingPeriod" class="radio-custom">
                 <div class="flex-1">
                   <div class="flex items-baseline gap-2">
-                    <span class="text-slate-500 line-through text-sm">US$<span x-text="pricing.annually.original"></span></span>
-                    <span class="text-white font-semibold text-lg">US$<span x-text="pricing.annually.subtotal"></span>/yr</span>
+                    <span class="text-slate-500 line-through text-lg">US$<span x-text="pricing.annually.subtotal"></span>/yr</span>
+                    <span class="text-teal-400 font-semibold text-xl">0 Taka/yr</span>
                   </div>
-                  <span class="text-xs text-green-400">You're saving US$<span x-text="pricing.annually.savings"></span></span>
+                  <span class="text-xs text-green-400">100% Free Forever</span>
                 </div>
               </label>
             </div>
@@ -344,7 +344,7 @@
 
             <!-- Continue Button -->
             <a :href="'/checkout/' + (planData ? planData.slug : 'pro-plus') + '?billing=' + billingPeriod" class="btn-primary w-full text-white font-semibold py-4 rounded-xl text-center block">
-              Continue
+              Try for free
             </a>
           </div>
         </div>

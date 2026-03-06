@@ -108,11 +108,12 @@ class CheckoutController extends Controller
             ];
             $subscription->save();
 
-            // 5. User created successfully - redirect to login
+            // 5. User created successfully
             DB::commit();
 
             // 6. Redirect to login page instead of auto-logging in
-            return redirect()->route('login')->with('success', 'Account created successfully! Please log in with your credentials.');
+            $user->sendEmailVerificationNotification();
+            return redirect()->route('login')->with('success', 'Account created successfully! Please check your email to verify your account before logging in.');
 
         } catch (\Exception $e) {
             DB::rollBack();

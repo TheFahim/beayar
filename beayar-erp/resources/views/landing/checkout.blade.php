@@ -226,7 +226,7 @@
               </div>
 
               <!-- Fake Payment Fields (only for paid plans) -->
-              @if($plan->base_price > 0)
+              {{-- @if($plan->base_price > 0)
                 <div class="mb-6">
                   <div class="flex items-center gap-2 mb-4">
                     <div class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(79,70,229,0.2);">
@@ -253,12 +253,12 @@
                     <p class="text-xs text-slate-600 italic">This is a demo. No real payment will be processed.</p>
                   </div>
                 </div>
-              @endif
+              @endif --}}
 
               <!-- Submit -->
               <button type="submit" class="btn-primary w-full text-white font-semibold py-4 rounded-xl text-sm">
                 @if($plan->base_price > 0)
-                  Complete Purchase — <span x-text="billingPeriod === 'monthly' ? '$' + subtotal.toFixed(0) + '/mo' : '$' + subtotal.toFixed(0) + '/yr'"></span>
+                  Try for free
                   <input type="hidden" name="billing_period" :value="billingPeriod">
                 @else
                   Create Free Account
@@ -393,10 +393,10 @@
                   </div>
                   <div class="flex-1">
                     <div class="flex items-baseline gap-2">
-                      <span class="text-slate-500 line-through text-sm" x-text="billingPeriod === 'monthly' ? '$' + pricing.monthly.original : '$' + pricing.annually.original"></span>
-                      <span class="text-white font-semibold text-sm" x-text="billingPeriod === 'monthly' ? '$' + pricing.monthly.subtotal + '/mo' : '$' + pricing.annually.subtotal + '/yr'"></span>
+                      <span class="text-slate-500 line-through text-lg" x-text="billingPeriod === 'monthly' ? '$' + pricing.monthly.subtotal + '/mo' : '$' + pricing.annually.subtotal + '/yr'"></span>
+                      <span class="text-teal-400 font-semibold text-xl">0 Taka</span>
                     </div>
-                    <span class="text-xs text-green-400" x-text="'You\'re saving $' + (billingPeriod === 'monthly' ? pricing.monthly.savings : pricing.annually.savings)"></span>
+                    <span class="text-xs text-green-400">100% Free Forever</span>
                   </div>
                 </div>
               </div>
@@ -414,7 +414,7 @@
                 </div>
                 <div class="flex justify-between items-center pt-3 border-t border-slate-700">
                   <span class="text-white font-semibold">Total</span>
-                  <span class="text-white font-bold text-lg">US$<span x-text="total.toFixed(2)"></span></span>
+                  <span class="text-teal-400 font-bold text-lg">0 Taka</span>
                 </div>
               </div>
             </div>
