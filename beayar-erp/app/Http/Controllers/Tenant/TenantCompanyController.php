@@ -8,7 +8,6 @@ use App\Models\TenantCompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Role;
 
 class TenantCompanyController extends Controller
 {
@@ -51,6 +50,8 @@ class TenantCompanyController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
+            'bin_no' => 'nullable|string|max:50',
+            'website' => 'nullable|url|max:255',
             'address' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -86,6 +87,8 @@ class TenantCompanyController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'bin_no' => $request->bin_no,
+            'website' => $request->website,
             'address' => $request->address,
             'logo' => $logoPath,
             'organization_type' => TenantCompany::TYPE_INDEPENDENT,
@@ -95,7 +98,7 @@ class TenantCompanyController extends Controller
         // Attach user as Admin
         // If user is tenant_admin (which they must be to create), give them tenant_admin role in company too
         $role = $user->hasRole('tenant_admin') ? 'tenant_admin' : 'company_admin';
-        
+
         $company->members()->attach($user->id, [
             'role' => $role,
             'is_active' => true,
@@ -156,6 +159,8 @@ class TenantCompanyController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
+            'bin_no' => 'nullable|string|max:50',
+            'website' => 'nullable|url|max:255',
             'address' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -164,6 +169,8 @@ class TenantCompanyController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'bin_no' => $request->bin_no,
+            'website' => $request->website,
             'address' => $request->address,
         ];
 

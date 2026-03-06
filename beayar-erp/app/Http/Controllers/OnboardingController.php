@@ -206,8 +206,12 @@ class OnboardingController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
             'address' => 'nullable|string',
-            'phone' => 'nullable|string',
+            'bin_no' => 'nullable|string|max:100',
+            'website' => 'nullable|url|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try {
@@ -225,13 +229,23 @@ class OnboardingController extends Controller
                 $tenant = $user->tenant;
             }
 
+            // Handle logo upload
+            $logoPath = null;
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store('company-logos', 'public');
+            }
+
             // Create Company
             $company = TenantCompany::create([
                 'tenant_id' => $tenant->id,
                 'owner_id' => $user->id,
                 'name' => $request->name,
-                'address' => $request->address,
+                'email' => $request->email,
                 'phone' => $request->phone,
+                'address' => $request->address,
+                'bin_no' => $request->bin_no,
+                'website' => $request->website,
+                'logo' => $logoPath,
                 'organization_type' => TenantCompany::TYPE_INDEPENDENT,
                 'status' => 'active',
             ]);

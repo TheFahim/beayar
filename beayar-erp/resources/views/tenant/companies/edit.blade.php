@@ -31,7 +31,7 @@
                     @csrf
                     @method('PUT')
                     <div class="p-8 space-y-8">
-                        
+
                         <!-- Logo Section -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-900 dark:text-white mb-4">Workspace Logo</label>
@@ -68,31 +68,45 @@
                         <div class="grid grid-cols-1 gap-6">
                             <div>
                                 <label for="name" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Company Name <span class="text-red-500">*</span></label>
-                                <input type="text" name="name" id="name" value="{{ old('name', $company->name) }}" required 
-                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3" 
+                                <input type="text" name="name" id="name" value="{{ old('name', $company->name) }}" required
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3"
                                     placeholder="e.g. Acme Corp">
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="email" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Email Address</label>
-                                    <input type="email" name="email" id="email" value="{{ old('email', $company->email) }}" 
-                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3" 
+                                    <input type="email" name="email" id="email" value="{{ old('email', $company->email) }}"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3"
                                         placeholder="info@company.com">
                                 </div>
 
                                 <div>
                                     <label for="phone" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Phone Number</label>
-                                    <input type="text" name="phone" id="phone" value="{{ old('phone', $company->phone) }}" 
-                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3" 
+                                    <input type="text" name="phone" id="phone" value="{{ old('phone', $company->phone) }}"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3"
                                         placeholder="+1 (555) 000-0000">
+                                </div>
+
+                                <div>
+                                    <label for="bin_no" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">BIN No.</label>
+                                    <input type="text" name="bin_no" id="bin_no" value="{{ old('bin_no', $company->bin_no) }}"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3"
+                                        placeholder="Enter BIN number">
+                                </div>
+
+                                <div>
+                                    <label for="website" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Website</label>
+                                    <input type="url" name="website" id="website" value="{{ old('website', $company->website) }}"
+                                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3"
+                                        placeholder="https://www.example.com">
                                 </div>
                             </div>
 
                             <div>
                                 <label for="address" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Address</label>
-                                <textarea id="address" name="address" rows="3" 
-                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3" 
+                                <textarea id="address" name="address" rows="3"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 py-2.5 px-3"
                                     placeholder="123 Business St, City, Country">{{ old('address', $company->address) }}</textarea>
                             </div>
                         </div>
