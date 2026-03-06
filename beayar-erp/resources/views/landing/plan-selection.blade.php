@@ -1,13 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" x-data="{
     billingYearly: false,
-    selectedPlan: 'pro-plus',
+    selectedPlan: {{ isset($plan) ? json_encode($plan->slug) : '"pro-plus"' }},
     businessLocation: 'Bangladesh',
     billingPeriod: 'annually',
-    pricing: {
-      monthly: { subtotal: 2.10, original: 21, savings: 56.70 },
-      annually: { subtotal: 113.00, original: 226, savings: 113.00 }
-    },
+    @if(isset($plan))
+        planData: {{ json_encode($plan->toArray()) }},
+        pricing: {
+          monthly: {
+            subtotal: {{ $plan->base_price }},
+            original: {{ $plan->base_price * 1.2 }},
+            savings: {{ ($plan->base_price * 1.2) - $plan->base_price }}
+          },
+          annually: {
+            subtotal: {{ $plan->base_price * 12 * 0.8 }},
+            original: {{ $plan->base_price * 12 }},
+            savings: {{ ($plan->base_price * 12) - ($plan->base_price * 12 * 0.8) }}
+          }
+        },
+    @else
+        planData: null,
+        pricing: {
+          monthly: { subtotal: 2.10, original: 2.52, savings: 0.42 },
+          annually: { subtotal: 113.00, original: 141.60, savings: 28.60 }
+        },
+    @endif
     vatRate: 0.15,
     get currentPricing() {
       return this.pricing[this.billingPeriod];
@@ -252,8 +269,8 @@
         <!-- Right Panel -->
         <div class="glass rounded-2xl p-6">
           <div class="mb-6">
-            <h3 class="font-display font-bold text-2xl text-white mb-2">Simple Start</h3>
-            <p class="text-slate-400 text-sm">Perfect for small businesses getting started</p>
+            <h3 class="font-display font-bold text-2xl text-white mb-2" x-text="planData ? planData.name : 'Simple Start'"></h3>
+            <p class="text-slate-400 text-sm" x-text="planData ? planData.description : 'Perfect for small businesses getting started'"></p>
           </div>
 
           <!-- Features List -->
@@ -326,7 +343,7 @@
             </div>
 
             <!-- Continue Button -->
-            <a href="/checkout/pro-plus" class="btn-primary w-full text-white font-semibold py-4 rounded-xl text-center block">
+            <a :href="'/checkout/' + (planData ? planData.slug : 'pro-plus') + '?billing=' + billingPeriod" class="btn-primary w-full text-white font-semibold py-4 rounded-xl text-center block">
               Continue
             </a>
           </div>

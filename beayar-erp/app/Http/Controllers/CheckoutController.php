@@ -11,27 +11,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Spatie\Permission\Models\Role;
 
 class CheckoutController extends Controller
 {
     /**
      * Show the comprehensive plan selection interface.
      */
-    public function planSelection()
+    public function planSelection(Request $request)
     {
         $plans = Plan::where('is_active', true)->orderBy('base_price', 'asc')->get();
-        return view('landing.plan-selection', compact('plans'));
+
+        // Get selected plan from query parameter if provided
+        $plan = null;
+        if ($request->has('plan')) {
+            $plan = Plan::where('slug', $request->get('plan'))->where('is_active', true)->first();
+        }
+
+        return view('landing.plan-selection', compact('plans', 'plan'));
     }
 
     /**
      * Show the checkout/registration form for a given plan.
      */
-    public function show(string $planSlug)
+    public function show(string $planSlug, Request $request)
     {
         $plan = Plan::where('slug', $planSlug)->where('is_active', true)->firstOrFail();
 
-        return view('landing.checkout', compact('plan'));
+        // Get billing period from query parameter, default to annually
+        $billingPeriod = $request->get('billing', 'annually');
+
+        return view('landing.checkout', compact('plan', 'billingPeriod'));
     }
 
     /**

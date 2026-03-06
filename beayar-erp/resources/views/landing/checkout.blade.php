@@ -3,10 +3,18 @@
     billingYearly: false,
     selectedPlan: '{{ $plan->slug }}',
     businessLocation: 'Bangladesh',
-    billingPeriod: 'annually',
+    billingPeriod: '{{ $billingPeriod ?? 'annually' }}',
     pricing: {
-      monthly: { subtotal: {{ $plan->base_price }}, original: {{ $plan->base_price * 2 }}, savings: {{ $plan->base_price }} },
-      annually: { subtotal: {{ $plan->base_price * 10 }}, original: {{ $plan->base_price * 20 }}, savings: {{ $plan->base_price * 10 }} }
+      monthly: {
+        subtotal: {{ $plan->base_price }},
+        original: {{ $plan->base_price * 1.2 }},
+        savings: {{ ($plan->base_price * 1.2) - $plan->base_price }}
+      },
+      annually: {
+        subtotal: {{ $plan->base_price * 12 * 0.8 }},
+        original: {{ $plan->base_price * 12 }},
+        savings: {{ ($plan->base_price * 12) - ($plan->base_price * 12 * 0.8) }}
+      }
     },
     vatRate: 0.15,
     get currentPricing() {
@@ -250,7 +258,8 @@
               <!-- Submit -->
               <button type="submit" class="btn-primary w-full text-white font-semibold py-4 rounded-xl text-sm">
                 @if($plan->base_price > 0)
-                  Complete Purchase — ${{ number_format($plan->base_price, 0) }}/mo
+                  Complete Purchase — <span x-text="billingPeriod === 'monthly' ? '$' + subtotal.toFixed(0) + '/mo' : '$' + subtotal.toFixed(0) + '/yr'"></span>
+                  <input type="hidden" name="billing_period" :value="billingPeriod">
                 @else
                   Create Free Account
                 @endif
@@ -371,6 +380,28 @@
 
           <!-- Pricing Summary -->
           @if($plan->base_price > 0)
+            <!-- Billing Period Display -->
+            <div class="mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-semibold text-white text-lg">Billing period</h3>
+              </div>
+              <div class="space-y-3">
+                <!-- Selected Billing Period -->
+                <div class="flex items-center gap-3 p-3 rounded-xl border bg-indigo-400/10 border-indigo-400">
+                  <div class="w-5 h-5 rounded-full flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-slate-500 line-through text-sm" x-text="billingPeriod === 'monthly' ? '$' + pricing.monthly.original : '$' + pricing.annually.original"></span>
+                      <span class="text-white font-semibold text-sm" x-text="billingPeriod === 'monthly' ? '$' + pricing.monthly.subtotal + '/mo' : '$' + pricing.annually.subtotal + '/yr'"></span>
+                    </div>
+                    <span class="text-xs text-green-400" x-text="'You\'re saving $' + (billingPeriod === 'monthly' ? pricing.monthly.savings : pricing.annually.savings)"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="border-t border-slate-700 pt-6">
               <div class="space-y-3 mb-6">
                 <div class="flex justify-between items-center">
