@@ -1,249 +1,286 @@
 <x-dashboard.common.navbar />
 
 <x-dashboard.common.sidebar-wrapper>
-    <ul class="space-y-2 font-medium">
-
+    <div class="space-y-6">
         {{-- Admin Section --}}
         @role('super_admin')
-        <li>
-            <button type="button"
-                class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                aria-controls="sidebar-dropdown-admin" data-collapse-toggle="sidebar-dropdown-admin">
-                <x-ui.svg.admin-settings class="h-5 w-5" />
-                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Admin</span>
-                <x-ui.svg.down-arrow class="h-3 w-3" />
-            </button>
-            <ul id="sidebar-dropdown-admin" class="hidden py-2 space-y-2 transition duration-300">
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Administration</h3>
+            <ul class="space-y-2">
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('admin.dashboard') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('admin.tenants.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Tenants</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('admin.plans.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Plans</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('admin.modules.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Modules</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('admin.coupons.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">Coupons</span>
-                    </x-dashboard.common.sidebar-link>
+                    <x-dashboard.common.sidebar-dropdown targetId="sidebar-dropdown-admin" :childLinks="[route('admin.dashboard'), route('admin.tenants.index'), route('admin.plans.index'), route('admin.modules.index'), route('admin.coupons.index')]">
+                        <x-ui.svg.admin-settings class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Admin</span>
+                        <x-slot name="dropdownContent">
+                            <ul class="space-y-1">
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('admin.dashboard') }}" class="pl-8">
+                                        <x-ui.svg.dashboard class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Dashboard</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('admin.tenants.index') }}" class="pl-8">
+                                        <x-ui.svg.company class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Tenants</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('admin.plans.index') }}" class="pl-8">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Plans</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('admin.modules.index') }}" class="pl-8">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                        </svg>
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Modules</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('admin.coupons.index') }}" class="pl-8">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                                        </svg>
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Coupons</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                            </ul>
+                        </x-slot>
+                    </x-dashboard.common.sidebar-dropdown>
                 </li>
             </ul>
-        </li>
-        @endif
+        </div>
+        @endrole
 
         {{-- Tenant Section --}}
         @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
-                <x-ui.svg.dashboard class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-
-        @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId() && \Illuminate\Support\Facades\Auth::user()->isOwnerOf(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId()))
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.show') }}">
-                    <x-ui.svg.company class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Profile</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
-        @endif
-
-        <li>
-            <button type="button"
-                class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                aria-controls="sidebar-dropdown-org" data-collapse-toggle="sidebar-dropdown-org">
-                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z" />
-                    <path
-                        d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z" />
-                    <path
-                        d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z" />
-                </svg>
-                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Organization</span>
-                <x-ui.svg.down-arrow class="h-3 w-3" />
-            </button>
-            <ul id="sidebar-dropdown-org" class="hidden py-2 space-y-2 transition duration-300">
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Main</h3>
+            <ul class="space-y-2">
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.user-companies.index') }}" class="pl-12">
-                        <span class="flex-1 ms-3 whitespace-nowrap">My Companies</span>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
+                        <x-ui.svg.dashboard class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Dashboard</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
-                @can('manage_members')
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('company-members.index') }}" class="pl-12">
-                <span class="flex-1 ms-3 whitespace-nowrap">Team Members</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @endcan
-        @can('manage_roles')
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.roles.index') }}" class="pl-12">
-                <span class="flex-1 ms-3 whitespace-nowrap">Roles & Permissions</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @endcan
+
+                @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId() && \Illuminate\Support\Facades\Auth::user()->isOwnerOf(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId()))
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.profile.show') }}">
+                        <x-ui.svg.company class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Profile</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+                @endif
+
+                <li>
+                    <x-dashboard.common.sidebar-dropdown targetId="sidebar-dropdown-org" :childLinks="[route('tenant.user-companies.index'), route('company-members.index'), route('tenant.roles.index')]">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span class="flex-1 ml-3 whitespace-nowrap">Organization</span>
+                        <x-slot name="dropdownContent">
+                            <ul class="space-y-1">
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.user-companies.index') }}" class="pl-8">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        <span class="flex-1 ml-3 whitespace-nowrap">My Companies</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                @can('manage_members')
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('company-members.index') }}" class="pl-8">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                        </svg>
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Team Members</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                @endcan
+                                @can('manage_roles')
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.roles.index') }}" class="pl-8">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                        </svg>
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Roles & Permissions</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                @endcan
+                            </ul>
+                        </x-slot>
+                    </x-dashboard.common.sidebar-dropdown>
+                </li>
             </ul>
-        </li>
+        </div>
+        @endif
 
         @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
         @canany(['view_customers', 'view_images', 'view_products'])
-        <li>
-            <button type="button"
-                class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                aria-controls="sidebar-dropdown-catalog" data-collapse-toggle="sidebar-dropdown-catalog">
-                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 000-2H8a2 2 0 012-2h2a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd" />
-                </svg>
-                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Catalog</span>
-                <x-ui.svg.down-arrow class="h-3 w-3" />
-            </button>
-            <ul id="sidebar-dropdown-catalog" class="hidden py-2 space-y-2 transition duration-300">
-                @can('view_customers')
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Catalog</h3>
+            <ul class="space-y-2">
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}" class="pl-12">
-                        <x-ui.svg.customer class="h-5 w-5" />
-                        <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
+                    <x-dashboard.common.sidebar-dropdown targetId="sidebar-dropdown-catalog" :childLinks="[route('tenant.customers.index'), route('tenant.images.index'), route('tenant.products.index')]">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <span class="flex-1 ml-3 whitespace-nowrap">Catalog</span>
+                        <x-slot name="dropdownContent">
+                            <ul class="space-y-1">
+                                @can('view_customers')
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}" class="pl-8">
+                                        <x-ui.svg.customer class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Customers</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                @endcan
+
+                                @can('view_images')
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}" class="pl-8">
+                                        <x-ui.svg.image class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Image Library</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                @endcan
+
+                                @can('view_products')
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}" class="pl-8">
+                                        <x-ui.svg.product class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Products</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                @endcan
+                            </ul>
+                        </x-slot>
+                    </x-dashboard.common.sidebar-dropdown>
+                </li>
+            </ul>
+        </div>
+        @endcanany
+        @endif
+
+        @canany(['view_quotations', 'view_challans', 'view_bills'])
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Transactions</h3>
+            <ul class="space-y-2">
+                @can('view_quotations')
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.index') }}">
+                        <x-ui.svg.qutation class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Quotations</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
                 @endcan
 
-                @can('view_images')
+                @can('view_challans')
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}" class="pl-12">
-                        <x-ui.svg.image class="h-5 w-5" />
-                        <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.challans.index') }}">
+                        <x-ui.svg.chalan class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Challans</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
                 @endcan
 
-                @can('view_products')
+                @can('view_bills')
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}" class="pl-12">
-                        <x-ui.svg.product class="h-5 w-5" />
-                        <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.bills.index') }}">
+                        <x-ui.svg.bill class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Billing</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
                 @endcan
             </ul>
-        </li>
+        </div>
         @endcanany
 
-        @can('view_quotations')
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.quotations.index') }}">
-                    <x-ui.svg.qutation class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Quotations</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
-        @endcan
-
-        @can('view_challans')
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.challans.index') }}">
-                    <x-ui.svg.chalan class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Challans</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
-        @endcan
-
-        @can('view_bills')
-            <li>
-                <x-dashboard.common.sidebar-link url="{{ route('tenant.bills.index') }}">
-                    <x-ui.svg.bill class="h-5 w-5" />
-                    <span class="flex-1 ms-3 whitespace-nowrap">Billing</span>
-                </x-dashboard.common.sidebar-link>
-            </li>
-        @endcan
-
-        {{-- @can('view_finance')
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.finance.index') }}">
-                <x-ui.svg.payment class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Finance</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @endcan --}}
-
         @canany(['view_feedback', 'create_feedback'])
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.feedback.index') }}">
-                <x-ui.svg.dashboard class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Feedback</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Support</h3>
+            <ul class="space-y-2">
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.feedback.index') }}">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <span class="flex-1 ml-3 whitespace-nowrap">Feedback</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+            </ul>
+        </div>
         @endcanany
 
         @if(\Illuminate\Support\Facades\Auth::user()->isOwnerOf(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId()))
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.subscription.index') }}">
-                <x-ui.svg.home class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Subscription</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @endif
-        @endif
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Account</h3>
+            <ul class="space-y-2">
+                <li>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.subscription.index') }}">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        <span class="flex-1 ml-3 whitespace-nowrap">Subscription</span>
+                    </x-dashboard.common.sidebar-link>
+                </li>
+            </ul>
+        </div>
         @endif
 
         {{-- Fallback for development if no roles set --}}
         @if(!\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId() && !\Illuminate\Support\Facades\Auth::user()->hasRole('super_admin'))
-        <li>
-            <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
-                <x-ui.svg.dashboard class="h-5 w-5" />
-                <span class="flex-1 ms-3 whitespace-nowrap">Dashboard</span>
-            </x-dashboard.common.sidebar-link>
-        </li>
-        @if(\Illuminate\Support\Facades\Auth::user()->subscription && \Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
-        <li>
-            <button type="button"
-                class="flex items-center w-full p-2 text-base text-gray-900 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                aria-controls="sidebar-dropdown-catalog-fallback" data-collapse-toggle="sidebar-dropdown-catalog-fallback">
-                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 000-2H8a2 2 0 012-2h2a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd" />
-                </svg>
-                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Catalog</span>
-                <x-ui.svg.down-arrow class="h-3 w-3" />
-            </button>
-            <ul id="sidebar-dropdown-catalog-fallback" class="hidden py-2 space-y-2 transition duration-300">
+        <div>
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-4">Getting Started</h3>
+            <ul class="space-y-2">
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}" class="pl-12">
-                        <x-ui.svg.customer class="h-5 w-5" />
-                        <span class="flex-1 ms-3 whitespace-nowrap">Customers</span>
+                    <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
+                        <x-ui.svg.dashboard class="h-5 w-5" />
+                        <span class="flex-1 ml-3 whitespace-nowrap">Dashboard</span>
                     </x-dashboard.common.sidebar-link>
                 </li>
+                @if(\Illuminate\Support\Facades\Auth::user()->subscription && \Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
                 <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}" class="pl-12">
-                        <x-ui.svg.image class="h-5 w-5" />
-                        <span class="flex-1 ms-3 whitespace-nowrap">Image Library</span>
-                    </x-dashboard.common.sidebar-link>
+                    <x-dashboard.common.sidebar-dropdown targetId="sidebar-dropdown-catalog-fallback" :childLinks="[route('tenant.customers.index'), route('tenant.images.index'), route('tenant.products.index')]">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <span class="flex-1 ml-3 whitespace-nowrap">Catalog</span>
+                        <x-slot name="dropdownContent">
+                            <ul class="space-y-1">
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.customers.index') }}" class="pl-8">
+                                        <x-ui.svg.customer class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Customers</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.images.index') }}" class="pl-8">
+                                        <x-ui.svg.image class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Image Library</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                                <li>
+                                    <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}" class="pl-8">
+                                        <x-ui.svg.product class="h-4 w-4" />
+                                        <span class="flex-1 ml-3 whitespace-nowrap">Products</span>
+                                    </x-dashboard.common.sidebar-link>
+                                </li>
+                            </ul>
+                        </x-slot>
+                    </x-dashboard.common.sidebar-dropdown>
                 </li>
-                <li>
-                    <x-dashboard.common.sidebar-link url="{{ route('tenant.products.index') }}" class="pl-12">
-                        <x-ui.svg.product class="h-5 w-5" />
-                        <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
-                    </x-dashboard.common.sidebar-link>
-                </li>
+                @endif
             </ul>
-        </li>
+        </div>
         @endif
-        @endif
-
-    </ul>
+    </div>
 </x-dashboard.common.sidebar-wrapper>

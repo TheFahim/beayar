@@ -19,7 +19,7 @@
     <main>
         <div>
             <x-dashboard.common.sidebar />
-            <div class="min-h-screen mt-20" :class="{ 'sm:ml-64': sidebarOpen }">
+            <div class="min-h-screen mt-20" :class="{ 'sm:ml-72': sidebarOpen }">
 
                 @if (session('success'))
                     <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" id="toast-success"
