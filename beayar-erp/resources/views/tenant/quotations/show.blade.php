@@ -393,6 +393,42 @@
                                                 </div>
                                                 @break
 
+                                            @case('style_6')
+                                                {{-- Style 6: Professional - Logo Left, Contact Details Right (No Company Name) --}}
+                                                <div class="flex justify-between items-start gap-3">
+                                                    <div class="flex gap-4 items-center">
+                                                        @if ($quotation->company && $quotation->company->logo)
+                                                            <img src="{{ asset('storage/' . $quotation->company->logo) }}"
+                                                                alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
+                                                        @else
+                                                            <div class="w-20 h-20 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">
+                                                                Logo
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="leading-tight text-right">
+                                                        @if ($quotation->company)
+                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                                {{ $quotation->company->address }}</div>
+                                                            @if ($quotation->company->email)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->email }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->phone)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->phone }}</div>
+                                                            @endif
+                                                            @if ($quotation->company->website)
+                                                                <div class="text-xs text-gray-600">
+                                                                    {{ $quotation->company->website }}</div>
+                                                            @endif
+                                                        @else
+                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                @break
+
                                             @default
                                                 {{-- Default: Style 1 --}}
                                                 <div class="flex justify-between items-start gap-3">

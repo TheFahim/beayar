@@ -141,8 +141,8 @@
                     <div id="regional-panel" class="tab-panel" role="tabpanel" aria-labelledby="regional-tab" x-cloak
                         x-show="activeTab === 'regional'">
                         <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
+                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4 rounded-t-2xl">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
@@ -364,8 +364,16 @@
 
                                             <div x-show="open && Object.keys(filteredCurrencies).length > 0"
                                                 x-ref="dropdown"
-                                                class="absolute z-20 mt-2 w-full bg-white dark:bg-gray-800 shadow-2xl max-h-60 rounded-xl py-2 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100 dark:border-gray-700"
-                                                style="display: none;">
+                                                class="fixed z-50 w-full bg-white dark:bg-gray-800 shadow-2xl max-h-60 rounded-xl py-2 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100 dark:border-gray-700"
+                                                style="display: none;"
+                                                x-init="$watch('open', () => {
+                                                    if (open) {
+                                                        const inputRect = $el.previousElementSibling.getBoundingClientRect();
+                                                        $el.style.top = (inputRect.top - 280) + 'px';
+                                                        $el.style.left = inputRect.left + 'px';
+                                                        $el.style.width = inputRect.width + 'px';
+                                                    }
+                                                })">
                                                 <template x-for="(symbol, code, index) in filteredCurrencies"
                                                     :key="code">
                                                     <div class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
@@ -403,8 +411,16 @@
                                                 </template>
                                             </div>
                                             <div x-show="open && search !== '' && Object.keys(filteredCurrencies).length === 0"
-                                                class="absolute z-20 mt-2 w-full bg-white dark:bg-gray-800 shadow-2xl rounded-xl py-4 px-4 text-sm text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700"
-                                                style="display: none;">
+                                                class="fixed z-50 w-full bg-white dark:bg-gray-800 shadow-2xl rounded-xl py-4 px-4 text-sm text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700"
+                                                style="display: none;"
+                                                x-init="$watch('open', () => {
+                                                    if (open && search !== '' && Object.keys(filteredCurrencies).length === 0) {
+                                                        const inputRect = $el.previousElementSibling.getBoundingClientRect();
+                                                        $el.style.top = (inputRect.top - 80) + 'px';
+                                                        $el.style.left = inputRect.left + 'px';
+                                                        $el.style.width = inputRect.width + 'px';
+                                                    }
+                                                })">
                                                 <div class="flex items-center space-x-2">
                                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
