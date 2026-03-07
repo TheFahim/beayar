@@ -1145,6 +1145,40 @@
                                             </div>
                                         </div>
                                     </label>
+
+                                    <!-- Style 6: Professional -->
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" name="header_style" value="style_6" {{ $headerStyle === 'style_6' ? 'checked' : '' }} class="peer sr-only">
+                                        <div
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <span
+                                                    class="text-sm font-semibold text-gray-900 dark:text-white">Professional</span>
+                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                    fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <div
+                                                class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
+                                                <div class="flex items-start gap-3">
+                                                    <div
+                                                        class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500 flex-shrink-0">
+                                                        Logo</div>
+                                                    <div class="flex-1 text-right">
+                                                        <div class="text-[10px] text-gray-500 space-y-0.5">
+                                                            <div>123 Street Address</div>
+                                                            <div>email@company.com</div>
+                                                            <div>+1 234 567 8900</div>
+                                                            <div>www.company.com</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
                                 @error('header_style')
                                     <p class="mt-4 text-sm text-red-600 dark:text-red-400 flex items-center">

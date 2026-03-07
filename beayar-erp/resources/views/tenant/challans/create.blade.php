@@ -178,15 +178,17 @@
                                         $delivered = $qp->challanProducts->sum('quantity') ?? 0;
                                         $remaining = max(0, $ordered - $delivered);
                                     @endphp
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 product-row"
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 product-row cursor-pointer"
                                         :class="items[{{ $index }}].selected ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500' : ''"
-                                        x-data="{ remaining: {{ $remaining }}, ordered: {{ $ordered }} }">
+                                        x-data="{ remaining: {{ $remaining }}, ordered: {{ $ordered }} }"
+                                        @click="toggleRowSelection({{ $index }}, ordered, remaining)">
                                         <td class="px-3 py-3">
                                             <input type="hidden" name="items[{{ $index }}][quotation_product_id]" value="{{ $qp->id }}">
                                             <div class="flex items-center">
                                                 <input type="checkbox" name="items[{{ $index }}][selected]" value="1"
                                                     x-model="items[{{ $index }}].selected"
                                                     @change="toggleItem({{ $index }}, ordered, remaining)"
+                                                    @click.stop
                                                     :disabled="remaining === 0"
                                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 transition-colors duration-200">
                                             </div>
@@ -212,6 +214,7 @@
                                                     name="items[{{ $index }}][quantity]"
                                                     x-model="items[{{ $index }}].quantity"
                                                     @input="validateQuantity({{ $index }}, remaining)"
+                                                    @click.stop
                                                     :disabled="!items[{{ $index }}].selected"
                                                     class="w-20 px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <div class="flex items-center text-xs whitespace-nowrap">
@@ -223,6 +226,7 @@
                                         <td class="px-3 py-3">
                                             <input type="text" name="items[{{ $index }}][remarks]"
                                                 x-model="items[{{ $index }}].remarks"
+                                                @click.stop
                                                 :disabled="!items[{{ $index }}].selected"
                                                 placeholder="Remarks"
                                                 class="w-48 px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -349,6 +353,13 @@
                         }
                     } else {
                         this.items[index].quantity = '';
+                    }
+                },
+
+                toggleRowSelection(index, ordered, remaining) {
+                    if (parseInt(remaining, 10) > 0) {
+                        this.items[index].selected = !this.items[index].selected;
+                        this.toggleItem(index, ordered, remaining);
                     }
                 },
 
