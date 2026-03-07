@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\Quotation;
 use App\Models\QuotationProduct;
 use App\Models\QuotationRevision;
-use App\Models\QuotationStatus;
 use App\Models\User;
 use App\Models\TenantCompany;
 use Illuminate\Database\Seeder;
@@ -34,7 +33,6 @@ class QuotationSeeder extends Seeder
         $customers = Customer::where('tenant_company_id', $company->id)->get();
         $products = Product::where('tenant_company_id', $company->id)->with('specifications')->get();
         $owner = User::find($company->owner_id);
-        $statuses = QuotationStatus::all();
         $brandOrigins = BrandOrigin::all();
 
         if ($customers->isEmpty() || $products->isEmpty() || ! $owner) {
@@ -44,13 +42,11 @@ class QuotationSeeder extends Seeder
         // Create 5 quotations per company
         for ($i = 0; $i < 5; $i++) {
             $customer = $customers->random();
-            $status = $statuses->random();
 
             $quotation = Quotation::create([
                 'tenant_company_id' => $company->id,
                 'customer_id' => $customer->id,
                 'user_id' => $owner->id,
-                'status_id' => $status->id,
                 'quotation_no' => 'QT-'.$company->id.'-'.date('Y').'-'.str_pad($i + 1, 4, '0', STR_PAD_LEFT).'-'.uniqid(),
                 'reference_no' => 'REF-'.uniqid(),
                 'po_no' => 'PO-'.uniqid(),

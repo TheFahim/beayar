@@ -38,7 +38,7 @@ Route::post('/checkout/{plan}', [CheckoutController::class, 'process'])->name('c
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+// Route::get('/#pricing', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 // Email Verification Routes
@@ -165,7 +165,6 @@ Route::group(['middleware' => ['web', 'auth', 'verified', 'onboarding.complete',
     Route::get('/quotations/exchange-rate', [QuotationController::class, 'getExchangeRate'])->name('exchange.rate');
     Route::get('/quotations/next-number', [QuotationController::class, 'getNextQuotationNo'])->name('tenant.quotations.next-number');
     Route::post('/quotations/product', [QuotationController::class, 'createProduct'])->name('tenant.quotations.create-product');
-    Route::patch('/quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])->name('tenant.quotations.status');
     Route::get('/quotations/revisions/{revision}/activate', [QuotationController::class, 'activateRevision'])->name('tenant.quotations.revisions.activate');
     Route::delete('/quotations/{quotation}/revisions/{revision}', [QuotationController::class, 'destroyRevision'])->name('tenant.quotations.revisions.destroy');
     Route::resource('quotations', QuotationController::class)->names('tenant.quotations')->middleware('ensure.operational');

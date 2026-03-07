@@ -6,7 +6,6 @@ use App\Models\Customer;
 use App\Models\Quotation;
 use App\Models\QuotationProduct;
 use App\Models\QuotationRevision;
-use App\Models\QuotationStatus;
 use App\Models\TenantCompany;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -43,20 +42,7 @@ class QuotationService
             $revisionData = $data['quotation_revision'];
             $productsData = $data['quotation_products'];
 
-            // Get default status
-            $status = QuotationStatus::forCurrentCompany()
-                ->where('is_default', true)
-                ->first();
-
-            if (! $status) {
-                // Fallback or create default
-                $status = QuotationStatus::firstOrCreate(
-                    ['name' => 'Draft', 'tenant_company_id' => Auth::user()->current_tenant_company_id],
-                    ['color' => 'gray', 'is_default' => true]
-                );
-            }
-
-            // Create parent quotation
+            // Create parent quotation (status tracking removed)
             $quotation = Quotation::create([
                 'tenant_company_id' => Auth::user()->current_tenant_company_id,
                 'user_id' => Auth::id(),
@@ -64,7 +50,6 @@ class QuotationService
                 'quotation_no' => $quotationData['quotation_no'],
                 'reference_no' => $quotationData['quotation_no'], // Sync reference_no for backward compatibility
                 'ship_to' => $quotationData['ship_to'] ?? '',
-                'status_id' => $status->id,
             ]);
 
             // Create initial revision
@@ -72,14 +57,6 @@ class QuotationService
 
             // Sync products
             $this->syncRevisionProducts($revision, $productsData);
-
-            // Update status if saved as quotation (Active)
-            if (($revisionData['saved_as'] ?? 'draft') === 'quotation') {
-                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                if ($activeStatus) {
-                    $quotation->update(['status_id' => $activeStatus->id]);
-                }
-            }
 
             return $quotation;
         });
@@ -110,14 +87,6 @@ class QuotationService
             // Sync products
             $this->syncRevisionProducts($revision, $productsData);
 
-            // Update quotation status if saved as quotation
-            if (($revisionData['saved_as'] ?? 'draft') === 'quotation') {
-                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                if ($activeStatus) {
-                    $quotation->update(['status_id' => $activeStatus->id]);
-                }
-            }
-
             return $quotation;
         });
     }
@@ -139,14 +108,6 @@ class QuotationService
 
             // Sync products
             $this->syncRevisionProducts($revision, $productsData);
-
-            // Update quotation status if saved as quotation
-            if (($revisionData['saved_as'] ?? 'draft') === 'quotation') {
-                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                if ($activeStatus) {
-                    $quotation->update(['status_id' => $activeStatus->id]);
-                }
-            }
 
             return $revision;
         });

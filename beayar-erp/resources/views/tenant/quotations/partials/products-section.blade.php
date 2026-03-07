@@ -376,10 +376,10 @@
                         <template x-if="!showAdvanced">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                 {{-- Foreign Currency Buying --}}
-                                <div class="relative">
+                                <div class="relative" x-show="quotation_revision.exchange_rate != 1">
                                     <label
                                         class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        <span x-text="getForeignCurrencyLabel()"></span>
+                                        <span x-text="`(${getForeignCurrencyLabel()}) (Purchase)`"></span>
                                     </label>
                                     <div class="relative">
                                         <input type="number" step="0.0001"
@@ -398,7 +398,7 @@
                                 <div class="relative">
                                     <label
                                         class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                                        {{ $companySettings['exchange_rate_currency'] ?? 'BDT' }} Equivalent
+                                        {{ $companySettings['exchange_rate_currency'] ?? 'BDT' }} Equivalent (Purchase)
                                     </label>
                                     <div class="relative">
                                         <input type="number" step="0.01"
@@ -442,7 +442,7 @@
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                     {{-- 1. USD (Foreign Currency) --}}
-                                    <div class="relative">
+                                    <div class="relative" x-show="quotation_revision.exchange_rate != 1">
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                                             <span x-text="getForeignCurrencyLabel()"></span>

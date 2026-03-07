@@ -16,7 +16,6 @@ class QuotationUpdateRequest extends FormRequest
         return [
             'po_no' => ['nullable', 'string', 'max:50'],
             'ship_to' => ['nullable', 'string'],
-            'status' => ['required', 'exists:quotation_statuses,id'],
         ];
     }
 }

@@ -11,7 +11,6 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Quotation;
 use App\Models\QuotationRevision;
-use App\Models\QuotationStatus;
 use App\Models\Specification;
 use App\Services\CompanySettingsService;
 use App\Services\ExchangeRateService;
@@ -301,28 +300,6 @@ class QuotationController extends Controller
     }
 
     /**
-     * Update the status of the specified quotation.
-     */
-    public function updateStatus(Request $request, Quotation $quotation)
-    {
-        $this->authorize('update', $quotation);
-
-        $validated = $request->validate([
-            'status' => 'required|string|in:in_progress,active,completed,cancelled',
-        ]);
-
-        $quotation->update([
-            'status' => $validated['status'],
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Status updated successfully!',
-            'status' => $quotation->status,
-        ]);
-    }
-
-    /**
      * Activate a specific revision.
      */
     public function activateRevision(QuotationRevision $revision)
@@ -342,12 +319,7 @@ class QuotationController extends Controller
             $revision->update(['is_active' => true]);
 
             // Update quotation status if saved as quotation
-            if (($revision->saved_as ?? 'draft') === 'quotation') {
-                $activeStatus = QuotationStatus::forCurrentCompany()->where('name', 'Active')->first();
-                if ($activeStatus) {
-                    $quotation->update(['status_id' => $activeStatus->id]);
-                }
-            }
+            // Status tracking removed - quotations no longer use status_id
         });
 
         return redirect()->route('tenant.quotations.edit', $quotation->id)

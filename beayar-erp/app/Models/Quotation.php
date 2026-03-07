@@ -48,11 +48,6 @@ class Quotation extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    public function status(): BelongsTo
-    {
-        return $this->belongsTo(QuotationStatus::class);
-    }
-
     public function revisions(): HasMany
     {
         return $this->hasMany(QuotationRevision::class);

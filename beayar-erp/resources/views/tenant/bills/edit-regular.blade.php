@@ -261,7 +261,7 @@
             this.$nextTick(() => document.getElementById('regularBillEditForm').submit());
         }
     }">
-        <form id="regularBillEditForm" action="{{ route('tenant.bills.update-regular', $bill) }}" method="POST"
+        <form id="regularBillEditForm" action="{{ route('tenant.bills.regular.update', $bill) }}" method="POST"
             @submit.prevent="clientValidateAndSubmit($event)">
             @csrf
             @method('PUT')

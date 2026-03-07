@@ -13,7 +13,6 @@ return new class extends Migration
             $table->foreignId('tenant_company_id')->constrained('tenant_companies')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained();
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('status_id')->constrained('quotation_statuses');
             $table->boolean('regular_billing_locked')->default(false);
             $table->string('reference_no');
             $table->string('quotation_no')->nullable();

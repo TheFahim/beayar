@@ -38,31 +38,12 @@ class QuotationQueryService
         // $query->where('tenant_company_id', Auth::user()->current_tenant_company_id);
 
         // Apply filters
-        $this->applyStatusFilter($query, $request->status);
         $this->applyTypeFilter($query, $request->type);
         $this->applySavedAsFilter($query, $request->saved_as);
         $this->applySearchFilter($query, $request->search);
         $this->applyDateRangeFilter($query, $request->date_from, $request->date_to);
 
         return $query->orderBy('created_at', 'desc');
-    }
-
-    /**
-     * Filter by status.
-     */
-    private function applyStatusFilter(Builder $query, ?string $status): void
-    {
-        if (! empty($status)) {
-            // beayar uses status_id, but UI might pass string 'active', 'in_progress' etc.
-            // We can join quotation_statuses table or check if input is numeric
-            if (is_numeric($status)) {
-                $query->where('status_id', $status);
-            } else {
-                $query->whereHas('status', function ($q) use ($status) {
-                    $q->where('name', $status);
-                });
-            }
-        }
     }
 
     /**

@@ -70,23 +70,6 @@
                                 value="{{ request('search') }}">
                         </div>
 
-                        <!-- Status Filter -->
-                        <div class="lg:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
-                            <select name="status" x-ref="statusSelect"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                @change="if ($event.target.value !== '') $refs.filterForm.submit()">
-                                <option value="">All Status</option>
-                                <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In
-                                    Progress</option>
-                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed
-                                </option>
-                                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                                    Cancelled</option>
-                            </select>
-                        </div>
-
                         <!-- Quotation Type Filter -->
                         <div class="lg:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quotation

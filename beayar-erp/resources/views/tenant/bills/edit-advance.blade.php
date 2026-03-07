@@ -13,7 +13,7 @@
     <form
         x-data='advanceBillsForm({ quotation: @json($quotation), activeRevision: @json($activeRevision) })'
         x-init="advancePercentage = {{ (float) ($bill->bill_percentage ?? 0) }};
-        calculatedAdvanceAmount = {{ (float) ($bill->total_amount ?? 0) }};" id="advanceBillForm" class="space-y-6" action="{{ route('tenant.bills.update-advance', $bill) }}"
+        calculatedAdvanceAmount = {{ (float) ($bill->total_amount ?? 0) }};" id="advanceBillForm" class="space-y-6" action="{{ route('tenant.bills.advance.update', $bill) }}"
         method="POST">
         @csrf
         @method('PUT')

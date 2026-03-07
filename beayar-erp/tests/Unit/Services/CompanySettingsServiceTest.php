@@ -37,16 +37,6 @@ function createCustomerForCompany(TenantCompany $company, string $customerNo = '
     ]);
 }
 
-function createDefaultStatus(TenantCompany $company): int
-{
-    return \App\Models\QuotationStatus::create([
-        'tenant_company_id' => $company->id,
-        'name' => 'Draft',
-        'color' => 'gray',
-        'is_default' => true,
-    ])->id;
-}
-
 it('generates quotation number with default format', function () {
     $service = app(CompanySettingsService::class);
     $company = createCompanyWithSettings();
@@ -93,8 +83,6 @@ it('increments sequence correctly', function () {
 
     $expectedYear = date('y');
 
-    $statusId = createDefaultStatus($company);
-
     // Create existing quotation
     Quotation::create([
         'tenant_company_id' => $company->id,
@@ -102,7 +90,6 @@ it('increments sequence correctly', function () {
         'user_id' => $company->owner_id,
         'quotation_no' => "ACME-{$expectedYear}-001",
         'reference_no' => "ACME-{$expectedYear}-001",
-        'status_id' => $statusId,
         'ship_to' => 'Test Ship To',
     ]);
 
@@ -119,8 +106,6 @@ it('handles sequence extraction when sequence is not at the end', function () {
 
     $expectedYear = date('y');
 
-    $statusId = createDefaultStatus($company);
-
     // Create existing quotation 001-26
     Quotation::create([
         'tenant_company_id' => $company->id,
@@ -128,7 +113,6 @@ it('handles sequence extraction when sequence is not at the end', function () {
         'user_id' => $company->owner_id,
         'quotation_no' => "001-{$expectedYear}",
         'reference_no' => "001-{$expectedYear}",
-        'status_id' => $statusId,
         'ship_to' => 'Test Ship To',
     ]);
 
@@ -147,8 +131,6 @@ it('handles ID and SEQUENCE correctly when ID comes first', function () {
     // We need to make sure the ID logic works.
     // The ID logic in service uses Quotation::count() + 1.
 
-    $statusId = createDefaultStatus($company);
-
     // Create existing quotation
     Quotation::create([
         'tenant_company_id' => $company->id,
@@ -156,7 +138,6 @@ it('handles ID and SEQUENCE correctly when ID comes first', function () {
         'user_id' => $company->owner_id,
         'quotation_no' => "1-001",
         'reference_no' => "1-001",
-        'status_id' => $statusId,
         'ship_to' => 'Test Ship To',
     ]);
 

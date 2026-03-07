@@ -72,7 +72,7 @@
             </button>
             
             <p class="text-sm font-light text-gray-500 dark:text-gray-400 text-center">
-                Don't have an account? <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors duration-200">Sign up</a>
+                Don't have an account? <a href="{{ url('/') }}#pricing" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors duration-200">Sign up</a>
             </p>
         </form>
     </div>
