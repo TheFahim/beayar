@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\CompanyMemberService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
@@ -146,6 +147,12 @@ class CompanyMemberController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Debug logging
+        \Log::info('CompanyMemberController::update called', [
+            'request_data' => $request->all(),
+            'member_id' => $id
+        ]);
+
         $targetUser = User::findOrFail($id);
         $user = Auth::user();
         $tenantId = Session::get('tenant_id');
@@ -190,12 +197,22 @@ class CompanyMemberController extends Controller
         // Apply field restrictions based on current user role
         $allowedFields = ['name', 'email', 'phone', 'avatar', 'password'];
 
-        if ($currentUserRole !== 'company_admin') {
-            // Non-company-admin users can edit all fields except role restrictions above
+        if ($currentUserRole === 'company_admin') {
+            // Company admin can edit all fields including role management
             $allowedFields = array_merge($allowedFields, ['roles', 'is_active', 'joined_at', 'employee_id']);
+        } else {
+            // Non-company-admin users can only edit basic fields (no role management)
+            $allowedFields = array_merge($allowedFields, ['joined_at', 'employee_id']);
         }
 
         $data = $request->only($allowedFields);
+
+        \Log::info('Data after field filtering', [
+            'allowed_fields' => $allowedFields,
+            'filtered_data' => $data,
+            'current_user_role' => $currentUserRole
+        ]);
+
         if ($request->filled('password')) {
             $data['password'] = $request->password;
         }
@@ -209,10 +226,22 @@ class CompanyMemberController extends Controller
         }
 
         try {
+            \Log::info('Calling updateMember service', [
+                'company_id' => $company->id,
+                'target_user_id' => $targetUser->id,
+                'data_to_update' => $data
+            ]);
+
             $this->memberService->updateMember($company, $targetUser, $data);
+
+            \Log::info('Update successful, redirecting with success');
 
             return redirect()->back()->with('success', 'Member details updated.');
         } catch (\Exception $e) {
+            \Log::error('Update failed with exception', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString()
+            ]);
             return redirect()->back()->withErrors($e->getMessage());
         }
     }
