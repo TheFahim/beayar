@@ -127,24 +127,14 @@
                             $savedAsClass = $savedAs === 'quotation'
                                 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
                                 : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
-
-                            // Determine workflow status color if available
-                            $statusColor = $quotation->status->color ?? 'gray';
-                            $textColorClass = 'text-' . $statusColor . '-400';
                         @endphp
                         <div class="flex justify-between items-center">
                             <span class="text-xs text-slate-300">{{ $quotation->reference_no }}</span>
                             <div class="flex items-center gap-1">
-                                <!-- Saved As Status (Primary) -->
+                                <!-- Saved As Status -->
                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $savedAsClass }}">
                                     {{ ucfirst($savedAs) }}
                                 </span>
-                                <!-- Workflow Status (Secondary) -->
-                                @if($quotation->status)
-                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                                        {{ $quotation->status->name }}
-                                    </span>
-                                @endif
                             </div>
                         </div>
                     @empty

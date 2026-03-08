@@ -156,7 +156,7 @@ class DashboardController extends Controller
         }
 
         // 9. Recent Quotations
-        $recentQuotations = Quotation::with('status')
+        $recentQuotations = Quotation::with('revisions')
             ->where('tenant_company_id', $tenantId)
             ->latest()
             ->take(3)
