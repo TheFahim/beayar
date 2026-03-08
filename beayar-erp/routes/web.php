@@ -19,6 +19,7 @@ use App\Http\Controllers\Tenant\FeedbackController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\QuotationController;
 use App\Http\Controllers\Tenant\ReceivedBillController;
+use App\Http\Controllers\Tenant\TaskCalendarController;
 use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -178,6 +179,13 @@ Route::group(['middleware' => ['web', 'auth', 'verified', 'onboarding.complete',
     // Challan Routes
     Route::get('/challans/products', [ChallanController::class, 'getProductsByChallanIds'])->name('tenant.challans.products');
     Route::resource('challans', ChallanController::class)->names('tenant.challans');
+
+    // Task Calendar Routes
+    Route::get('/tasks/calendar', [TaskCalendarController::class, 'index'])->name('tenant.tasks.index');
+    Route::get('/tasks/data', [TaskCalendarController::class, 'getTasks'])->name('tenant.tasks.data');
+    Route::post('/tasks', [TaskCalendarController::class, 'store'])->name('tenant.tasks.store');
+    Route::put('/tasks/{task}', [TaskCalendarController::class, 'update'])->name('tenant.tasks.update');
+    Route::delete('/tasks/{task}', [TaskCalendarController::class, 'destroy'])->name('tenant.tasks.destroy');
 });
 
 // Admin Auth Routes
