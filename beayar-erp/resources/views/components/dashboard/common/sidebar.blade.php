@@ -60,7 +60,6 @@
         {{-- Tenant Section --}}
         @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
         <div>
-            <h3 class="text-xs font-semibold text-gray-800 dark:text-slate-500 uppercase tracking-wider mb-3 px-4">Main</h3>
             <ul class="space-y-2">
                 <li>
                     <x-dashboard.common.sidebar-link url="{{ route('tenant.dashboard') }}">
@@ -125,7 +124,6 @@
         @if(\Illuminate\Support\Facades\Auth::user()->getCurrentCompanyId())
         @canany(['view_customers', 'view_images', 'view_products'])
         <div>
-            <h3 class="text-xs font-semibold text-gray-800 dark:text-slate-500 uppercase tracking-wider mb-3 px-4">Catalog</h3>
             <ul class="space-y-2">
                 <li>
                     <x-dashboard.common.sidebar-dropdown targetId="sidebar-dropdown-catalog" :childLinks="[route('tenant.customers.index'), route('tenant.images.index'), route('tenant.products.index')]">
@@ -172,7 +170,6 @@
 
         @canany(['view_quotations', 'view_challans', 'view_bills'])
         <div>
-            <h3 class="text-xs font-semibold text-gray-800 dark:text-slate-500 uppercase tracking-wider mb-3 px-4">Transactions</h3>
             <ul class="space-y-2">
                 @can('view_quotations')
                 <li>

@@ -142,7 +142,7 @@
                         x-show="activeTab === 'regional'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
-                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4 rounded-t-2xl">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 rounded-t-2xl">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
@@ -749,9 +749,9 @@
                                             Number Format Pattern <span class="text-red-500 ml-1">*</span>
                                         </label>
                                         <input type="text" name="quotation_number_format" id="quotation_number_format"
-                                            value="{{ old('quotation_number_format', $settings['quotation_number_format']) }}"
+                                            value="{{ old('quotation_number_format', preg_replace('/[{}]/', '', $settings['quotation_number_format'] ?? '')) }}"
                                             class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono transition-all duration-200 hover:border-gray-300"
-                                            placeholder="{CUSTOMER_NO}-{YY}-{SEQUENCE}" maxlength="100" required
+                                            placeholder="CUSTOMER_NO-YY-SEQUENCE" maxlength="100" required
                                             oninput="updatePreview()">
                                         @error('quotation_number_format')
                                             <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
@@ -767,58 +767,63 @@
 
                                     <!-- Available Tags -->
                                     <div
-                                        class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+                                        class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
                                         <h3
-                                            class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
+                                            class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4 flex items-center">
                                             <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
                                                 </path>
                                             </svg>
                                             Available Tags
                                         </h3>
-                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{CUSTOMER_NO}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{CUSTOMER_NO}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Customer code</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{SEQUENCE}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{SEQUENCE}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Auto-increment</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{PREFIX}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{PREFIX}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Your prefix</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{YYYY}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{YYYY}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Full year</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{YY}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{YY}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Short year</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{MM}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{MM}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Month</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{DD}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{DD}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Day</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <button type="button" data-tag="{ID}"
-                                                    class="bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 font-mono text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md">{ID}</button>
-                                                <span class="text-gray-600 dark:text-gray-400">Total count</span>
-                                            </div>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button type="button" data-tag="CUSTOMER_NO"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">CUSTOMER_NO</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Customer code</span>
+                                            </button>
+                                            <button type="button" data-tag="SEQUENCE"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">SEQUENCE</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Auto-increment</span>
+                                            </button>
+                                            <button type="button" data-tag="PREFIX"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">PREFIX</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Your prefix</span>
+                                            </button>
+                                            <button type="button" data-tag="YYYY"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">YYYY</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Full year</span>
+                                            </button>
+                                            <button type="button" data-tag="YY"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">YY</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Short year</span>
+                                            </button>
+                                            <button type="button" data-tag="MM"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">MM</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Month</span>
+                                            </button>
+                                            <button type="button" data-tag="DD"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">DD</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Day</span>
+                                            </button>
+                                            <button type="button" data-tag="ID"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">ID</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Total count</span>
+                                            </button>
+                                            <button type="button" data-tag="-"
+                                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150">
+                                                <span class="font-mono text-indigo-600 dark:text-indigo-400">-</span>
+                                                <span class="ml-1.5 text-gray-500 dark:text-gray-400">• Separator</span>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -861,7 +866,7 @@
                         x-show="activeTab === 'vat'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                            <div class="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-3">
                                         <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -993,7 +998,7 @@
                         x-show="activeTab === 'pdf'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                            <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
@@ -1215,7 +1220,7 @@
                         x-cloak x-show="activeTab === 'authorization'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                            <div class="bg-gradient-to-r from-indigo-500 to-blue-600 px-6 py-4">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
@@ -1910,14 +1915,14 @@
             const now = new Date();
 
             let preview = format
-                .replace(/{PREFIX}/g, prefix)
-                .replace(/{CUSTOMER_NO}/g, 'ACME')
-                .replace(/{YYYY}/g, now.getFullYear())
-                .replace(/{YY}/g, String(now.getFullYear()).slice(-2))
-                .replace(/{MM}/g, String(now.getMonth() + 1).padStart(2, '0'))
-                .replace(/{DD}/g, String(now.getDate()).padStart(2, '0'))
-                .replace(/{SEQUENCE}/g, '001')
-                .replace(/{ID}/g, '42');
+                .replace(/PREFIX/g, prefix)
+                .replace(/CUSTOMER_NO/g, 'ACME')
+                .replace(/YYYY/g, now.getFullYear())
+                .replace(/YY/g, String(now.getFullYear()).slice(-2))
+                .replace(/MM/g, String(now.getMonth() + 1).padStart(2, '0'))
+                .replace(/DD/g, String(now.getDate()).padStart(2, '0'))
+                .replace(/SEQUENCE/g, '001')
+                .replace(/ID/g, '42');
 
             document.getElementById('format-preview').textContent = preview || '—';
         }
@@ -1928,6 +1933,8 @@
             const start = input.selectionStart ?? input.value.length;
             const end = input.selectionEnd ?? input.value.length;
             const value = input.value;
+
+            // Insert tag without curly braces
             input.value = value.slice(0, start) + tag + value.slice(end);
             const cursor = start + tag.length;
             input.setSelectionRange(cursor, cursor);

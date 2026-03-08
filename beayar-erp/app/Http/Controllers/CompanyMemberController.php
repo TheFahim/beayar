@@ -100,6 +100,8 @@ class CompanyMemberController extends Controller
             'password' => 'nullable|string|min:8',
             'employee_id' => 'nullable|string|max:255',
             'avatar' => 'nullable|image|max:2048',
+            'is_active' => 'required|boolean',
+            'joined_at' => 'nullable|date',
         ]);
 
         $user = Auth::user();
@@ -117,6 +119,12 @@ class CompanyMemberController extends Controller
         $extraData = [];
         if ($request->filled('employee_id')) {
             $extraData['employee_id'] = $request->employee_id;
+        }
+        if ($request->filled('is_active')) {
+            $extraData['is_active'] = $request->boolean('is_active');
+        }
+        if ($request->filled('joined_at')) {
+            $extraData['joined_at'] = $request->joined_at;
         }
         if ($request->hasFile('avatar')) {
             $extraData['avatar'] = $request->file('avatar')->store('avatars', 'public');

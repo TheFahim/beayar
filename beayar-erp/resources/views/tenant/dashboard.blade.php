@@ -1,6 +1,6 @@
 @use('Illuminate\Support\Number')
 <x-dashboard.layout.default title="Dashboard">
-    <div style="background: linear-gradient(145deg, #111827 0%, #0d1526 100%);" class="p-5 rounded-xl shadow-lg">
+    <div class="p-5 rounded-xl shadow-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-900 dark:to-slate-800">
         <!-- Stats row -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-4">
             <!-- Revenue -->
@@ -19,15 +19,15 @@
             </div> --}}
 
             <!-- Invoices -->
-            <div class="rounded-xl p-3" style="background:rgba(20,184,166,0.1); border:1px solid rgba(20,184,166,0.2);">
-                <div class="text-xs text-teal-300 mb-1">Invoices</div>
-                <div class="text-lg font-display font-bold text-white">{{ Number::format($currentInvoices) }}</div>
+            <div class="rounded-xl p-3 bg-teal-50/50 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800">
+                <div class="text-xs text-teal-700 dark:text-teal-300 mb-1">Invoices</div>
+                <div class="text-lg font-display font-bold text-gray-900 dark:text-white">{{ Number::format($currentInvoices) }}</div>
                 @if($invoicesTrend['direction'] === 'up')
-                    <div class="text-xs text-green-400 mt-1">▲ {{ $invoicesTrend['value'] }}%</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">▲ {{ $invoicesTrend['value'] }}%</div>
                 @elseif($invoicesTrend['direction'] === 'down')
-                    <div class="text-xs text-red-400 mt-1">▼ {{ $invoicesTrend['value'] }}%</div>
+                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">▼ {{ $invoicesTrend['value'] }}%</div>
                 @else
-                    <div class="text-xs text-gray-400 mt-1">- {{ $invoicesTrend['value'] }}%</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">- {{ $invoicesTrend['value'] }}%</div>
                 @endif
             </div>
 
@@ -60,35 +60,35 @@
             </div> --}}
 
             <!-- Teams -->
-            <div class="rounded-xl p-3" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2);">
-                <div class="text-xs text-purple-300 mb-1">Teams</div>
-                <div class="text-lg font-display font-bold text-white">{{ Number::format($activeTeams) }}</div>
-                <div class="text-xs text-slate-400 mt-1">Active</div>
+            <div class="rounded-xl p-3 bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800">
+                <div class="text-xs text-purple-700 dark:text-purple-300 mb-1">Teams</div>
+                <div class="text-lg font-display font-bold text-gray-900 dark:text-white">{{ Number::format($activeTeams) }}</div>
+                <div class="text-xs text-slate-600 dark:text-slate-400 mt-1">Active</div>
             </div>
 
             <!-- Quotations -->
-            <div class="rounded-xl p-3" style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2);">
-                <div class="text-xs text-green-300 mb-1">Quotations</div>
-                <div class="text-lg font-display font-bold text-white">{{ Number::format($currentQuotations) }}</div>
+            <div class="rounded-xl p-3 bg-green-50/50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+                <div class="text-xs text-green-700 dark:text-green-300 mb-1">Quotations</div>
+                <div class="text-lg font-display font-bold text-gray-900 dark:text-white">{{ Number::format($currentQuotations) }}</div>
                 @if($quotationsTrend['direction'] === 'up')
-                    <div class="text-xs text-green-400 mt-1">▲ {{ $quotationsTrend['value'] }}%</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">▲ {{ $quotationsTrend['value'] }}%</div>
                 @elseif($quotationsTrend['direction'] === 'down')
-                    <div class="text-xs text-red-400 mt-1">▼ {{ $quotationsTrend['value'] }}%</div>
+                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">▼ {{ $quotationsTrend['value'] }}%</div>
                 @else
-                    <div class="text-xs text-gray-400 mt-1">- {{ $quotationsTrend['value'] }}%</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">- {{ $quotationsTrend['value'] }}%</div>
                 @endif
             </div>
 
             <!-- Challans from Quotations -->
-            <div class="rounded-xl p-3" style="background:rgba(251,146,60,0.1); border:1px solid rgba(251,146,60,0.2);">
-                <div class="text-xs text-orange-300 mb-1">Challans</div>
-                <div class="text-lg font-display font-bold text-white">{{ Number::format($currentChallans) }}</div>
+            <div class="rounded-xl p-3 bg-orange-50/50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800">
+                <div class="text-xs text-orange-700 dark:text-orange-300 mb-1">Challans</div>
+                <div class="text-lg font-display font-bold text-gray-900 dark:text-white">{{ Number::format($currentChallans) }}</div>
                 @if($challansTrend['direction'] === 'up')
-                    <div class="text-xs text-green-400 mt-1">▲ {{ $challansTrend['value'] }}%</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">▲ {{ $challansTrend['value'] }}%</div>
                 @elseif($challansTrend['direction'] === 'down')
-                    <div class="text-xs text-red-400 mt-1">▼ {{ $challansTrend['value'] }}%</div>
+                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">▼ {{ $challansTrend['value'] }}%</div>
                 @else
-                    <div class="text-xs text-gray-400 mt-1">- {{ $challansTrend['value'] }}%</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">- {{ $challansTrend['value'] }}%</div>
                 @endif
             </div>
 
@@ -115,8 +115,8 @@
         <!-- Bottom rows -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <!-- Recent Quotations -->
-            <div class="rounded-xl p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);">
-                <div class="text-xs text-slate-500 mb-2">Recent Quotations</div>
+            <div class="rounded-xl p-3 bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Recent Quotations</div>
                 <div class="space-y-1.5">
                     @forelse($recentQuotations as $quotation)
                         @php
@@ -125,11 +125,11 @@
 
                             // Determine saved_as styling
                             $savedAsClass = $savedAs === 'quotation'
-                                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
-                                : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
+                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200';
                         @endphp
                         <div class="flex justify-between items-center">
-                            <span class="text-xs text-slate-300">{{ $quotation->reference_no }}</span>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">{{ $quotation->reference_no }}</span>
                             <div class="flex items-center gap-1">
                                 <!-- Saved As Status -->
                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $savedAsClass }}">
@@ -138,7 +138,7 @@
                             </div>
                         </div>
                     @empty
-                        <div class="text-xs text-slate-500 text-center py-2">No recent quotations</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 text-center py-2">No recent quotations</div>
                     @endforelse
                 </div>
             </div>

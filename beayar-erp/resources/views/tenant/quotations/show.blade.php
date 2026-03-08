@@ -1,6 +1,6 @@
 <x-dashboard.layout.default :title="($activeRevision->revision_no !== 'R00' ? 'Revised ' : '') . 'Commercial Quotation - ' . $quotation->quotation_no">
     @php
-        $companySettings = $quotation->company ? $quotation->company->settings : null;
+        $companySettings = $quotation->company ? $quotation->company->getSettings() : [];
         $baseCurrency = isset($companySettings['exchange_rate_currency'])
             ? $companySettings['exchange_rate_currency']
             : 'BDT';
@@ -22,11 +22,41 @@
                 display: none;
             }
 
+            /* Dark mode transitions */
+            * {
+                transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            }
+
             @media print {
                 body {
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                     margin: 0;
+                }
+
+                /* Force light mode for printing */
+                body, #q-invoice, .bg-gray-800, .dark\\:bg-gray-800 {
+                    background: white !important;
+                    color: black !important;
+                }
+
+                /* Override dark mode colors for print */
+                .dark\\:text-gray-100, .dark\\:text-gray-200, .dark\\:text-gray-300,
+                .dark\\:text-gray-400, .dark\\:text-gray-500, .dark\\:text-gray-600,
+                .dark\\:text-gray-700, .dark\\:text-gray-800, .dark\\:text-gray-900 {
+                    color: black !important;
+                }
+
+                .dark\\:border-gray-600, .dark\\:border-gray-700 {
+                    border-color: #d1d5db !important;
+                }
+
+                .dark\\:bg-gray-700, .dark\\:bg-gray-900 {
+                    background: #f9fafb !important;
+                }
+
+                .dark\\:bg-blue-900 {
+                    background: #1e40af !important;
                 }
 
                 @page {
@@ -185,13 +215,13 @@
             <x-dashboard.ui.bread-crumb-list name="Quotation" />
         </x-dashboard.ui.bread-crumb>
 
-        <div class="p-8 bg-gray-50 min-h-screen font-sans">
+        <div class="p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-200">
             <div class="max-w-4xl mx-auto">
                 {{-- Action Buttons --}}
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex gap-3">
                         <button id="printBtn" type="button"
-                            class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-4 py-2 text-sm">
+                            class="inline-flex items-center text-white bg-blue-700 dark:bg-blue-600 hover:bg-blue-800 dark:hover:bg-blue-700 rounded-lg px-4 py-2 text-sm transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
@@ -200,7 +230,7 @@
                             Print
                         </button>
                         <button id="downloadExcelBtn" type="button"
-                            class="inline-flex items-center text-white bg-green-600 hover:bg-green-700 rounded-lg px-4 py-2 text-sm transition-colors duration-200">
+                            class="inline-flex items-center text-white bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 rounded-lg px-4 py-2 text-sm transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -210,20 +240,20 @@
                         </button>
                         <button @click="isTechnical = !isTechnical" type="button"
                             class="inline-flex items-center text-white rounded-lg px-4 py-2 text-sm transition-colors duration-200"
-                            :class="isTechnical ? 'bg-gray-600 hover:bg-gray-700' : 'bg-indigo-600 hover:bg-indigo-700'">
+                            :class="isTechnical ? 'bg-gray-600 dark:bg-gray-700 hover:bg-gray-700 dark:hover:bg-gray-600' : 'bg-indigo-600 dark:bg-indigo-700 hover:bg-indigo-700 dark:hover:bg-indigo-600'">
                             <span x-text="isTechnical ? 'Show Commercial' : 'Technical'">Technical</span>
                         </button>
 
                     </div>
 
-                    <div class="text-sm text-gray-600">Created:
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Created:
                         <strong>{{ $activeRevision->created_at->format('d M, Y') }}</strong>
                     </div>
                 </div>
 
                 {{-- Invoice card (this will be printed) --}}
                 <div id="q-invoice"
-                    class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg text-gray-900">
+                    class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg text-gray-900 dark:text-gray-100 transition-colors duration-200">
                     <div class="print-watermark hidden"></div>
 
                     <div class="px-6 py-6">
@@ -241,32 +271,32 @@
                                                             <img src="{{ asset('storage/' . $quotation->company->logo) }}"
                                                                 alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
                                                         @else
-                                                            <div class="text-lg font-bold text-gray-800">
+                                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-200">
                                                                 {{ $quotation->company->name ?? 'Company' }}</div>
                                                         @endif
                                                     </div>
                                                     <div class="leading-tight text-right">
                                                         @if ($quotation->company)
                                                             @if ($quotation->company->logo)
-                                                                <div class="text-sm font-bold text-gray-800">
+                                                                <div class="text-sm font-bold text-gray-800 dark:text-white">
                                                                     {{ $quotation->company->name }}</div>
                                                             @endif
-                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-line">
                                                                 {{ $quotation->company->address }}</div>
                                                             @if ($quotation->company->email)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->email }}</div>
                                                             @endif
                                                             @if ($quotation->company->phone)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->phone }}</div>
                                                             @endif
                                                             @if ($quotation->company->bin_no)
-                                                                <div class="text-xs text-gray-600">BIN:
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">BIN:
                                                                     {{ $quotation->company->bin_no }}</div>
                                                             @endif
                                                         @else
-                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200">Company Information Unavailable</div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -277,24 +307,24 @@
                                                 <div class="flex justify-between items-start gap-3">
                                                     <div class="leading-tight text-left">
                                                         @if ($quotation->company)
-                                                            <div class="text-sm font-bold text-gray-800">
+                                                            <div class="text-sm font-bold text-gray-800 dark:text-white">
                                                                 {{ $quotation->company->name }}</div>
-                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-line">
                                                                 {{ $quotation->company->address }}</div>
                                                             @if ($quotation->company->email)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->email }}</div>
                                                             @endif
                                                             @if ($quotation->company->phone)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->phone }}</div>
                                                             @endif
                                                             @if ($quotation->company->bin_no)
-                                                                <div class="text-xs text-gray-600">BIN:
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">BIN:
                                                                     {{ $quotation->company->bin_no }}</div>
                                                             @endif
                                                         @else
-                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200">Company Information Unavailable</div>
                                                         @endif
                                                     </div>
                                                     <div class="flex gap-4 items-center">
@@ -302,7 +332,7 @@
                                                             <img src="{{ asset('storage/' . $quotation->company->logo) }}"
                                                                 alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
                                                         @else
-                                                            <div class="text-lg font-bold text-gray-800">
+                                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-200">
                                                                 {{ $quotation->company->name ?? 'Company' }}</div>
                                                         @endif
                                                     </div>
@@ -317,9 +347,9 @@
                                                             alt="{{ $quotation->company->name }}" class="h-16 w-auto mx-auto mb-2" />
                                                     @endif
                                                     @if ($quotation->company)
-                                                        <div class="text-base font-bold text-gray-800">
+                                                        <div class="text-base font-bold text-gray-800 dark:text-white">
                                                             {{ $quotation->company->name }}</div>
-                                                        <div class="text-xs text-gray-600 mt-1">
+                                                        <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
                                                             @if($quotation->company->address)
                                                                 <span>{{ $quotation->company->address }}</span>
                                                             @endif
@@ -339,7 +369,7 @@
                                                             @endif
                                                         </div>
                                                     @else
-                                                        <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">Company Information Unavailable</div>
                                                     @endif
                                                 </div>
                                                 @break
@@ -347,7 +377,7 @@
                                             @case('style_4')
                                                 {{-- Style 4: Corporate Bar --}}
                                                 <div>
-                                                    <div class="bg-blue-800 px-4 py-3 flex items-center gap-4 -mx-6 -mt-6 mb-3" style="width: calc(100% + 48px);">
+                                                    <div class="bg-blue-800 dark:bg-blue-900 px-4 py-3 flex items-center gap-4 -mx-6 -mt-6 mb-3" style="width: calc(100% + 48px);">
                                                         @if ($quotation->company && $quotation->company->logo)
                                                             <img src="{{ asset('storage/' . $quotation->company->logo) }}"
                                                                 alt="{{ $quotation->company->name }}" class="h-10 w-auto brightness-0 invert" />
@@ -358,7 +388,7 @@
                                                             </div>
                                                         @endif
                                                     </div>
-                                                    <div class="text-center text-xs text-gray-600 mt-2">
+                                                    <div class="text-center text-xs text-gray-600 dark:text-gray-400 mt-2">
                                                         @if ($quotation->company)
                                                             @if($quotation->company->address)
                                                                 <span>{{ $quotation->company->address }}</span>
@@ -387,7 +417,7 @@
                                                         <img src="{{ asset('storage/' . $quotation->company->logo) }}"
                                                             alt="{{ $quotation->company->name }}" class="h-16 w-auto" />
                                                     @else
-                                                        <div class="text-xl font-bold text-gray-800">
+                                                        <div class="text-xl font-bold text-gray-800 dark:text-white">
                                                             {{ $quotation->company->name ?? 'Company' }}</div>
                                                     @endif
                                                 </div>
@@ -401,29 +431,29 @@
                                                             <img src="{{ asset('storage/' . $quotation->company->logo) }}"
                                                                 alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
                                                         @else
-                                                            <div class="w-20 h-20 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">
+                                                            <div class="w-20 h-20 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
                                                                 Logo
                                                             </div>
                                                         @endif
                                                     </div>
                                                     <div class="leading-tight text-right">
                                                         @if ($quotation->company)
-                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-line">
                                                                 {{ $quotation->company->address }}</div>
                                                             @if ($quotation->company->email)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->email }}</div>
                                                             @endif
                                                             @if ($quotation->company->phone)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->phone }}</div>
                                                             @endif
                                                             @if ($quotation->company->website)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->website }}</div>
                                                             @endif
                                                         @else
-                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200">Company Information Unavailable</div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -437,32 +467,32 @@
                                                             <img src="{{ asset('storage/' . $quotation->company->logo) }}"
                                                                 alt="{{ $quotation->company->name }}" class="h-20 w-auto" />
                                                         @else
-                                                            <div class="text-lg font-bold text-gray-800">
+                                                            <div class="text-lg font-bold text-gray-800 dark:text-white">
                                                                 {{ $quotation->company->name ?? 'Company' }}</div>
                                                         @endif
                                                     </div>
                                                     <div class="leading-tight text-right">
                                                         @if ($quotation->company)
                                                             @if ($quotation->company->logo)
-                                                                <div class="text-sm font-bold text-gray-800">
+                                                                <div class="text-sm font-bold text-gray-800 dark:text-white">
                                                                     {{ $quotation->company->name }}</div>
                                                             @endif
-                                                            <div class="text-xs text-gray-600 whitespace-pre-line">
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-line">
                                                                 {{ $quotation->company->address }}</div>
                                                             @if ($quotation->company->email)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->email }}</div>
                                                             @endif
                                                             @if ($quotation->company->phone)
-                                                                <div class="text-xs text-gray-600">
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">
                                                                     {{ $quotation->company->phone }}</div>
                                                             @endif
                                                             @if ($quotation->company->bin_no)
-                                                                <div class="text-xs text-gray-600">BIN:
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200">BIN:
                                                                     {{ $quotation->company->bin_no }}</div>
                                                             @endif
                                                         @else
-                                                            <div class="text-xs text-gray-600">Company Information Unavailable</div>
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200">Company Information Unavailable</div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -476,80 +506,80 @@
                                         {{-- Info grid --}}
                                         <div class="grid grid-cols-3 gap-3 mt-4">
                                             <div
-                                                class="border col-span-2 border-gray-200 rounded-lg p-4 bg-gray-50 grid grid-cols-2">
+                                                class="border col-span-2 border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 grid grid-cols-2 transition-colors duration-200">
                                                 <div>
                                                     <span
-                                                        class="block text-xs text-gray-600 font-semibold uppercase">Bill
+                                                        class="block text-xs text-gray-800 dark:text-gray-200 font-semibold uppercase">Bill
                                                         To</span>
                                                     <div class="mt-1.5">
-                                                        <div class="text-xs font-semibold text-gray-900">
+                                                        <div class="text-xs font-semibold text-gray-900 dark:text-white">
                                                             {{ $quotation->customer->customer_name }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->designation }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->department }}</div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->company->name }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->address }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->phone ? 'Cell: ' . $quotation->customer->phone : 'N/A' }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->email }}</div>
                                                         @if ($quotation->customer->attention)
-                                                            <div class="text-xs text-gray-600 mt-2 font-semibold">
+                                                            <div class="text-xs text-gray-800 dark:text-gray-200 mt-2 font-semibold">
                                                                 Attention:
                                                                 {{ $quotation->customer->attention }}</div>
                                                         @endif
-                                                        <div class="text-xs text-gray-600 mt-2 whitespace-pre-line">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200 mt-2 whitespace-pre-line">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div>
                                                     <span
-                                                        class="block text-xs text-gray-600 font-semibold uppercase">Ship
+                                                        class="block text-xs text-gray-800 dark:text-gray-200 font-semibold uppercase">Ship
                                                         To</span>
                                                     <div class="mt-1.5">
-                                                        <div class="text-xs text-gray-600">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">
                                                             {{ $quotation->customer->company->name }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600">{{ $quotation->ship_to }}
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200">{{ $quotation->ship_to }}
                                                         </div>
-                                                        <div class="text-xs text-gray-600 mt-2 whitespace-pre-line">
+                                                        <div class="text-xs text-gray-800 dark:text-gray-200 mt-2 whitespace-pre-line">
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 transition-colors duration-200">
                                                 <div class="flex justify-between items-center mb-4">
                                                     @php
                                                         $titlePrefix =
                                                             $activeRevision->revision_no !== 'R00' ? 'REVISED ' : '';
                                                     @endphp
-                                                    <div class="text-xs text-gray-700 font-bold"
+                                                    <div class="text-xs text-gray-800 dark:text-gray-200 font-bold"
                                                         x-text="isTechnical ? '{{ $titlePrefix }}TECHNICAL QUOTATION' : '{{ $titlePrefix }}COMMERCIAL QUOTATION'">
                                                         {{ $titlePrefix }}COMMERCIAL QUOTATION</div>
                                                     <div>
                                                         <span
-                                                            class="inline-block px-1 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-md whitespace-nowrap">
+                                                            class="inline-block px-1 py-1.5 bg-blue-500 dark:bg-blue-600 text-white text-xs font-bold rounded-md whitespace-nowrap transition-colors duration-200">
                                                             {{ $quotation->quotation_no }}{{ $activeRevision->revision_no == 'R00' ? '' : ' (' . $activeRevision->revision_no . ')' }}
                                                         </span>
                                                     </div>
                                                 </div>
 
                                                 <div class="grid grid-cols-2 gap-2 text-sm">
-                                                    <div class="text-gray-600">Date</div>
+                                                    <div class="text-gray-900 dark:text-gray-100">Date</div>
                                                     <div class="text-right font-semibold">
                                                         {{ $activeRevision->date->format('d/m/Y') }}
                                                     </div>
 
-                                                    <div class="text-gray-600">Validity</div>
+                                                    <div class="text-gray-900 dark:text-gray-100">Validity</div>
                                                     <div class="flex justify-end text-right">
-                                                        <div class="text-xs text-gray-500 whitespace-nowrap">
+                                                        <div class="text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                                             ({{ $activeRevision->date->diffInDays(\Carbon\Carbon::parse($activeRevision->validity)) }}
                                                             days)
                                                         </div>
@@ -564,32 +594,32 @@
                                         {{-- Items table --}}
                                         <section class="mt-6">
                                             <div class="overflow-x-auto">
-                                                <table class="w-full border-collapse border border-gray-300 text-xs">
+                                                <table class="w-full border-collapse border border-gray-300 dark:border-gray-600 text-xs">
                                                     <thead
-                                                        class="bg-blue-800 text-white uppercase font-bold text-[11px]">
+                                                        class="bg-blue-800 dark:bg-blue-900 text-white uppercase font-bold text-[11px]">
                                                         <tr>
                                                             {{-- <th class="w-10 text-center p-2 border border-gray-300">SL</th> --}}
                                                             <th
-                                                                class="w-[150px] text-center p-2 border border-gray-300">
+                                                                class="w-[150px] text-center p-2 border border-gray-300 dark:border-gray-600">
                                                                 Item Name</th>
-                                                            <th class="text-center p-2 border border-gray-300 w-1/4">
+                                                            <th class="text-center p-2 border border-gray-300 dark:border-gray-600 w-1/4">
                                                                 Specification</th>
                                                             <th
-                                                                class=" w-[40px] text-center p-2 border border-gray-300">
+                                                                class=" w-[40px] text-center p-2 border border-gray-300 dark:border-gray-600">
                                                                 Qty</th>
                                                             <th
-                                                                class=" w-[40px] text-center p-2 border border-gray-300">
+                                                                class=" w-[40px] text-center p-2 border border-gray-300 dark:border-gray-600">
                                                                 Unit</th>
                                                             <th
-                                                                class=" w-[40px] text-center p-2 border border-gray-300">
+                                                                class=" w-[40px] text-center p-2 border border-gray-300 dark:border-gray-600">
                                                                 Delivery</th>
                                                             <th
-                                                                class=" w-[40px] text-center p-2 border border-gray-300">
+                                                                class=" w-[40px] text-center p-2 border border-gray-300 dark:border-gray-600">
                                                                 Sample Photo
                                                             </th>
-                                                            <th class=" w-[70px] text-center p-2 border border-gray-300"
+                                                            <th class=" w-[70px] text-center p-2 border border-gray-300 dark:border-gray-600"
                                                                 x-show="!isTechnical">Unit Price</th>
-                                                            <th class=" w-[60px] text-center p-2 border border-gray-300"
+                                                            <th class=" w-[60px] text-center p-2 border border-gray-300 dark:border-gray-600"
                                                                 x-show="!isTechnical">Total</th>
                                                         </tr>
                                                     </thead>
@@ -657,7 +687,7 @@
                                                                 }
                                                             @endphp
                                                             <tr>
-                                                                <td class="text-center border border-gray-300">
+                                                                <td class="text-center border border-gray-300 dark:border-gray-600">
                                                                     <div>
                                                                         <strong>Name: </strong>
                                                                         {{ $quotationProduct->product->name }}
@@ -678,7 +708,7 @@
 
                                                                 </td>
                                                                 @if (!$skipSpec)
-                                                                    <td class="align-middle text-center border border-gray-300 w-1/4"
+                                                                    <td class="align-middle text-center border border-gray-300 dark:border-gray-600 w-1/4 text-gray-800 dark:text-gray-200"
                                                                         rowspan="{{ $rowspan }}">
                                                                         {!! $quotationProduct->specification->description !!}
                                                                         @if ($quotationProduct->brandOrigin->name ?? false)
@@ -695,14 +725,14 @@
                                                                         @endif
                                                                     </td>
                                                                 @endif
-                                                                <td class="text-center border border-gray-300">
+                                                                <td class="text-center border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
                                                                     {{ $quotationProduct->quantity }}</td>
-                                                                <td class="text-center border border-gray-300">
+                                                                <td class="text-center border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
                                                                     {{ $quotationProduct->unit }}</td>
-                                                                <td class="text-center border border-gray-300">
+                                                                <td class="text-center border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
                                                                     {{ $quotationProduct->delivery_time }}</td>
                                                                 @if (!$skipImage)
-                                                                    <td class="border border-gray-300 text-center align-middle"
+                                                                    <td class="border border-gray-300 dark:border-gray-600 text-center align-middle text-gray-800 dark:text-gray-200"
                                                                         rowspan="{{ $imageRowspan }}">
                                                                         @if ($quotationProduct->product->image->path ?? false)
                                                                             <img src="{{ asset($quotationProduct->product->image->path) }}"
@@ -712,11 +742,11 @@
                                                                         @endif
                                                                     </td>
                                                                 @endif
-                                                                <td class="text-right border border-gray-300"
+                                                                <td class="text-right border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
                                                                     x-show="!isTechnical">
                                                                     {{ number_format($quotationProduct->unit_price, 2) }}
                                                                 </td>
-                                                                <td class="text-right border border-gray-300"
+                                                                <td class="text-right border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
                                                                     x-show="!isTechnical">
                                                                     {{ number_format($quotationProduct->unit_price * $quotationProduct->quantity, 2) }}
                                                                 </td>
@@ -726,9 +756,9 @@
                                                         {{-- Summary rows --}}
                                                         <tr x-show="!isTechnical">
                                                             <td colspan="4" class="border-0"></td>
-                                                            <td class="border text-right border-gray-300"
+                                                            <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                 colspan="2">Subtotal</td>
-                                                            <td class="border text-right border-gray-300"
+                                                            <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                 colspan="2">
                                                                 {{ number_format($activeRevision->subtotal, 2) }}
                                                                 {{ $activeRevision->type == 'via' ? $activeRevision->currency : '৳' }}
@@ -737,10 +767,10 @@
                                                         @if ($activeRevision->discount_amount)
                                                             <tr x-show="!isTechnical">
                                                                 <td colspan="4" class="border-0"></td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">Discount
                                                                 </td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->discount_amount, 2) }}
                                                                     {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
@@ -748,11 +778,11 @@
                                                             </tr>
                                                             <tr x-show="!isTechnical">
                                                                 <td colspan="4" class="border-0"></td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">Discount
                                                                     Less
                                                                     Subtotal</td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->subtotal - $activeRevision->discount_amount, 2) }}
                                                                     {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
@@ -762,10 +792,10 @@
                                                         @if ($activeRevision->shipping)
                                                             <tr x-show="!isTechnical">
                                                                 <td colspan="4" class="border-0"></td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">Shipping
                                                                 </td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->shipping, 2) }}
                                                                     {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
@@ -775,10 +805,10 @@
                                                         @if ($activeRevision->vat_amount)
                                                             <tr x-show="!isTechnical">
                                                                 <td colspan="4" class="border-0"></td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">VAT
                                                                     ({{ (int) $activeRevision->vat_percentage }}%)</td>
-                                                                <td class="border text-right border-gray-300"
+                                                                <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                     colspan="2">
                                                                     {{ number_format($activeRevision->vat_amount, 2) }}
                                                                     {{ $activeRevision->type == 'via' ? $activeRevision->currency : $baseCurrencySymbol }}
@@ -787,10 +817,10 @@
                                                         @endif
                                                         <tr x-show="!isTechnical">
                                                             <td colspan="4" class="border-0"></td>
-                                                            <td class="border text-right border-gray-300"
+                                                            <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                 colspan="2">Grand Total
                                                             </td>
-                                                            <td class="border text-right border-gray-300"
+                                                            <td class="border text-right border-gray-300 dark:border-gray-600"
                                                                 colspan="2">
                                                                 {{ number_format($activeRevision->total, 2) }}
                                                                 {{ $activeRevision->type == 'via' ? $activeRevision->currency : '৳' }}
@@ -804,7 +834,7 @@
                                         {{-- Signature and Terms --}}
                                         <div class="flex justify-between gap-3 mt-6 ">
                                             <div
-                                                class="text-xs text-gray-600 border border-gray-200 rounded-lg p-4 bg-gray-50 {{ $activeRevision->type === 'via' ? 'w-2/3' : '' }}">
+                                                class="text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 {{ $activeRevision->type === 'via' ? 'w-2/3' : '' }} transition-colors duration-200">
                                                 @if ($activeRevision->terms_conditions)
                                                     {!! $activeRevision->terms_conditions !!}
                                                 @else
@@ -827,7 +857,7 @@
                                                     @if($signatureImage || !empty($authorizedPersonName))
                                                         <div>
                                                             @if(!empty($authorizationLabel))
-                                                                <div class="text-xs text-gray-600 mb-2">{{ $authorizationLabel }}</div>
+                                                                <div class="text-xs text-gray-800 dark:text-gray-200 mb-2">{{ $authorizationLabel }}</div>
                                                             @endif
                                                             @if($signatureImage)
                                                                 <div>
@@ -836,7 +866,7 @@
                                                                 </div>
                                                             @endif
                                                             @if(!empty($authorizedPersonName))
-                                                                <p class="text-xs text-gray-600">{{ $authorizedPersonName }}</p>
+                                                                <p class="text-xs text-gray-800 dark:text-gray-200">{{ $authorizedPersonName }}</p>
                                                             @endif
                                                         </div>
                                                     @endif
@@ -848,17 +878,17 @@
                             </tbody>
                         </table>
                         <div class="screen-footer">
-                            <div class="w-full border-t border-gray-300 mt-6"></div>
+                            <div class="w-full border-t border-gray-300 dark:border-gray-600 mt-6"></div>
                             <div
-                                class="mt-1 p-2.5 border-t-3 text-red-600 border-blue-600 bg-gray-50 text-center text-xs underline">
+                                class="mt-1 p-2.5 border-t-3 text-red-600 dark:text-red-400 border-blue-600 dark:border-blue-400 bg-gray-50 dark:bg-gray-700 text-center text-xs underline transition-colors duration-200">
                                 <div>"Complete Solution for Pharma, Food, Power, and Other Industries"</div>
                             </div>
                             {{-- <div class="text-center text-sm mt-1.5 font-bold uppercase">Thank You For Your Business!</div> --}}
                         </div>
                         <div class="print-footer-quotation">
-                            <div class="w-full border-t border-gray-300 mt-6"></div>
+                            <div class="w-full border-t border-gray-300 dark:border-gray-600 mt-6"></div>
                             <div
-                                class="mt-1 p-2.5 border-t-3 text-red-600 border-blue-600 bg-gray-50 text-center text-xs underline">
+                                class="mt-1 p-2.5 border-t-3 text-red-600 dark:text-red-400 border-blue-600 dark:border-blue-400 bg-gray-50 dark:bg-gray-700 text-center text-xs underline transition-colors duration-200">
                                 <div>"Complete Solution for Pharma, Food, Power, and Other Industries"</div>
                             </div>
                             {{-- <div class="text-center text-sm mt-1.5 font-bold uppercase">Thank You For Your Business!</div> --}}

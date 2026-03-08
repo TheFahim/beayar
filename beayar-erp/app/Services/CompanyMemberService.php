@@ -66,8 +66,9 @@ class CompanyMemberService
 
         $pivotData = [
             'role' => $primaryRole,
-            'is_active' => true,
+            'is_active' => $extraData['is_active'] ?? true,
             'employee_id' => $extraData['employee_id'] ?? null,
+            'joined_at' => $extraData['joined_at'] ?? null,
         ];
 
         $company->members()->attach($user->id, $pivotData);

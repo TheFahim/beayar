@@ -30,6 +30,7 @@ class TenantCompany extends Model
         'quotation_number_format' => '{CUSTOMER_NO}-{YY}-{SEQUENCE}',
         'vat_percentages' => [0, 5, 10, 15],
         'vat_default_percentage' => 15,
+        'header_style' => 'style_1',
     ];
 
     /**

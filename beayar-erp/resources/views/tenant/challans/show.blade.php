@@ -1,6 +1,6 @@
 <x-dashboard.layout.default :title="'Challan - ' . $challan->challan_no">
     @php
-        $companySettings = $challan->revision->quotation->company ? $challan->revision->quotation->company->settings : null;
+        $companySettings = $challan->revision->quotation->company ? $challan->revision->quotation->company->getSettings() : [];
         $headerStyle = $companySettings['header_style'] ?? 'style_1';
         $authorizedPersonName = $companySettings['authorized_person_name'] ?? '';
         $authorizationLabel = $companySettings['authorization_label'] ?? 'Authorized By';
