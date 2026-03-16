@@ -1,13 +1,13 @@
 # Billing Module Implementation Task Report
 
-**Date:** 2026-03-12  
-**Status:** Phase 1 & Phase 2 Completed
+**Date:** 2026-03-16
+**Status:** Phase 1, Phase 2 & Phase 3 Completed
 
 ---
 
 ## Summary
 
-This report documents the implementation work completed for the billing module refactor. Both Phase 1 (Database Foundation) and Phase 2 (Backend Core & Services) have been successfully implemented.
+This report documents the implementation work completed for the billing module refactor. Phase 1 (Database Foundation), Phase 2 (Backend Core & Services), and Phase 3 (Backend API & Controllers) have been successfully implemented.
 
 ---
 
@@ -142,6 +142,66 @@ Methods: `canBeEdited()`, `getLockReason()`, `lock()`, `unlock()`
 
 ---
 
+## Phase 3: Backend API & Controllers
+
+### Controllers Created
+
+#### BillController Enhancements (`app/Http/Controllers/Tenant/BillController.php`)
+- **New methods added:**
+  - `issue()` - Issue a draft bill
+  - `cancel()` - Cancel an issued/partially paid bill
+  - `applyAdvance()` - Apply advance credit to a regular bill
+  - `removeAdvance()` - Remove applied advance credit
+- All methods support both JSON and web responses
+- Authorization via BillPolicy
+
+#### BillPaymentController (`app/Http/Controllers/Tenant/BillPaymentController.php`)
+- **Methods:**
+  - `index()` - List payments for a bill
+  - `store()` - Record a new payment
+  - `destroy()` - Void a payment
+- Payment voiding updates bill status automatically
+- Activity logging for audit trail
+
+#### BillApiController (`app/Http/Controllers/Tenant/BillApiController.php`)
+- **AJAX endpoints for frontend:**
+  - `billableChallans()` - Get unbilled challans for a quotation
+  - `availableAdvances()` - Get advance bills with available credit
+  - `advanceBalance()` - Get advance bill balance and adjustments
+  - `quotationBillSummary()` - Get all bills for a quotation with totals
+  - `status()` - Quick bill status check
+  - `search()` - Search bills by number or quotation
+
+### Helper Functions Created
+
+#### `app/helpers.php`
+- `currentTenantId()` - Get current tenant company ID from session or user
+- `currentTenant()` - Get current tenant company model
+- `tenant()` - Alias for currentTenant()
+- Registered in `composer.json` autoload files
+
+### Routes Registered
+
+#### Web Routes (`routes/web.php`)
+- **Bill Actions:**
+  - `POST /bills/{bill}/issue` - Issue a bill
+  - `POST /bills/{bill}/cancel` - Cancel a bill
+  - `POST /bills/{bill}/apply-advance` - Apply advance credit
+  - `DELETE /bills/{bill}/advance-adjustments/{adjustment}` - Remove advance credit
+- **Bill Payments:**
+  - `GET /bills/{bill}/payments` - List payments
+  - `POST /bills/{bill}/payments` - Record payment
+  - `DELETE /bills/{bill}/payments/{payment}` - Void payment
+- **API Endpoints:**
+  - `GET /api/quotations/{quotation}/billable-challans`
+  - `GET /api/quotations/{quotation}/available-advances`
+  - `GET /api/quotations/{quotation}/bill-summary`
+  - `GET /api/bills/{bill}/advance-balance`
+  - `GET /api/bills/{bill}/status`
+  - `GET /api/bills/search`
+
+---
+
 ## Files Modified/Created Summary
 
 ### Phase 1
@@ -162,14 +222,25 @@ Methods: `canBeEdited()`, `getLockReason()`, `lock()`, `unlock()`
 | `app/Http/Requests/RecordPaymentRequest.php` | Created |
 | `app/Policies/BillPolicy.php` | Modified |
 
+### Phase 3
+| File | Action |
+|------|--------|
+| `app/helpers.php` | Created |
+| `app/Http/Controllers/Tenant/BillController.php` | Modified |
+| `app/Http/Controllers/Tenant/BillPaymentController.php` | Created |
+| `app/Http/Controllers/Tenant/BillApiController.php` | Created |
+| `routes/web.php` | Modified |
+| `composer.json` | Modified |
+
 ---
 
 ## Next Steps
 
-1. **Run Migrations:** Execute `php artisan migrate` to apply all database changes
-2. **Phase 3:** Proceed to Backend API & Controllers implementation
-3. **Testing:** Write unit tests for the 6-rule locking system
-4. **Documentation:** Update API documentation with new endpoints
+1. **Run Composer Dump:** Execute `composer dump-autoload` to load the new helpers.php file
+2. **Run Migrations:** Execute `php artisan migrate` to apply all database changes
+3. **Phase 4:** Proceed to Frontend Bill Creation implementation
+4. **Testing:** Write unit tests for controllers and API endpoints
+5. **Documentation:** Update API documentation with new endpoints
 
 ---
 

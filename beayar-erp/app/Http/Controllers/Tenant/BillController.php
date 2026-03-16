@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Exceptions\BillLockedException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ApplyAdvanceCreditRequest;
 use App\Http\Requests\StoreAdvanceBillRequest;
 use App\Http\Requests\StoreRegularBillRequest;
 use App\Http\Requests\StoreRunningBillRequest;
 use App\Http\Requests\UpdateAdvanceBillRequest;
 use App\Http\Requests\UpdateRegularBillRequest;
 use App\Models\Bill;
+use App\Models\BillAdvanceAdjustment;
 use App\Models\Challan;
 use App\Models\Quotation;
 use App\Services\BillingService;
@@ -359,6 +362,153 @@ class BillController extends Controller
         }
 
         return redirect()->route('tenant.bills.index');
+    }
+
+    /**
+     * Issue the specified bill.
+     */
+    public function issue(Request $request, Bill $bill)
+    {
+        $this->authorize('issue', $bill);
+
+        try {
+            $bill = $this->billingService->issueBill($bill);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bill issued successfully.',
+                    'bill' => $bill->fresh(),
+                ]);
+            }
+
+            return redirect()
+                ->route('tenant.bills.show', $bill)
+                ->with('success', 'Bill issued successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Cancel the specified bill.
+     */
+    public function cancel(Request $request, Bill $bill)
+    {
+        $this->authorize('cancel', $bill);
+
+        $request->validate([
+            'reason' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $bill = $this->billingService->cancelBill($bill, $request->reason);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bill cancelled successfully.',
+                    'bill' => $bill,
+                ]);
+            }
+
+            return redirect()
+                ->route('tenant.bills.show', $bill)
+                ->with('success', 'Bill cancelled successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Apply advance credit to a regular bill.
+     */
+    public function applyAdvance(ApplyAdvanceCreditRequest $request, Bill $bill)
+    {
+        $this->authorize('applyAdvance', $bill);
+
+        try {
+            $advanceBill = Bill::findOrFail($request->advance_bill_id);
+
+            $adjustment = $this->billingService->applyAdvanceCredit(
+                $advanceBill,
+                $bill,
+                $request->amount
+            );
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Advance credit applied successfully.',
+                    'adjustment' => $adjustment,
+                    'bill' => $bill->fresh(),
+                ]);
+            }
+
+            return redirect()
+                ->route('tenant.bills.show', $bill)
+                ->with('success', 'Advance credit applied successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Remove advance credit from a regular bill.
+     */
+    public function removeAdvance(Request $request, Bill $bill, BillAdvanceAdjustment $adjustment)
+    {
+        $this->authorize('update', $bill);
+
+        try {
+            $this->billingService->removeAdvanceCredit($adjustment);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Advance credit removed successfully.',
+                    'bill' => $bill->fresh(),
+                ]);
+            }
+
+            return redirect()
+                ->route('tenant.bills.show', $bill)
+                ->with('success', 'Advance credit removed successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
     /**
