@@ -1,13 +1,13 @@
 # Billing Module Implementation Task Report
 
 **Date:** 2026-03-16
-**Status:** Phase 1, Phase 2 & Phase 3 Completed
+**Status:** Phase 1, Phase 2, Phase 3 & Phase 4 Completed
 
 ---
 
 ## Summary
 
-This report documents the implementation work completed for the billing module refactor. Phase 1 (Database Foundation), Phase 2 (Backend Core & Services), and Phase 3 (Backend API & Controllers) have been successfully implemented.
+This report documents the implementation work completed for the billing module refactor. Phase 1 (Database Foundation), Phase 2 (Backend Core & Services), Phase 3 (Backend API & Controllers), and Phase 4 (Frontend Bill Creation) have been successfully implemented.
 
 ---
 
@@ -234,13 +234,147 @@ Methods: `canBeEdited()`, `getLockReason()`, `lock()`, `unlock()`
 
 ---
 
+## Phase 4: Frontend Bill Creation
+
+### Blade Views Implemented
+
+#### Regular Bill Creation (`resources/views/tenant/bills/create-regular.blade.php`)
+- **Features:**
+  - Challan selection with expandable accordion UI
+  - Dynamic bill items with quantity input and price calculation
+  - Alpine.js state management for selections and totals
+  - Client-side validation matching backend validation rules
+  - Flowbite datepicker for bill_date and payment_received_date
+  - Previous bills display for reference
+  - Discount, VAT, shipping, and round-up calculations
+  - Formatted with Tailwind CSS and dark mode support
+
+#### Advance Bill Creation (`resources/views/tenant/bills/create-advance.blade.php`)
+- **Features:**
+  - Percentage-based advance calculation
+  - Amount-to-percentage reverse calculation
+  - Due amount computation
+  - Quotation details sidebar
+  - Flowbite datepicker integration
+  - Validation for percentage bounds (1-100%)
+  - Support for VIA currency type from quotation revision
+
+#### Running Bill Creation (`resources/views/tenant/bills/create-running.blade.php`)
+- **Features:**
+  - Parent advance bill details display
+  - Running percentage and amount inputs with sync
+  - Remaining balance calculation after this bill
+  - Bill history timeline showing all previous bills
+  - Invoice number auto-generation (parent-A, parent-B pattern)
+  - Currency support matching parent bill revision
+
+### New Components Created
+
+#### Bill Timeline Component (`resources/views/tenant/bills/partials/bill-timeline.blade.php`)
+- Visual timeline showing all bills for a quotation
+- Color-coded icons by bill type (amber for advance, purple for running, green for regular)
+- Status badges with appropriate colors
+- Lock indicator for locked bills
+- Expandable details section with Alpine.js collapse
+- Links to individual bill views
+
+#### Bill Management View (`resources/views/tenant/bills/manage.blade.php`)
+- **Action Buttons (Policy-gated):**
+  - Print View - Opens print-friendly invoice view
+  - Edit - Only visible when `@can('update', $bill)`
+  - Issue Bill - Only visible when `@can('issue', $bill)`
+  - Record Payment - Only visible when `@can('recordPayment', $bill)`
+  - Cancel Bill - Only visible when `@can('cancel', $bill)`
+- **Payment Recording Modal:**
+  - Amount input with max validation
+  - Payment method dropdown
+  - Flowbite datepicker for payment date
+  - Reference number and notes fields
+- **Cancel Bill Modal:**
+  - Reason textarea
+  - Warning for applied advance credit
+- **Summary Section:**
+  - Subtotal, discount, shipping, tax breakdown
+  - Advance applied amount (highlighted in green)
+  - Net payable calculation
+  - Paid amount and remaining balance
+- **Bill Items Table:** For regular bills showing product details
+- **Payments List:** With void option for non-paid bills
+
+### UI/UX Features
+
+- **Consistent Color Coding:**
+  - Advance bills: Amber/Orange theme
+  - Running bills: Purple/Indigo theme
+  - Regular bills: Green/Indigo theme
+- **Status Badges:**
+  - Draft: Gray
+  - Issued: Blue
+  - Paid: Green
+  - Cancelled: Red
+  - Partially Paid: Yellow
+  - Adjusted: Indigo
+- **Dark Mode Support:** All views support dark mode with appropriate color classes
+- **Responsive Design:** Mobile-friendly layouts with grid systems
+- **Sticky Action Bar:** Quick access to primary actions while scrolling
+- **Validation Error Display:** Styled error alerts with error count
+
+### Datepicker Integration
+
+All date inputs use the existing Flowbite datepicker implementation:
+- `flowbite-datepicker` class on text inputs
+- Format: dd/mm/yyyy (matches backend validation)
+- Integrated with Alpine.js for reactive updates
+- Located in: `create-regular.blade.php`, `create-advance.blade.php`, `create-running.blade.php`, `manage.blade.php`
+
+---
+
+## Files Modified/Created Summary
+
+### Phase 1
+| File | Action |
+|------|--------|
+| `app/Models/Bill.php` | Modified |
+| `app/Models/Quotation.php` | Modified |
+| `app/Models/BillPayment.php` | Created |
+| `app/Models/BillAdvanceAdjustment.php` | Created |
+
+### Phase 2
+| File | Action |
+|------|--------|
+| `app/Exceptions/BillLockedException.php` | Created |
+| `app/Models/Bill.php` | Modified |
+| `app/Services/BillingService.php` | Modified |
+| `app/Http/Requests/ApplyAdvanceCreditRequest.php` | Created |
+| `app/Http/Requests/RecordPaymentRequest.php` | Created |
+| `app/Policies/BillPolicy.php` | Modified |
+
+### Phase 3
+| File | Action |
+|------|--------|
+| `app/helpers.php` | Created |
+| `app/Http/Controllers/Tenant/BillController.php` | Modified |
+| `app/Http/Controllers/Tenant/BillPaymentController.php` | Created |
+| `app/Http/Controllers/Tenant/BillApiController.php` | Created |
+| `routes/web.php` | Modified |
+| `composer.json` | Modified |
+
+### Phase 4
+| File | Action |
+|------|--------|
+| `resources/views/tenant/bills/create-regular.blade.php` | Verified/Existing |
+| `resources/views/tenant/bills/create-advance.blade.php` | Verified/Existing |
+| `resources/views/tenant/bills/create-running.blade.php` | Verified/Existing |
+| `resources/views/tenant/bills/partials/bill-timeline.blade.php` | Created |
+| `resources/views/tenant/bills/manage.blade.php` | Created |
+
+---
+
 ## Next Steps
 
-1. **Run Composer Dump:** Execute `composer dump-autoload` to load the new helpers.php file
-2. **Run Migrations:** Execute `php artisan migrate` to apply all database changes
-3. **Phase 4:** Proceed to Frontend Bill Creation implementation
-4. **Testing:** Write unit tests for controllers and API endpoints
-5. **Documentation:** Update API documentation with new endpoints
+1. **Phase 5:** Proceed to Frontend Advance Credits implementation
+2. **Testing:** Write feature tests for bill creation workflows
+3. **Documentation:** Update user documentation with new bill management features
 
 ---
 
@@ -250,3 +384,5 @@ Methods: `canBeEdited()`, `getLockReason()`, `lock()`, `unlock()`
 - All monetary calculations use `bcmath` functions for precision
 - Activity logging is implemented via Laravel's logging facade
 - The locking system prevents accidental modification of bills in invalid states
+- All forms use existing Flowbite datepicker (no re-implementation needed)
+- Alpine.js is used for reactive UI without additional framework overhead
