@@ -162,7 +162,7 @@
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                         <h2 class="text-lg font-medium text-gray-900 dark:text-white">Payments</h2>
                         @can('recordPayment', $bill)
-                        <button type="button" 
+                        <button type="button"
                                 @click="showPaymentModal = true"
                                 class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,7 +172,7 @@
                         </button>
                         @endcan
                     </div>
-                    
+
                     <div class="p-6">
                         @if($bill->payments->isEmpty())
                         <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No payments recorded yet.</p>
@@ -195,7 +195,7 @@
                                     <form action="{{ route('tenant.bills.payments.destroy', [$bill, $payment]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 onclick="return confirm('Are you sure you want to void this payment?')"
                                                 class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -248,7 +248,7 @@
                                 <span class="text-xl font-bold text-gray-900 dark:text-white">৳ {{ number_format($bill->total_amount ?? $bill->bill_amount ?? 0, 2) }}</span>
                             </div>
                         </div>
-                        
+
                         @if($bill->advance_applied_amount > 0)
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
                             <div class="flex justify-between text-sm">
@@ -261,7 +261,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         @php $paidAmount = $bill->payments()->sum('amount'); @endphp
                         @if($paidAmount > 0)
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -285,46 +285,51 @@
                 @if($bill->quotation)
                 <x-tenant.bills.partials.bill-timeline :bills="$bill->quotation->bills->sortBy('created_at')" />
                 @endif
+
+                <!-- Correction History -->
+                @if($bill->reissued_from_id || $bill->reissued_to_id)
+                <x-tenant.bills.partials.correction-history :bill="$bill" />
+                @endif
             </div>
         </div>
     </div>
 
     <!-- Cancel Modal -->
-    <div x-show="showCancelModal" 
+    <div x-show="showCancelModal"
          x-transition
          class="fixed inset-0 z-50 overflow-y-auto"
          style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-black bg-opacity-50" @click="showCancelModal = false"></div>
-            
+
             <div class="relative bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Cancel Bill</h3>
-                
+
                 <form action="{{ route('tenant.bills.cancel', $bill) }}" method="POST">
                     @csrf
                     <div class="mb-4">
                         <label for="cancel_reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Reason for Cancellation (Optional)
                         </label>
-                        <textarea id="cancel_reason" 
-                                  name="reason" 
+                        <textarea id="cancel_reason"
+                                  name="reason"
                                   rows="3"
                                   class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-red-500 focus:ring-red-500"></textarea>
                     </div>
-                    
+
                     @if($bill->advance_applied_amount > 0)
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
                         <strong class="text-red-600 dark:text-red-400">Warning:</strong> This will remove ৳ {{ number_format($bill->advance_applied_amount, 2) }} in applied advance credit.
                     </p>
                     @endif
-                    
+
                     <div class="flex justify-end space-x-3">
-                        <button type="button" 
+                        <button type="button"
                                 @click="showCancelModal = false"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
                             Keep Bill
                         </button>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
                             Cancel Bill
                         </button>
@@ -335,16 +340,16 @@
     </div>
 
     <!-- Payment Modal -->
-    <div x-show="showPaymentModal" 
+    <div x-show="showPaymentModal"
          x-transition
          class="fixed inset-0 z-50 overflow-y-auto"
          style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-black bg-opacity-50" @click="showPaymentModal = false"></div>
-            
+
             <div class="relative bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Record Payment</h3>
-                
+
                 <form action="{{ route('tenant.bills.payments.store', $bill) }}" method="POST">
                     @csrf
                     <div class="space-y-4">
@@ -352,7 +357,7 @@
                             <label for="payment_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Amount <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" 
+                            <input type="number"
                                    step="0.01"
                                    min="0.01"
                                    max="{{ $bill->remaining_balance ?? $bill->due ?? 0 }}"
@@ -364,12 +369,12 @@
                                 Max: ৳ {{ number_format($bill->remaining_balance ?? $bill->due ?? 0, 2) }}
                             </p>
                         </div>
-                        
+
                         <div>
                             <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Payment Method <span class="text-red-500">*</span>
                             </label>
-                            <select id="payment_method" 
+                            <select id="payment_method"
                                     name="payment_method"
                                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500"
                                     required>
@@ -382,47 +387,47 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label for="payment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Payment Date <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" 
+                            <input type="text"
                                    id="payment_date"
                                    name="payment_date"
                                    value="{{ now()->format('d/m/Y') }}"
                                    class="flowbite-datepicker w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500"
                                    required>
                         </div>
-                        
+
                         <div>
                             <label for="reference_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Reference Number
                             </label>
-                            <input type="text" 
+                            <input type="text"
                                    id="reference_number"
                                    name="reference_number"
                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500">
                         </div>
-                        
+
                         <div>
                             <label for="payment_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Notes
                             </label>
-                            <textarea id="payment_notes" 
-                                      name="notes" 
+                            <textarea id="payment_notes"
+                                      name="notes"
                                       rows="2"
                                       class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500"></textarea>
                         </div>
                     </div>
-                    
+
                     <div class="mt-6 flex justify-end space-x-3">
-                        <button type="button" 
+                        <button type="button"
                                 @click="showPaymentModal = false"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
                             Cancel
                         </button>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
                             Record Payment
                         </button>
@@ -440,7 +445,7 @@
             showPaymentModal: false,
         };
     }
-    
+
     function paymentSection() {
         return {
             showPaymentModal: false,

@@ -576,22 +576,15 @@ class BillingService
         }
 
         // Check if final bill can accept credit
-        if (!$finalBill->canBeEdited()) {
-            throw new BillLockedException($finalBill, $finalBill->getLockReason());
+        // Advance can be applied to draft, issued, or partially paid bills
+        $allowedStatuses = [Bill::STATUS_DRAFT, Bill::STATUS_ISSUED, Bill::STATUS_PARTIALLY_PAID];
+        if (!in_array($finalBill->status, $allowedStatuses)) {
+            throw new BillLockedException($finalBill, 'Bill status does not allow advance application');
         }
 
         return DB::transaction(function () use ($advanceBill, $finalBill, $amount) {
-            // Create the adjustment record
-            $adjustment = BillAdvanceAdjustment::create([
-                'advance_bill_id' => $advanceBill->id,
-                'final_bill_id' => $finalBill->id,
-                'tenant_company_id' => currentTenantId(),
-                'amount' => $amount,
-                'created_by' => auth()->id(),
-                'notes' => null,
-            ]);
-
-            // Update the final bill's applied amount and net payable
+            // Update the final bill's applied amount and net payable FIRST
+            // This must happen before creating the adjustment to avoid triggering Rule 6 lock
             $currentApplied = $finalBill->advance_applied_amount ?? '0';
             $newApplied = bcadd($currentApplied, $amount, 2);
             $newNetPayable = bcsub($finalBill->total_amount ?? 0, $newApplied, 2);
@@ -599,6 +592,16 @@ class BillingService
             $finalBill->update([
                 'advance_applied_amount' => $newApplied,
                 'net_payable_amount' => max($newNetPayable, '0.00'),
+            ]);
+
+            // Create the adjustment record AFTER bill update
+            $adjustment = BillAdvanceAdjustment::create([
+                'advance_bill_id' => $advanceBill->id,
+                'final_bill_id' => $finalBill->id,
+                'tenant_company_id' => \currentTenantId(),
+                'amount' => $amount,
+                'created_by' => auth()->id(),
+                'notes' => null,
             ]);
 
             Log::info('Advance credit applied', [
@@ -734,7 +737,7 @@ class BillingService
         return DB::transaction(function () use ($bill, $data) {
             $payment = BillPayment::create([
                 'bill_id' => $bill->id,
-                'tenant_company_id' => currentTenantId(),
+                'tenant_company_id' => \currentTenantId(),
                 'amount' => $data['amount'],
                 'payment_method' => $data['payment_method'],
                 'payment_date' => $data['payment_date'] ?? now(),
@@ -762,7 +765,7 @@ class BillingService
      * @param Bill $bill
      * @return void
      */
-    protected function updateBillPaymentStatus(Bill $bill): void
+    public function updateBillPaymentStatus(Bill $bill): void
     {
         $paidAmount = $bill->paid_amount;
         $netPayable = $bill->net_payable_amount ?? $bill->total_amount ?? 0;
@@ -832,5 +835,117 @@ class BillingService
             }
             return false;
         });
+    }
+
+    // ==========================================
+    // PHASE 6: REISSUE METHODS
+    // ==========================================
+
+    /**
+     * Reissue a cancelled bill.
+     * Creates a new bill from a cancelled one, tracking the reissue chain.
+     *
+     * @param Bill $cancelledBill The cancelled bill to reissue
+     * @param array $data New bill data (invoice_no, bill_date, etc.)
+     * @return Bill The new reissued bill
+     * @throws \Exception
+     */
+    public function reissueBill(Bill $cancelledBill, array $data): Bill
+    {
+        if ($cancelledBill->status !== Bill::STATUS_CANCELLED) {
+            throw new \InvalidArgumentException('Only cancelled bills can be reissued.');
+        }
+
+        return DB::transaction(function () use ($cancelledBill, $data) {
+            // Create the new bill based on the cancelled one
+            $newBill = Bill::create([
+                'tenant_company_id' => $cancelledBill->tenant_company_id,
+                'quotation_id' => $cancelledBill->quotation_id,
+                'quotation_revision_id' => $cancelledBill->quotation_revision_id,
+                'parent_bill_id' => $cancelledBill->parent_bill_id,
+                'bill_type' => $cancelledBill->bill_type,
+                'invoice_no' => $data['invoice_no'],
+                'bill_date' => Carbon::createFromFormat('d/m/Y', $data['bill_date'])->format('Y-m-d'),
+                'payment_received_date' => !empty($data['payment_received_date'])
+                    ? Carbon::createFromFormat('d/m/Y', $data['payment_received_date'])->format('Y-m-d')
+                    : null,
+                'total_amount' => $cancelledBill->total_amount,
+                'bill_amount' => $cancelledBill->bill_amount,
+                'bill_percentage' => $cancelledBill->bill_percentage,
+                'due' => $cancelledBill->due,
+                'discount' => $cancelledBill->discount,
+                'shipping' => $cancelledBill->shipping,
+                'status' => Bill::STATUS_DRAFT,
+                'notes' => $data['notes'] ?? $cancelledBill->notes,
+                // Track reissue chain
+                'reissued_from_id' => $cancelledBill->id,
+            ]);
+
+            // Update the cancelled bill to track its reissued counterpart
+            $cancelledBill->update([
+                'reissued_to_id' => $newBill->id,
+            ]);
+
+            // For regular bills, replicate the bill items
+            if ($cancelledBill->bill_type === Bill::TYPE_REGULAR) {
+                $this->replicateBillItems($cancelledBill, $newBill);
+            }
+
+            // Log the reissue activity
+            activity()
+                ->performedOn($newBill)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'cancelled_bill_id' => $cancelledBill->id,
+                    'new_invoice_no' => $data['invoice_no'],
+                ])
+                ->log("Bill reissued from {$cancelledBill->invoice_no}");
+
+            Log::info('Bill reissued', [
+                'cancelled_bill_id' => $cancelledBill->id,
+                'new_bill_id' => $newBill->id,
+                'old_invoice_no' => $cancelledBill->invoice_no,
+                'new_invoice_no' => $data['invoice_no'],
+            ]);
+
+            return $newBill;
+        });
+    }
+
+    /**
+     * Replicate bill items from one bill to another.
+     *
+     * @param Bill $sourceBill
+     * @param Bill $targetBill
+     * @return void
+     */
+    protected function replicateBillItems(Bill $sourceBill, Bill $targetBill): void
+    {
+        $sourceBill->load(['challans', 'items']);
+
+        // Copy challan associations
+        foreach ($sourceBill->challans as $challan) {
+            $targetBill->challans()->syncWithoutDetaching([$challan->id]);
+        }
+
+        // Copy bill items
+        foreach ($sourceBill->items as $item) {
+            $billChallanId = DB::table('bill_challans')
+                ->where('bill_id', $targetBill->id)
+                ->where('challan_id', $item->challanProduct->challan_id ?? null)
+                ->value('id');
+
+            if ($billChallanId) {
+                BillItem::create([
+                    'bill_challan_id' => $billChallanId,
+                    'quotation_product_id' => $item->quotation_product_id,
+                    'challan_product_id' => $item->challan_product_id,
+                    'quantity' => $item->quantity,
+                    'remaining_quantity' => $item->remaining_quantity,
+                    'unit_price' => $item->unit_price,
+                    'bill_price' => $item->bill_price,
+                ]);
+            }
+        }
     }
 }

@@ -136,6 +136,28 @@ class BillPolicy
             return false;
         }
 
-        return $bill->canBeEdited();
+        // Advance can be applied to draft, issued, or partially paid bills
+        return in_array($bill->status, [
+            Bill::STATUS_DRAFT,
+            Bill::STATUS_ISSUED,
+            Bill::STATUS_PARTIALLY_PAID,
+        ]);
+    }
+
+    /**
+     * Determine whether the user can reissue a cancelled bill.
+     */
+    public function reissue(User $user, Bill $bill): bool
+    {
+        if (!$user->can('edit_bills')) {
+            return false;
+        }
+
+        if ($bill->tenant_company_id !== $user->current_tenant_company_id) {
+            return false;
+        }
+
+        // Only cancelled bills can be reissued
+        return $bill->status === Bill::STATUS_CANCELLED;
     }
 }

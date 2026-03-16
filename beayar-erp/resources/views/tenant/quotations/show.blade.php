@@ -251,6 +251,13 @@
                     </div>
                 </div>
 
+                {{-- Advance Credit Banner --}}
+                @if($quotation->bills()->where('bill_type', 'advance')->where('status', '!=', 'cancelled')->exists())
+                <div class="mb-6">
+                    <x-advance-credit-banner :quotation-id="$quotation->id" :show-apply-button="true" />
+                </div>
+                @endif
+
                 {{-- Invoice card (this will be printed) --}}
                 <div id="q-invoice"
                     class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg text-gray-900 dark:text-gray-100 transition-colors duration-200">

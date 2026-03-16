@@ -132,8 +132,15 @@ Route::group(['middleware' => ['web', 'auth', 'verified', 'onboarding.complete',
     // Bill Actions
     Route::post('/bills/{bill}/issue', [BillController::class, 'issue'])->name('tenant.bills.issue');
     Route::post('/bills/{bill}/cancel', [BillController::class, 'cancel'])->name('tenant.bills.cancel');
+    Route::get('/bills/{bill}/cancelled', [BillController::class, 'cancelled'])->name('tenant.bills.cancelled');
+    Route::get('/bills/{bill}/reissue', [BillController::class, 'showReissueForm'])->name('tenant.bills.reissue.form');
+    Route::post('/bills/{bill}/reissue', [BillController::class, 'reissue'])->name('tenant.bills.reissue');
+    Route::get('/bills/{bill}/reissued', [BillController::class, 'reissued'])->name('tenant.bills.reissued');
     Route::post('/bills/{bill}/apply-advance', [BillController::class, 'applyAdvance'])->name('tenant.bills.apply-advance');
     Route::delete('/bills/{bill}/advance-adjustments/{adjustment}', [BillController::class, 'removeAdvance'])->name('tenant.bills.remove-advance');
+
+    // Advance Credit Management
+    Route::get('/quotations/{quotation}/advance-credit', [BillController::class, 'advanceCreditManagement'])->name('tenant.quotations.advance-credit');
 
     // Bill Payments
     Route::get('/bills/{bill}/payments', [BillPaymentController::class, 'index'])->name('tenant.bills.payments.index');

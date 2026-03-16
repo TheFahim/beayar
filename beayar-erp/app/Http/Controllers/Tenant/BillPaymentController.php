@@ -114,15 +114,8 @@ class BillPaymentController extends Controller
         try {
             $payment->delete();
 
-            // Update bill status
-            $paidAmount = $bill->payments()->sum('amount');
-            $netPayable = $bill->net_payable_amount ?? $bill->total_amount ?? 0;
-
-            $newStatus = bccomp($paidAmount, '0.00', 2) <= 0
-                ? Bill::STATUS_ISSUED
-                : Bill::STATUS_PARTIALLY_PAID;
-
-            $bill->update(['status' => $newStatus]);
+            // Use service method for consistent status updates
+            $this->billingService->updateBillPaymentStatus($bill);
 
             activity('billing')
                 ->performedOn($bill)

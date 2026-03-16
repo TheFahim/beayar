@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\BillPayment;
 use App\Models\Challan;
 use App\Models\Quotation;
-use App\Models\ReceivedBill;
 use App\Models\SaleTarget;
 use App\Models\TenantCompany;
 use Illuminate\Support\Carbon;
@@ -24,18 +24,18 @@ class DashboardController extends Controller
         $currentYear = $now->year;
         $previousMonthDate = $now->copy()->subMonth();
 
-        // 1. Revenue (Received Bills)
-        $currentRevenue = ReceivedBill::join('bills', 'bills.id', '=', 'received_bills.bill_id')
+        // 1. Revenue (Bill Payments)
+        $currentRevenue = BillPayment::join('bills', 'bills.id', '=', 'bill_payments.bill_id')
             ->where('bills.tenant_company_id', $tenantId)
-            ->whereMonth('received_bills.received_date', $currentMonth)
-            ->whereYear('received_bills.received_date', $currentYear)
-            ->sum('received_bills.amount');
+            ->whereMonth('bill_payments.payment_date', $currentMonth)
+            ->whereYear('bill_payments.payment_date', $currentYear)
+            ->sum('bill_payments.amount');
 
-        $previousRevenue = ReceivedBill::join('bills', 'bills.id', '=', 'received_bills.bill_id')
+        $previousRevenue = BillPayment::join('bills', 'bills.id', '=', 'bill_payments.bill_id')
             ->where('bills.tenant_company_id', $tenantId)
-            ->whereMonth('received_bills.received_date', $previousMonthDate->month)
-            ->whereYear('received_bills.received_date', $previousMonthDate->year)
-            ->sum('received_bills.amount');
+            ->whereMonth('bill_payments.payment_date', $previousMonthDate->month)
+            ->whereYear('bill_payments.payment_date', $previousMonthDate->year)
+            ->sum('bill_payments.amount');
 
         $revenueTrend = $this->calculateTrend($currentRevenue, $previousRevenue);
 
@@ -131,11 +131,11 @@ class DashboardController extends Controller
         $maxRevenue = 0;
 
         for ($m = 1; $m <= 12; $m++) {
-            $revenue = ReceivedBill::join('bills', 'bills.id', '=', 'received_bills.bill_id')
+            $revenue = BillPayment::join('bills', 'bills.id', '=', 'bill_payments.bill_id')
                 ->where('bills.tenant_company_id', $tenantId)
-                ->whereMonth('received_bills.received_date', $m)
-                ->whereYear('received_bills.received_date', $currentYear)
-                ->sum('received_bills.amount');
+                ->whereMonth('bill_payments.payment_date', $m)
+                ->whereYear('bill_payments.payment_date', $currentYear)
+                ->sum('bill_payments.amount');
 
             $monthlyRevenue[] = [
                 'month' => Carbon::createFromDate($currentYear, $m, 1)->format('M'),
@@ -163,11 +163,11 @@ class DashboardController extends Controller
             ->get();
 
         // 10. Cash Flow
-        // Collected: (Total amount from received_bills / Total bill_amount from bills) * 100
+        // Collected: (Total amount from bill_payments / Total bill_amount from bills) * 100
         // This is cumulative total, not just this month, based on wording.
-        $totalReceived = ReceivedBill::join('bills', 'bills.id', '=', 'received_bills.bill_id')
+        $totalReceived = BillPayment::join('bills', 'bills.id', '=', 'bill_payments.bill_id')
             ->where('bills.tenant_company_id', $tenantId)
-            ->sum('received_bills.amount');
+            ->sum('bill_payments.amount');
 
         $totalBilled = Bill::where('tenant_company_id', $tenantId)->sum('bill_amount');
 

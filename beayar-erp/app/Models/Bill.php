@@ -45,6 +45,9 @@ class Bill extends Model
         // Phase 1: Credit tracking fields
         'advance_applied_amount',
         'net_payable_amount',
+        // Phase 6: Reissue tracking fields
+        'reissued_from_id',
+        'reissued_to_id',
     ];
 
     /**
@@ -150,6 +153,34 @@ class Bill extends Model
     }
 
     // ==========================================
+    // PHASE 6: REISSUE RELATIONSHIPS
+    // ==========================================
+
+    /**
+     * Get the original bill this was reissued from.
+     */
+    public function reissuedFrom(): BelongsTo
+    {
+        return $this->belongsTo(Bill::class, 'reissued_from_id');
+    }
+
+    /**
+     * Get the new bill this was reissued to.
+     */
+    public function reissuedTo(): BelongsTo
+    {
+        return $this->belongsTo(Bill::class, 'reissued_to_id');
+    }
+
+    /**
+     * Get all child bills (running bills from advance).
+     */
+    public function childBills(): HasMany
+    {
+        return $this->hasMany(Bill::class, 'parent_bill_id');
+    }
+
+    // ==========================================
     // SCOPES
     // ==========================================
 
@@ -219,6 +250,15 @@ class Bill extends Model
     public function scopeUnlocked(Builder $query): Builder
     {
         return $query->where('is_locked', false);
+    }
+
+    /**
+     * Scope for tenant filtering.
+     */
+    public function scopeForTenant(Builder $query, ?int $tenantId = null): Builder
+    {
+        $tenantId = $tenantId ?? currentTenantId();
+        return $query->where('tenant_company_id', $tenantId);
     }
 
     // ==========================================
@@ -339,8 +379,11 @@ class Bill extends Model
             return self::LOCK_REASON_ADVANCE;
         }
 
-        // Rule 6: Regular bills lock once adjustments reference them
-        if ($this->bill_type === self::TYPE_REGULAR && $this->advanceAdjustmentsReceived()->exists()) {
+        // Rule 6: Regular bills lock once adjustments reference them (only if not draft)
+        // During draft status, multiple adjustments can be applied
+        if ($this->bill_type === self::TYPE_REGULAR
+            && $this->status !== self::STATUS_DRAFT
+            && $this->advanceAdjustmentsReceived()->exists()) {
             return self::LOCK_REASON_ADJUSTMENTS;
         }
 
@@ -386,12 +429,44 @@ class Bill extends Model
         parent::boot();
 
         static::updating(function (Bill $bill) {
-            // Skip lock check if we're only updating lock-related fields
+            // Skip lock check if we're only updating lock-related fields or status
             $lockFields = ['is_locked', 'lock_reason', 'locked_at', 'updated_at'];
+            $adjustmentFields = ['advance_applied_amount', 'net_payable_amount', 'notes'];
+            $reissueFields = ['reissued_to_id', 'reissued_from_id'];
             $changingFields = array_keys($bill->getDirty());
             $onlyLockFields = empty(array_diff($changingFields, $lockFields));
 
             if ($onlyLockFields) {
+                return true;
+            }
+
+            // Allow updates to adjustment-related fields (for reversal during cancellation)
+            $onlyAdjustmentFields = empty(array_diff($changingFields, array_merge($adjustmentFields, ['updated_at'])));
+            if ($onlyAdjustmentFields) {
+                return true;
+            }
+
+            // Allow updates to reissue tracking fields (for linking original and reissued bills)
+            $onlyReissueFields = empty(array_diff($changingFields, array_merge($reissueFields, ['updated_at'])));
+            if ($onlyReissueFields) {
+                return true;
+            }
+
+            // Allow status transitions from draft (issuing, cancelling)
+            if (isset($bill->getDirty()['status']) && $bill->getOriginal('status') === self::STATUS_DRAFT) {
+                return true;
+            }
+
+            // Allow cancellation from any status
+            if (isset($bill->getDirty()['status']) && $bill->getDirty()['status'] === self::STATUS_CANCELLED) {
+                return true;
+            }
+
+            // Allow payment-related status transitions (issued <-> partially_paid <-> paid)
+            $paymentStatuses = [self::STATUS_ISSUED, self::STATUS_PARTIALLY_PAID, self::STATUS_PAID];
+            if (isset($bill->getDirty()['status'])
+                && in_array($bill->getOriginal('status'), $paymentStatuses)
+                && in_array($bill->getDirty()['status'], $paymentStatuses)) {
                 return true;
             }
 

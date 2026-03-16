@@ -421,7 +421,7 @@ class BillController extends Controller
             }
 
             return redirect()
-                ->route('tenant.bills.show', $bill)
+                ->route('tenant.bills.cancelled', $bill)
                 ->with('success', 'Bill cancelled successfully.');
 
         } catch (\Exception $e) {
@@ -434,6 +434,80 @@ class BillController extends Controller
 
             return back()->withErrors(['error' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * Display the cancelled bill success page.
+     */
+    public function cancelled(Bill $bill)
+    {
+        $bill->load(['quotation.customer.company']);
+
+        return view('tenant.bills.cancelled', compact('bill'));
+    }
+
+    /**
+     * Show the reissue form for a cancelled bill.
+     */
+    public function showReissueForm(Bill $bill)
+    {
+        $this->authorize('reissue', $bill);
+
+        $bill->load(['quotation.customer.company']);
+        $nextInvoiceNo = $this->invoiceNumberGenerator->generate($bill->quotation);
+
+        return view('tenant.bills.reissue', compact('bill', 'nextInvoiceNo'));
+    }
+
+    /**
+     * Reissue a cancelled bill.
+     */
+    public function reissue(Request $request, Bill $bill)
+    {
+        $this->authorize('reissue', $bill);
+
+        $validated = $request->validate([
+            'invoice_no' => ['required', 'string', 'max:255', \Illuminate\Validation\Rule::unique('bills', 'invoice_no')],
+            'bill_date' => ['required', 'date_format:d/m/Y'],
+            'payment_received_date' => ['nullable', 'date_format:d/m/Y'],
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        try {
+            $newBill = $this->billingService->reissueBill($bill, $validated);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bill reissued successfully.',
+                    'bill' => $newBill,
+                ]);
+            }
+
+            return redirect()
+                ->route('tenant.bills.reissued', $newBill)
+                ->with('success', 'Bill reissued successfully.');
+
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->withInput()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Display the reissued bill success page.
+     */
+    public function reissued(Bill $bill)
+    {
+        $bill->load(['quotation.customer.company', 'reissuedFrom']);
+
+        return view('tenant.bills.reissued', compact('bill'));
     }
 
     /**
@@ -910,5 +984,57 @@ class BillController extends Controller
 
             return redirect()->back()->withInput()->with('error', 'Failed to update bill. '.$e->getMessage());
         }
+    }
+
+    /**
+     * Show the advance credit management view for a quotation.
+     */
+    public function advanceCreditManagement(Quotation $quotation)
+    {
+        $this->authorize('view', $quotation);
+
+        // Get all advance bills for this quotation with eager loading to avoid N+1 queries
+        $advances = Bill::where('quotation_id', $quotation->id)
+            ->where('bill_type', Bill::TYPE_ADVANCE)
+            ->where('status', '!=', Bill::STATUS_CANCELLED)
+            ->with(['payments', 'advanceAdjustmentsGiven'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get draft regular bills that can receive credit
+        $regularBills = Bill::where('quotation_id', $quotation->id)
+            ->where('bill_type', Bill::TYPE_REGULAR)
+            ->where('status', Bill::STATUS_DRAFT)
+            ->with(['payments', 'advanceAdjustmentsReceived'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Calculate summary using pre-loaded data (avoids N+1 queries)
+        $totalAdvance = '0.00';
+        $totalReceived = '0.00';
+        $totalApplied = '0.00';
+        $availableBalance = '0.00';
+
+        foreach ($advances as $advance) {
+            $totalAdvance = bcadd($totalAdvance, $advance->total_amount ?? '0.00', 2);
+
+            $paidAmount = $advance->payments->sum('amount');
+            $totalReceived = bcadd($totalReceived, $paidAmount, 2);
+
+            $appliedAmount = $advance->advanceAdjustmentsGiven->sum('amount');
+            $totalApplied = bcadd($totalApplied, $appliedAmount, 2);
+
+            $unapplied = bcsub($paidAmount, $appliedAmount, 2);
+            $availableBalance = bcadd($availableBalance, $unapplied, 2);
+        }
+
+        $summary = [
+            'total_advance' => $totalAdvance,
+            'total_received' => $totalReceived,
+            'total_applied' => $totalApplied,
+            'available_balance' => $availableBalance,
+        ];
+
+        return view('tenant.bills.advance-credit', compact('quotation', 'advances', 'regularBills', 'summary'));
     }
 }

@@ -1,13 +1,13 @@
 # Billing Module Implementation Task Report
 
 **Date:** 2026-03-16
-**Status:** Phase 1, Phase 2, Phase 3 & Phase 4 Completed
+**Status:** Phase 1, Phase 2, Phase 3, Phase 4, Phase 5 & Phase 6 Completed
 
 ---
 
 ## Summary
 
-This report documents the implementation work completed for the billing module refactor. Phase 1 (Database Foundation), Phase 2 (Backend Core & Services), Phase 3 (Backend API & Controllers), and Phase 4 (Frontend Bill Creation) have been successfully implemented.
+This report documents the implementation work completed for the billing module refactor. Phase 1 (Database Foundation), Phase 2 (Backend Core & Services), Phase 3 (Backend API & Controllers), Phase 4 (Frontend Bill Creation), Phase 5 (Frontend Advance Credits), and Phase 6 (Frontend Correction Flow) have been successfully implemented.
 
 ---
 
@@ -370,11 +370,232 @@ All date inputs use the existing Flowbite datepicker implementation:
 
 ---
 
+## Phase 5: Frontend Advance Credits
+
+### Blade Views Implemented
+
+#### Advance Credit Banner Component (`resources/views/tenant/bills/partials/advance-credit-banner.blade.php`)
+- **Features:**
+  - Reusable Blade component for displaying advance credit status
+  - Shows total advance, total received, total applied, and available balance
+  - Expandable details showing individual advance bills with remaining balances
+  - "Apply to Bill" button (conditionally shown based on `showApplyButton` prop)
+  - Success banner when all credit has been applied
+  - Alpine.js integration for expand/collapse functionality
+  - Dark mode support with appropriate color classes
+
+#### Advance Credit Management View (`resources/views/tenant/bills/advance-credit.blade.php`)
+- **Features:**
+  - Summary cards showing total advance, received, applied, and available balance
+  - List of all advance bills for a quotation with expandable details
+  - Credit applications listed per advance bill
+  - Modal for applying credit to regular bills
+  - Remove credit functionality for draft bills
+  - Bill selection dropdown with existing credit info
+  - Amount input with max button for quick filling
+  - Preview section showing net payable after credit application
+  - Responsive design with Tailwind CSS
+
+### Blade Component Created
+
+#### AdvanceCreditBanner (`app/View/Components/AdvanceCreditBanner.php`)
+- **Properties:**
+  - `quotationId` - The quotation ID to fetch advance bills for
+  - `showApplyButton` - Whether to show the "Apply to Bill" button
+- **Render:** Returns the `tenant.bills.partials.advance-credit-banner` view
+
+### Controller Method Added
+
+#### BillController::advanceCreditManagement (`app/Http/Controllers/Tenant/BillController.php`)
+- **Method:** `advanceCreditManagement(Quotation $quotation)`
+- **Authorization:** Uses `view` policy on quotation
+- **Data Retrieved:**
+  - All advance bills for the quotation (excluding cancelled)
+  - Draft regular bills that can receive credit
+  - Summary calculations (total advance, received, applied, available)
+- **Returns:** `tenant.bills.advance-credit` view
+
+### Routes Registered
+
+#### Web Routes (`routes/web.php`)
+- `GET /quotations/{quotation}/advance-credit` - Advance credit management view
+  - Route name: `tenant.quotations.advance-credit`
+
+---
+
+## Files Modified/Created Summary
+
+### Phase 1
+| File | Action |
+|------|--------|
+| `app/Models/Bill.php` | Modified |
+| `app/Models/Quotation.php` | Modified |
+| `app/Models/BillPayment.php` | Created |
+| `app/Models/BillAdvanceAdjustment.php` | Created |
+
+### Phase 2
+| File | Action |
+|------|--------|
+| `app/Exceptions/BillLockedException.php` | Created |
+| `app/Models/Bill.php` | Modified |
+| `app/Services/BillingService.php` | Modified |
+| `app/Http/Requests/ApplyAdvanceCreditRequest.php` | Created |
+| `app/Http/Requests/RecordPaymentRequest.php` | Created |
+| `app/Policies/BillPolicy.php` | Modified |
+
+### Phase 3
+| File | Action |
+|------|--------|
+| `app/helpers.php` | Created |
+| `app/Http/Controllers/Tenant/BillController.php` | Modified |
+| `app/Http/Controllers/Tenant/BillPaymentController.php` | Created |
+| `app/Http/Controllers/Tenant/BillApiController.php` | Created |
+| `routes/web.php` | Modified |
+| `composer.json` | Modified |
+
+### Phase 4
+| File | Action |
+|------|--------|
+| `resources/views/tenant/bills/create-regular.blade.php` | Verified/Existing |
+| `resources/views/tenant/bills/create-advance.blade.php` | Verified/Existing |
+| `resources/views/tenant/bills/create-running.blade.php` | Verified/Existing |
+| `resources/views/tenant/bills/partials/bill-timeline.blade.php` | Created |
+| `resources/views/tenant/bills/manage.blade.php` | Created |
+
+### Phase 5
+| File | Action |
+|------|--------|
+| `resources/views/tenant/bills/partials/advance-credit-banner.blade.php` | Created |
+| `app/View/Components/AdvanceCreditBanner.php` | Created |
+| `resources/views/tenant/bills/advance-credit.blade.php` | Created |
+| `resources/views/tenant/quotations/show.blade.php` | Modified |
+| `app/Http/Controllers/Tenant/BillController.php` | Modified |
+| `routes/web.php` | Modified |
+
+---
+
+## Phase 6: Frontend Correction Flow
+
+### Database Changes
+
+#### Migration Created (`database/migrations/2026_03_16_000001_add_reissue_tracking_to_bills.php`)
+- **New columns:**
+  - `reissued_from_id` - Foreign key to the original cancelled bill
+  - `reissued_to_id` - Foreign key to the new reissued bill
+- **Purpose:** Track the chain of cancelled and reissued bills for audit purposes
+
+### Models Updated
+
+#### Bill Model (`app/Models/Bill.php`)
+- **Added fillable fields:**
+  - `reissued_from_id`, `reissued_to_id` (reissue tracking fields)
+- **New relationships:**
+  - `reissuedFrom()` - BelongsTo relationship to the original cancelled bill
+  - `reissuedTo()` - BelongsTo relationship to the new reissued bill
+  - `childBills()` - HasMany relationship for running bills from advance
+
+### Policy Enhanced
+
+#### BillPolicy (`app/Policies/BillPolicy.php`)
+- **New method:** `reissue()` - Check if user can reissue a cancelled bill
+- **Authorization:** Requires `edit_bills` permission and bill must be cancelled
+
+### Service Enhanced
+
+#### BillingService (`app/Services/BillingService.php`)
+- **New methods:**
+  - `reissueBill()` - Create a new bill from a cancelled one with tracking
+  - `replicateBillItems()` - Copy bill items from cancelled bill to new bill
+- **Features:**
+  - Transaction-based creation for data integrity
+  - Automatic tracking of reissue chain
+  - Activity logging for audit trail
+  - Support for all bill types (advance, regular, running)
+
+### Controllers Enhanced
+
+#### BillController (`app/Http/Controllers/Tenant/BillController.php`)
+- **New methods:**
+  - `cancelled()` - Display cancelled bill success page
+  - `showReissueForm()` - Show reissue form for cancelled bill
+  - `reissue()` - Process bill reissuance
+  - `reissued()` - Display reissued bill success page
+- **Updated methods:**
+  - `cancel()` - Now redirects to cancelled success view
+
+### Routes Registered
+
+#### Web Routes (`routes/web.php`)
+- `GET /bills/{bill}/cancelled` - Cancelled bill success page
+- `GET /bills/{bill}/reissue` - Reissue form view
+- `POST /bills/{bill}/reissue` - Process reissuance
+- `GET /bills/{bill}/reissued` - Reissued bill success page
+
+### Blade Views Created
+
+#### Cancelled Bill Success View (`resources/views/tenant/bills/cancelled.blade.php`)
+- **Features:**
+  - Success header with cancelled indicator
+  - Bill details summary (invoice, customer, amount, date)
+  - Reissue button for cancelled bills (policy-gated)
+  - Info card explaining next steps
+
+#### Reissue Form View (`resources/views/tenant/bills/reissue.blade.php`)
+- **Features:**
+  - Original bill details summary
+  - New invoice number input (auto-suggested)
+  - Bill date and payment date inputs with Flowbite datepicker
+  - Notes textarea
+  - Warning info card about reissuance
+
+#### Reissued Bill Success View (`resources/views/tenant/bills/reissued.blade.php`)
+- **Features:**
+  - Success header with reissued indicator
+  - Reissue chain visualization (original → new)
+  - Bill details summary
+  - Draft status badge
+  - Edit, Issue, and View action buttons (policy-gated)
+
+#### Correction History Component (`resources/views/tenant/bills/partials/correction-history.blade.php`)
+- **Features:**
+  - Timeline visualization of cancelled → reissued chain
+  - Color-coded status indicators (red for cancelled, green for current)
+  - View links to related bills
+  - Reissue link for cancelled bills
+  - Only displays when bill is part of reissue chain
+
+### Integration
+
+#### Manage View Updated (`resources/views/tenant/bills/manage.blade.php`)
+- Added correction-history component display
+- Shows when bill has `reissued_from_id` or `reissued_to_id`
+
+---
+
+## Files Modified/Created Summary
+
+### Phase 6
+| File | Action |
+|------|--------|
+| `database/migrations/2026_03_16_000001_add_reissue_tracking_to_bills.php` | Created |
+| `app/Models/Bill.php` | Modified |
+| `app/Policies/BillPolicy.php` | Modified |
+| `app/Services/BillingService.php` | Modified |
+| `app/Http/Controllers/Tenant/BillController.php` | Modified |
+| `routes/web.php` | Modified |
+| `resources/views/tenant/bills/cancelled.blade.php` | Created |
+| `resources/views/tenant/bills/reissue.blade.php` | Created |
+| `resources/views/tenant/bills/reissued.blade.php` | Created |
+| `resources/views/tenant/bills/partials/correction-history.blade.php` | Created |
+| `resources/views/tenant/bills/manage.blade.php` | Modified |
+
+---
+
 ## Next Steps
 
-1. **Phase 5:** Proceed to Frontend Advance Credits implementation
-2. **Testing:** Write feature tests for bill creation workflows
-3. **Documentation:** Update user documentation with new bill management features
+1. **Testing:** Write feature tests for bill cancellation and reissue workflows
+2. **Documentation:** Update user documentation with correction flow features
+3. **Migration:** Run `php artisan migrate` to apply reissue tracking columns
 
 ---
 
@@ -386,3 +607,5 @@ All date inputs use the existing Flowbite datepicker implementation:
 - The locking system prevents accidental modification of bills in invalid states
 - All forms use existing Flowbite datepicker (no re-implementation needed)
 - Alpine.js is used for reactive UI without additional framework overhead
+- The advance credit banner component can be reused in multiple views (quotation show, bill create/edit)
+- Credit can only be applied to or removed from draft bills
