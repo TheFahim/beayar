@@ -38,8 +38,15 @@ class BillPolicy
      */
     public function update(User $user, Bill $bill): bool
     {
-        return $user->can('edit_bills') &&
-               ($bill->tenant_company_id === $user->current_tenant_company_id);
+        if (!$user->can('edit_bills')) {
+            return false;
+        }
+
+        if ($bill->tenant_company_id !== $user->current_tenant_company_id) {
+            return false;
+        }
+
+        return $bill->canBeEdited();
     }
 
     /**
@@ -47,14 +54,88 @@ class BillPolicy
      */
     public function delete(User $user, Bill $bill): bool
     {
-        // Typically bills shouldn't be deleted easily, but if permission exists:
-        // We didn't define delete_bills in seeder, so maybe restrict to owner or admin role check as fallback?
-        // Or assume edit_bills covers deletion? Or prevent deletion.
-        // Let's check seeder: 'view_bills', 'create_bills', 'edit_bills', 'view_finance'.
-        // No delete_bills.
-        // So only super_admin or tenant_admin might delete if logic permits.
-        
-        return $user->hasRole('tenant_admin') && 
+        // Only draft bills can be deleted
+        if ($bill->status !== Bill::STATUS_DRAFT) {
+            return false;
+        }
+
+        return $user->hasRole('tenant_admin') &&
                ($bill->tenant_company_id === $user->current_tenant_company_id);
+    }
+
+    /**
+     * Determine whether the user can issue the bill.
+     */
+    public function issue(User $user, Bill $bill): bool
+    {
+        if (!$user->can('edit_bills')) {
+            return false;
+        }
+
+        if ($bill->tenant_company_id !== $user->current_tenant_company_id) {
+            return false;
+        }
+
+        return $bill->status === Bill::STATUS_DRAFT;
+    }
+
+    /**
+     * Determine whether the user can cancel the bill.
+     */
+    public function cancel(User $user, Bill $bill): bool
+    {
+        if (!$user->can('edit_bills')) {
+            return false;
+        }
+
+        if ($bill->tenant_company_id !== $user->current_tenant_company_id) {
+            return false;
+        }
+
+        // Only issued or partially paid bills can be cancelled
+        return in_array($bill->status, [
+            Bill::STATUS_ISSUED,
+            Bill::STATUS_PARTIALLY_PAID,
+        ]);
+    }
+
+    /**
+     * Determine whether the user can record payments.
+     */
+    public function recordPayment(User $user, Bill $bill): bool
+    {
+        if (!$user->can('edit_bills')) {
+            return false;
+        }
+
+        if ($bill->tenant_company_id !== $user->current_tenant_company_id) {
+            return false;
+        }
+
+        return in_array($bill->status, [
+            Bill::STATUS_ISSUED,
+            Bill::STATUS_PARTIALLY_PAID,
+        ]);
+    }
+
+    /**
+     * Determine whether the user can apply advance credit.
+     */
+    public function applyAdvance(User $user, Bill $bill): bool
+    {
+        if (!$user->can('edit_bills')) {
+            return false;
+        }
+
+        if ($bill->tenant_company_id !== $user->current_tenant_company_id) {
+            return false;
+        }
+
+        // Only regular bills can have advance applied
+        if ($bill->bill_type !== Bill::TYPE_REGULAR) {
+            return false;
+        }
+
+        return $bill->canBeEdited();
     }
 }

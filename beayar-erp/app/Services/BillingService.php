@@ -3,12 +3,16 @@
 namespace App\Services;
 
 use App\Models\Bill;
+use App\Models\BillAdvanceAdjustment;
 use App\Models\BillItem;
+use App\Models\BillPayment;
 use App\Models\ChallanProduct;
 use App\Models\Quotation;
 use App\Models\QuotationProduct;
 use App\Models\QuotationRevision;
+use App\Exceptions\BillLockedException;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -533,5 +537,300 @@ class BillingService
                 ]);
             }
         }
+    }
+
+    // ==========================================
+    // PHASE 2: ADDITIONAL METHODS
+    // ==========================================
+
+    /**
+     * Apply advance credit to a final bill.
+     *
+     * @param Bill $advanceBill The advance bill providing credit
+     * @param Bill $finalBill The bill receiving credit (must be regular type)
+     * @param string $amount Amount to apply (as string for precision)
+     * @return BillAdvanceAdjustment
+     * @throws \Exception
+     */
+    public function applyAdvanceCredit(Bill $advanceBill, Bill $finalBill, string $amount): BillAdvanceAdjustment
+    {
+        // Validation
+        if ($advanceBill->bill_type !== Bill::TYPE_ADVANCE) {
+            throw new \InvalidArgumentException('Source bill must be an advance bill.');
+        }
+
+        if ($finalBill->bill_type !== Bill::TYPE_REGULAR) {
+            throw new \InvalidArgumentException('Target bill must be a regular bill.');
+        }
+
+        if ($advanceBill->quotation_id !== $finalBill->quotation_id) {
+            throw new \InvalidArgumentException('Both bills must belong to the same quotation.');
+        }
+
+        // Check available balance
+        $availableBalance = $this->getUnappliedAdvanceBalance($advanceBill);
+        if (bccomp($amount, $availableBalance, 2) > 0) {
+            throw new \InvalidArgumentException(
+                "Cannot apply {$amount}. Available balance is {$availableBalance}."
+            );
+        }
+
+        // Check if final bill can accept credit
+        if (!$finalBill->canBeEdited()) {
+            throw new BillLockedException($finalBill, $finalBill->getLockReason());
+        }
+
+        return DB::transaction(function () use ($advanceBill, $finalBill, $amount) {
+            // Create the adjustment record
+            $adjustment = BillAdvanceAdjustment::create([
+                'advance_bill_id' => $advanceBill->id,
+                'final_bill_id' => $finalBill->id,
+                'tenant_company_id' => currentTenantId(),
+                'amount' => $amount,
+                'created_by' => auth()->id(),
+                'notes' => null,
+            ]);
+
+            // Update the final bill's applied amount and net payable
+            $currentApplied = $finalBill->advance_applied_amount ?? '0';
+            $newApplied = bcadd($currentApplied, $amount, 2);
+            $newNetPayable = bcsub($finalBill->total_amount ?? 0, $newApplied, 2);
+
+            $finalBill->update([
+                'advance_applied_amount' => $newApplied,
+                'net_payable_amount' => max($newNetPayable, '0.00'),
+            ]);
+
+            Log::info('Advance credit applied', [
+                'advance_bill_id' => $advanceBill->id,
+                'final_bill_id' => $finalBill->id,
+                'amount' => $amount,
+            ]);
+
+            return $adjustment;
+        });
+    }
+
+    /**
+     * Remove advance credit from a final bill.
+     * Used during cancellation or correction workflows.
+     *
+     * @param BillAdvanceAdjustment $adjustment
+     * @return void
+     * @throws \Exception
+     */
+    public function removeAdvanceCredit(BillAdvanceAdjustment $adjustment): void
+    {
+        $finalBill = $adjustment->finalBill;
+        $advanceBill = $adjustment->advanceBill;
+        $amount = $adjustment->amount;
+
+        DB::transaction(function () use ($adjustment, $finalBill, $advanceBill, $amount) {
+            // Soft delete the adjustment
+            $adjustment->delete();
+
+            // Update the final bill
+            $currentApplied = $finalBill->advance_applied_amount ?? '0';
+            $newApplied = bcsub($currentApplied, $amount, 2);
+            $newNetPayable = bcadd($finalBill->total_amount ?? 0, $amount, 2);
+
+            $finalBill->update([
+                'advance_applied_amount' => max($newApplied, '0.00'),
+                'net_payable_amount' => $newNetPayable,
+            ]);
+
+            Log::info('Advance credit removed', [
+                'advance_bill_id' => $advanceBill->id,
+                'final_bill_id' => $finalBill->id,
+                'amount' => $amount,
+            ]);
+        });
+    }
+
+    /**
+     * Issue a bill (change status from draft to issued).
+     *
+     * @param Bill $bill
+     * @return Bill
+     * @throws BillLockedException|\Exception
+     */
+    public function issueBill(Bill $bill): Bill
+    {
+        if ($bill->status !== Bill::STATUS_DRAFT) {
+            throw new \InvalidArgumentException('Only draft bills can be issued.');
+        }
+
+        return DB::transaction(function () use ($bill) {
+            $oldStatus = $bill->status;
+
+            $bill->update(['status' => Bill::STATUS_ISSUED]);
+
+            // Lock the bill after issuing
+            $bill->lock(Bill::LOCK_REASON_STATUS);
+
+            Log::info('Bill issued', [
+                'bill_id' => $bill->id,
+                'old_status' => $oldStatus,
+                'new_status' => Bill::STATUS_ISSUED,
+            ]);
+
+            return $bill->fresh();
+        });
+    }
+
+    /**
+     * Cancel a bill.
+     *
+     * @param Bill $bill
+     * @param string|null $reason
+     * @return Bill
+     * @throws \Exception
+     */
+    public function cancelBill(Bill $bill, ?string $reason = null): Bill
+    {
+        if ($bill->status === Bill::STATUS_CANCELLED) {
+            throw new \InvalidArgumentException('Bill is already cancelled.');
+        }
+
+        return DB::transaction(function () use ($bill, $reason) {
+            $oldStatus = $bill->status;
+
+            // Remove any advance adjustments if this is a regular bill
+            if ($bill->bill_type === Bill::TYPE_REGULAR) {
+                foreach ($bill->advanceAdjustmentsReceived as $adjustment) {
+                    $this->removeAdvanceCredit($adjustment);
+                }
+            }
+
+            $bill->update([
+                'status' => Bill::STATUS_CANCELLED,
+                'notes' => $reason ? ($bill->notes . "\nCancellation reason: " . $reason) : $bill->notes,
+            ]);
+
+            Log::info('Bill cancelled', [
+                'bill_id' => $bill->id,
+                'old_status' => $oldStatus,
+                'reason' => $reason,
+            ]);
+
+            return $bill->fresh();
+        });
+    }
+
+    /**
+     * Record a payment for a bill.
+     *
+     * @param Bill $bill
+     * @param array $data Payment data
+     * @return BillPayment
+     * @throws \Exception
+     */
+    public function recordPayment(Bill $bill, array $data): BillPayment
+    {
+        if (!in_array($bill->status, [Bill::STATUS_ISSUED, Bill::STATUS_PARTIALLY_PAID])) {
+            throw new \InvalidArgumentException('Can only record payments for issued or partially paid bills.');
+        }
+
+        return DB::transaction(function () use ($bill, $data) {
+            $payment = BillPayment::create([
+                'bill_id' => $bill->id,
+                'tenant_company_id' => currentTenantId(),
+                'amount' => $data['amount'],
+                'payment_method' => $data['payment_method'],
+                'payment_date' => $data['payment_date'] ?? now(),
+                'reference_number' => $data['reference_number'] ?? null,
+                'notes' => $data['notes'] ?? null,
+                'created_by' => auth()->id(),
+            ]);
+
+            // Update bill status
+            $this->updateBillPaymentStatus($bill);
+
+            Log::info('Payment recorded', [
+                'bill_id' => $bill->id,
+                'payment_id' => $payment->id,
+                'amount' => $data['amount'],
+            ]);
+
+            return $payment;
+        });
+    }
+
+    /**
+     * Update bill status based on payments.
+     *
+     * @param Bill $bill
+     * @return void
+     */
+    protected function updateBillPaymentStatus(Bill $bill): void
+    {
+        $paidAmount = $bill->paid_amount;
+        $netPayable = $bill->net_payable_amount ?? $bill->total_amount ?? 0;
+
+        if (bccomp($paidAmount, '0.00', 2) <= 0) {
+            // No payments
+            $newStatus = Bill::STATUS_ISSUED;
+        } elseif (bccomp($paidAmount, $netPayable, 2) >= 0) {
+            // Fully paid
+            $newStatus = Bill::STATUS_PAID;
+        } else {
+            // Partially paid
+            $newStatus = Bill::STATUS_PARTIALLY_PAID;
+        }
+
+        if ($bill->status !== $newStatus) {
+            $oldStatus = $bill->status;
+            $bill->update(['status' => $newStatus]);
+
+            Log::info('Bill status updated', [
+                'bill_id' => $bill->id,
+                'old_status' => $oldStatus,
+                'new_status' => $newStatus,
+            ]);
+        }
+    }
+
+    /**
+     * Get the unapplied advance balance for an advance bill.
+     *
+     * @param Bill $advanceBill
+     * @return string
+     */
+    public function getUnappliedAdvanceBalance(Bill $advanceBill): string
+    {
+        if ($advanceBill->bill_type !== Bill::TYPE_ADVANCE) {
+            return '0.00';
+        }
+
+        return $advanceBill->unapplied_amount;
+    }
+
+    /**
+     * Get billable challans for a quotation.
+     * Returns challans that have not been fully billed yet.
+     *
+     * @param Quotation $quotation
+     * @return Collection
+     */
+    public function getBillableChallans(Quotation $quotation): Collection
+    {
+        // Get all challans for this quotation
+        $challans = $quotation->challans()
+            ->with(['challanProducts.quotationProduct'])
+            ->get();
+
+        // Filter out fully billed challans
+        return $challans->filter(function ($challan) {
+            foreach ($challan->challanProducts as $cp) {
+                $billedQuantity = DB::table('bill_items')
+                    ->where('challan_product_id', $cp->id)
+                    ->sum('quantity');
+
+                if (bccomp($cp->quantity, $billedQuantity, 2) > 0) {
+                    return true; // Has unbilled quantity
+                }
+            }
+            return false;
+        });
     }
 }

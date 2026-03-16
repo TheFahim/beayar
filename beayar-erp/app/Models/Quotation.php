@@ -14,6 +14,17 @@ class Quotation extends BaseModel
 
     protected $guarded = ['id'];
 
+    /**
+     * Billing stage constants
+     */
+    const BILLING_STAGE_NONE = 'none';
+    const BILLING_STAGE_ADVANCE_PENDING = 'advance_pending';
+    const BILLING_STAGE_ADVANCE_ISSUED = 'advance_issued';
+    const BILLING_STAGE_RUNNING_IN_PROGRESS = 'running_in_progress';
+    const BILLING_STAGE_REGULAR_PENDING = 'regular_pending';
+    const BILLING_STAGE_COMPLETED = 'completed';
+    const BILLING_STAGE_CANCELLED = 'cancelled';
+
     public static function boot()
     {
         parent::boot();
