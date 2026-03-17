@@ -56,7 +56,7 @@ class BillController extends Controller
             // Calculate metrics based on all bills, not just the paginated ones
             // This might be expensive, so we might want to cache it or optimize it
             $allBills = Bill::select('id', 'quotation_id', 'bill_date', 'total_amount', 'due')
-                ->withSum('receivedBills as paid', 'amount')
+                ->withSum('payments as paid', 'amount')
                 ->get();
 
             $latestByQuotation = $allBills

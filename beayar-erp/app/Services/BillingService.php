@@ -15,10 +15,30 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class BillingService
 {
+    /**
+     * Get the current tenant company ID from authenticated user or session
+     */
+    protected function getCurrentTenantId(): ?int
+    {
+        // First try to get from authenticated user
+        $user = Auth::user();
+        if ($user && $user->current_tenant_company_id) {
+            return $user->current_tenant_company_id;
+        }
+
+        // Fall back to session
+        if (session()->has('tenant_id')) {
+            return session()->get('tenant_id');
+        }
+
+        return null;
+    }
+
     /**
      * Create a new bill with items and allocations
      *
@@ -36,8 +56,12 @@ class BillingService
 
             $activeRevision = QuotationRevision::where('quotation_id', $data['quotation_id'])->where('is_active', '1')->first();
 
-            // Create the bill
+            // Get the current tenant ID
+            $tenantId = $this->getCurrentTenantId();
+
+            // Create the bill with explicit tenant_company_id
             $bill = Bill::create([
+                'tenant_company_id' => $tenantId, // Explicitly set tenant_company_id
                 'quotation_id' => $data['quotation_id'],
                 'quotation_revision_id' => $data['quotation_revision_id'] ?? null,
                 'parent_bill_id' => $data['parent_bill_id'] ?? null,
@@ -183,6 +207,7 @@ class BillingService
             }
 
             $bill = Bill::create([
+                'tenant_company_id' => $this->getCurrentTenantId(),
                 'quotation_id' => $data['quotation_id'],
                 'quotation_revision_id' => $data['quotation_revision_id'] ?? null,
                 'bill_type' => 'advance',
@@ -231,6 +256,7 @@ class BillingService
             }
 
             $bill = Bill::create([
+                'tenant_company_id' => $this->getCurrentTenantId(),
                 'quotation_id' => $data['quotation_id'],
                 'quotation_revision_id' => $data['quotation_revision_id'] ?? null,
                 'parent_bill_id' => $parent->id,
