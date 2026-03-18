@@ -61,6 +61,7 @@
     window.quotationFormConfig = {
         mode: 'create',
         hasPriceCalculator: {{ auth()->user()->currentCompany->hasFeature('module_price_calculator') ? 'true' : 'false' }},
+        companySettings: @json($companySettings),
         // Old values from Laravel
         oldQuotation: {
             quotation_no: @json(old('quotation.quotation_no', '')),
@@ -77,7 +78,27 @@
                 'discount' => 0,
                 'shipping' => 0,
                 'saved_as' => 'draft',
-                'terms_conditions' => $companySettings['default_terms_conditions'] ?? "* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT",
+                'terms_conditions' => (function() use ($companySettings) {
+                    $sectionName = $companySettings['terms_section_name'] ?? 'Terms & Instructions';
+                    $rawTerms = $companySettings['default_terms_conditions'] ?? "* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT";
+                    $lines = array_filter(explode("\n", $rawTerms), fn($l) => trim($l) !== '');
+                    $bullets = [];
+                    $others = [];
+                    foreach ($lines as $line) {
+                        $trimmed = trim($line);
+                        if (str_starts_with($trimmed, '*')) {
+                            $bullets[] = '<li>' . e(trim(substr($trimmed, 1))) . '</li>';
+                        } else {
+                            $others[] = '<p class="text-xs text-gray-700">' . e($trimmed) . '</p>';
+                        }
+                    }
+                    $body = '';
+                    if (!empty($bullets)) {
+                        $body .= '<ul class="list-disc list-inside text-xs space-y-2 text-gray-700">' . implode('', $bullets) . '</ul>';
+                    }
+                    $body .= implode('', $others);
+                    return '<h3 class="bg-blue-900 text-white font-bold p-2 mb-4 text-sm">' . e($sectionName) . '</h3>' . $body;
+                })(),
             ])
         ) !!},
         oldQuotationProducts: {!! json_encode(

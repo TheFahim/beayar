@@ -227,13 +227,37 @@ const QuotationHelpers = {
     },
 
     // Default terms and conditions
-    getDefaultTerms() {
-        return `<h3 class="bg-blue-900 text-white font-bold p-2 mb-4 text-sm">Terms & Instructions</h3>
-            <ul class="list-disc list-inside text-xs space-y-2 text-gray-700">
-                <li>50% Advance with Work order, rest after delivery</li>
-                <li>Delivery time: Supply 15-20 days After Getting PO</li>
-                <li>The Price included 10% VAT & 5% AIT</li>
+    getDefaultTerms(companySettings) {
+        const sectionName = (companySettings && companySettings.terms_section_name) || 'Terms & Instructions';
+        const rawTerms = (companySettings && companySettings.default_terms_conditions) ||
+            "* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT";
+
+        const lines = rawTerms.split('\n').filter(l => l.trim() !== '');
+        const bulletLines = [];
+        const otherLines = [];
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('*')) {
+                bulletLines.push(trimmed.substring(1).trim());
+            } else {
+                otherLines.push(trimmed);
+            }
+        });
+
+        let bodyHtml = '';
+        if (bulletLines.length > 0) {
+            const items = bulletLines.map(b => `<li>${b}</li>`).join('\n                ');
+            bodyHtml += `<ul class="list-disc list-inside text-xs space-y-2 text-gray-700">
+                ${items}
             </ul>`;
+        }
+        if (otherLines.length > 0) {
+            bodyHtml += otherLines.map(l => `<p class="text-xs text-gray-700">${l}</p>`).join('\n');
+        }
+
+        return `<h3 class="bg-blue-900 text-white font-bold p-2 mb-4 text-sm">${sectionName}</h3>
+            ${bodyHtml}`;
     },
     getViaTerms() {
         return `<div class="mx-auto p-2 bg-white shadow-sm w-2/3">

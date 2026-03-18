@@ -83,7 +83,9 @@ function initQuotationForm(config = {}) {
             margin_percentage: 0,
             total: 0,
             saved_as: config.oldQuotationRevision?.saved_as || 'draft',
-            terms_conditions: config.oldQuotationRevision?.terms_conditions || '',
+            terms_conditions: config.oldQuotationRevision?.terms_conditions
+                ?? config.companySettings?.default_terms_conditions
+                ?? '',
         },
 
 
@@ -125,6 +127,7 @@ function initQuotationForm(config = {}) {
         csrfToken: config.csrfToken || '',
         mode: config.mode || 'create',
         hasPriceCalculator: config.hasPriceCalculator ?? true,
+        companySettings: config.companySettings || {},
         dateFormat: config.companySettings?.date_format || 'd/m/Y',
 
         format2(value) {
@@ -701,7 +704,7 @@ function initQuotationForm(config = {}) {
         // ========================================================================
 
         useDefaultTerms() {
-            this.quotation_revision.terms_conditions = QuotationHelpers.getDefaultTerms();
+            this.quotation_revision.terms_conditions = QuotationHelpers.getDefaultTerms(this.companySettings);
         },
         useViaTerms() {
             this.quotation_revision.terms_conditions = QuotationHelpers.getViaTerms();
