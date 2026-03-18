@@ -104,6 +104,14 @@ Route::group(['middleware' => ['web', 'auth', 'verified', 'onboarding.complete',
     Route::get('/profile/edit', [\App\Http\Controllers\Tenant\ProfileController::class, 'edit'])->name('tenant.profile.edit');
     Route::put('/profile', [\App\Http\Controllers\Tenant\ProfileController::class, 'update'])->name('tenant.profile.update');
 
+    // Password Change Routes
+    Route::post('/profile/password/send-verification', [\App\Http\Controllers\Tenant\ProfileController::class, 'sendPasswordChangeVerification'])->name('tenant.profile.password.send-verification');
+    Route::get('/profile/password/verify/{token}', [\App\Http\Controllers\Tenant\ProfileController::class, 'verifyEmail'])->name('tenant.profile.password.verify');
+    Route::get('/profile/password/check-verification', [\App\Http\Controllers\Tenant\ProfileController::class, 'checkVerificationStatus'])->name('tenant.profile.password.check-verification');
+    Route::post('/profile/password/send-link', [\App\Http\Controllers\Tenant\ProfileController::class, 'sendPasswordChangeLink'])->name('tenant.profile.password.send-link');
+    Route::get('/profile/password/change/{token}', [\App\Http\Controllers\Tenant\ProfileController::class, 'showPasswordChangeForm'])->name('tenant.profile.password.change.form');
+    Route::post('/profile/password/change', [\App\Http\Controllers\Tenant\ProfileController::class, 'changePassword'])->name('tenant.profile.password.change');
+
     // Company Members
     Route::resource('company-members', \App\Http\Controllers\CompanyMemberController::class)->names('company-members');
 

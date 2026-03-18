@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Password Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Password Verification Test</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">Test Steps:</h2>
+            
+            <div class="space-y-4">
+                <div class="p-4 bg-blue-50 rounded">
+                    <h3 class="font-medium">1. Test Modal Opening</h3>
+                    <p class="text-sm text-gray-600">Click the button to test if modal opens correctly:</p>
+                    <button onclick="testModal()" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Test Modal
+                    </button>
+                </div>
+                
+                <div class="p-4 bg-green-50 rounded">
+                    <h3 class="font-medium">2. Test URL Parameters</h3>
+                    <p class="text-sm text-gray-600">Check if URL parameters are detected:</p>
+                    <button onclick="testUrlParams()" class="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                        Test URL Params
+                    </button>
+                    <div id="urlResult" class="mt-2 text-sm"></div>
+                </div>
+                
+                <div class="p-4 bg-yellow-50 rounded">
+                    <h3 class="font-medium">3. Simulate Verification</h3>
+                    <p class="text-sm text-gray-600">Simulate returning from email verification:</p>
+                    <button onclick="simulateVerification()" class="mt-2 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+                        Simulate Verification
+                    </button>
+                </div>
+            </div>
+            
+            <div id="testResults" class="mt-6 p-4 bg-gray-100 rounded">
+                <h3 class="font-medium mb-2">Test Results:</h3>
+                <div id="results" class="text-sm space-y-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                addResult('✅ Modal found and opened successfully');
+            } else {
+                addResult('❌ Modal not found');
+            }
+        }
+
+        function testUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const verified = urlParams.get('verified');
+            const token = urlParams.get('token');
+            
+            document.getElementById('urlResult').innerHTML = `
+                <div class="text-sm">
+                    <strong>Verified:</strong> ${verified || 'null'}<br>
+                    <strong>Token:</strong> ${token || 'null'}
+                </div>
+            `;
+            
+            addResult(`URL params detected - Verified: ${verified}, Token: ${token ? 'present' : 'missing'}`);
+        }
+
+        function simulateVerification() {
+            const testToken = 'test-verification-token-' + Date.now();
+            const newUrl = window.location.pathname + '?verified=true&token=' + testToken;
+            window.history.pushState({}, '', newUrl);
+            
+            addResult(`✅ Simulated verification with token: ${testToken}`);
+            
+            // Trigger page load check
+            setTimeout(() => {
+                testUrlParams();
+            }, 100);
+        }
+
+        function addResult(message) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            results.appendChild(div);
+        }
+
+        // Initial test
+        testUrlParams();
+    </script>
+
+    <!-- Copy of modal structure for testing -->
+    <div id="passwordModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeModal()"></div>
+            <div class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+                <h3 class="text-lg font-medium">Test Modal</h3>
+                <p>This is a test modal to verify the structure.</p>
+                <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-red-600 text-white rounded">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closeModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>
