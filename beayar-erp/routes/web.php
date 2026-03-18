@@ -11,7 +11,9 @@ use App\Http\Controllers\Admin\TenantController as AdminTenantController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Tenant\BillApiController;
 use App\Http\Controllers\Tenant\BillController;
+use App\Http\Controllers\Tenant\BillPaymentController;
 use App\Http\Controllers\Tenant\BrandOriginController;
 use App\Http\Controllers\Tenant\ChallanController;
 use App\Http\Controllers\Tenant\CustomerController;
@@ -126,6 +128,33 @@ Route::group(['middleware' => ['web', 'auth', 'verified', 'onboarding.complete',
     Route::put('/bills/{bill}/advance', [BillController::class, 'updateAdvance'])->name('tenant.bills.advance.update');
     Route::put('/bills/{bill}/regular', [BillController::class, 'updateRegular'])->name('tenant.bills.regular.update');
     Route::put('/bills/{bill}/running', [BillController::class, 'updateRunning'])->name('tenant.bills.running.update');
+
+    // Bill Actions
+    Route::post('/bills/{bill}/issue', [BillController::class, 'issue'])->name('tenant.bills.issue');
+    Route::post('/bills/{bill}/cancel', [BillController::class, 'cancel'])->name('tenant.bills.cancel');
+    Route::get('/bills/{bill}/cancelled', [BillController::class, 'cancelled'])->name('tenant.bills.cancelled');
+    Route::get('/bills/{bill}/reissue', [BillController::class, 'showReissueForm'])->name('tenant.bills.reissue.form');
+    Route::post('/bills/{bill}/reissue', [BillController::class, 'reissue'])->name('tenant.bills.reissue');
+    Route::get('/bills/{bill}/reissued', [BillController::class, 'reissued'])->name('tenant.bills.reissued');
+    Route::post('/bills/{bill}/apply-advance', [BillController::class, 'applyAdvance'])->name('tenant.bills.apply-advance');
+    Route::delete('/bills/{bill}/advance-adjustments/{adjustment}', [BillController::class, 'removeAdvance'])->name('tenant.bills.remove-advance');
+
+    // Advance Credit Management
+    Route::get('/quotations/{quotation}/advance-credit', [BillController::class, 'advanceCreditManagement'])->name('tenant.quotations.advance-credit');
+
+    // Bill Payments
+    Route::get('/bills/{bill}/payments', [BillPaymentController::class, 'index'])->name('tenant.bills.payments.index');
+    Route::post('/bills/{bill}/payments', [BillPaymentController::class, 'store'])->name('tenant.bills.payments.store');
+    Route::delete('/bills/{bill}/payments/{payment}', [BillPaymentController::class, 'destroy'])->name('tenant.bills.payments.destroy');
+
+    // Bill API endpoints (AJAX)
+    Route::get('/api/quotations/{quotation}/billable-challans', [BillApiController::class, 'billableChallans'])->name('api.quotations.billable-challans');
+    Route::get('/api/quotations/{quotation}/available-advances', [BillApiController::class, 'availableAdvances'])->name('api.quotations.available-advances');
+    Route::get('/api/quotations/{quotation}/bill-summary', [BillApiController::class, 'quotationBillSummary'])->name('api.quotations.bill-summary');
+    Route::get('/api/bills/{bill}/advance-balance', [BillApiController::class, 'advanceBalance'])->name('api.bills.advance-balance');
+    Route::get('/api/bills/{bill}/status', [BillApiController::class, 'status'])->name('api.bills.status');
+    Route::get('/api/bills/search', [BillApiController::class, 'search'])->name('api.bills.search');
+
     Route::resource('bills', BillController::class)->names('tenant.bills')->middleware('ensure.operational');
 
     // Received Bills (Payments)

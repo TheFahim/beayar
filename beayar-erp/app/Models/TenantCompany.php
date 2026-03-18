@@ -31,6 +31,8 @@ class TenantCompany extends Model
         'vat_percentages' => [0, 5, 10, 15],
         'vat_default_percentage' => 15,
         'header_style' => 'style_1',
+        'terms_section_name' => 'Terms & Instructions',
+        'default_terms_conditions' => "* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT",
     ];
 
     /**

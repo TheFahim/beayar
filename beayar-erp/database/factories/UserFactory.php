@@ -41,4 +41,14 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Set the current tenant company for the user.
+     */
+    public function forTenant($tenantId): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'current_tenant_company_id' => $tenantId,
+        ]);
+    }
 }

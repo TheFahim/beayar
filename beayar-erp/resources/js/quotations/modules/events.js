@@ -25,7 +25,7 @@ export default {
   handleQuotationTypeChange() {
     if (this.quotation_revision.type === 'normal') {
       this.clearCurrencyForNormalQuotation();
-      this.quotation_revision.terms_conditions = QuotationHelpers.getDefaultTerms();
+      this.quotation_revision.terms_conditions = QuotationHelpers.getDefaultTerms(this.companySettings);
     } else if (this.quotation_revision.type === 'via') {
       this.setDefaultCurrencyForViaQuotation();
       this.quotation_revision.terms_conditions = QuotationHelpers.getViaTerms();

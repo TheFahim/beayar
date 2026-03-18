@@ -16,9 +16,7 @@
         {{ $label }}
 
         @if ($attributes['required'] ?? false)
-            <span
-                class="bg-red-100 text-red-800 text-xs font-medium px-1 py-0.5 rounded dark:bg-red-900 dark:text-red-300">required
-            </span>
+            <span class="text-red-500 text-sm font-medium">*</span>
         @endif
     </label>
 @endif
