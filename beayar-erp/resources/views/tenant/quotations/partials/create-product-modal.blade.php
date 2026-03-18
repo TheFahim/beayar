@@ -18,11 +18,11 @@
 
             <!-- Modal Header -->
             <div
-                class="px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
+                class="px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-olive-50 dark:from-gray-800 dark:to-gray-800">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div
-                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-olive-600 flex items-center justify-center shadow-lg">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4"></path>
@@ -117,7 +117,7 @@
                                         placeholder="Enter product name..."
                                         class="block w-full rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-all duration-200"
                                         required>
-                                    <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-0 -z-10 blur transition-opacity duration-200"
+                                    <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 to-olive-500 opacity-0 -z-10 blur transition-opacity duration-200"
                                         :class="{ 'opacity-20': isFocused }"></div>
                                 </div>
                                 <p x-show="createProductModal.errors.productName" x-text="createProductModal.errors.productName"
@@ -131,7 +131,7 @@
                                         Specifications
                                     </label>
                                     <button type="button" @click="addModalSpec()"
-                                        class="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 text-xs font-bold shadow-md hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                                        class="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-olive-600 text-white rounded-lg hover:from-blue-700 hover:to-olive-700 text-xs font-bold shadow-md hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                         </svg>
@@ -209,7 +209,7 @@
                 </button>
                 <button type="button" @click="createAndSelectProduct()"
                     :disabled="createProductModal.creating || !createProductModal.productName.trim()"
-                    class="group relative px-8 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 font-bold shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden">
+                    class="group relative px-8 py-2.5 bg-gradient-to-r from-blue-600 to-olive-600 text-white rounded-xl hover:from-blue-700 hover:to-olive-700 font-bold shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden">
                     <span class="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
                     <svg x-show="createProductModal.creating" class="animate-spin h-4 w-4" fill="none"
                         viewBox="0 0 24 24">

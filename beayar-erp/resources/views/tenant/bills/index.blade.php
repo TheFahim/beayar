@@ -129,13 +129,13 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Running Bills</p>
-                    <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ $runningBills->count() }}</p>
+                    <p class="text-2xl font-bold text-olive-600 dark:text-olive-400">{{ $runningBills->count() }}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{ number_format($runningBills->sum('total_amount'), 2) }} &#2547;
                     </p>
                 </div>
-                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 bg-olive-100 dark:bg-olive-900/30 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-olive-600 dark:text-olive-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                 </div>
@@ -183,7 +183,7 @@
                                         $item->bill_type === 'advance'
                                             ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 ring-1 ring-emerald-200 dark:ring-emerald-700'
                                             : ($item->bill_type === 'running'
-                                                ? 'bg-purple-50 text-purple-800 dark:bg-purple-900 dark:text-purple-200 ring-1 ring-purple-200 dark:ring-purple-700'
+                                                ? 'bg-olive-50 text-olive-800 dark:bg-olive-900 dark:text-olive-200 ring-1 ring-olive-200 dark:ring-olive-700'
                                                 : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700'),
                                     ])>
                                         @if($item->bill_type === 'advance')

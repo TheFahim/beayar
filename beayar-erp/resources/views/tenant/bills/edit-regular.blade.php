@@ -355,7 +355,7 @@
                 <div class="lg:col-span-8 space-y-4">
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -480,7 +480,7 @@
                     <template x-if="items.length">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                            <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                                 <div class="flex items-center gap-2 text-gray-900 dark:text-white">
                                     <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -556,7 +556,7 @@
                     </template>
 
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

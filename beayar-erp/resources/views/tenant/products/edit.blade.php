@@ -26,14 +26,14 @@
                 :class="{ 'border-blue-400 dark:border-blue-500 ring-2 ring-blue-200 dark:ring-blue-900': isHovered }">
 
                 {{-- Animated corner accent --}}
-                <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 opacity-10 rounded-bl-full transition-all duration-300"
+                <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400 to-olive-500 opacity-10 rounded-bl-full transition-all duration-300"
                     :class="{ 'w-32 h-32 opacity-20': isHovered }"></div>
 
                 {{-- Header --}}
                 <div class="flex items-center justify-between relative z-10">
                     <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-3">
                         <span
-                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-bold flex items-center justify-center shadow-lg">
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-olive-600 text-white text-sm font-bold flex items-center justify-center shadow-lg">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
@@ -137,7 +137,7 @@
                                 @focus="isFocused = true" @blur="isFocused = false"
                                 class="mt-1 block w-full rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-all duration-200"
                                 placeholder="Enter product name">
-                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-0 -z-10 blur transition-opacity duration-200"
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400 to-olive-500 opacity-0 -z-10 blur transition-opacity duration-200"
                                 :class="{ 'opacity-20': isFocused }"></div>
                         </div>
                         @error('name')
@@ -223,7 +223,7 @@
                     Cancel
                 </a>
                 <button type="submit"
-                    class="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 font-bold shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden save-button">
+                    class="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-olive-600 text-white rounded-xl hover:from-blue-700 hover:to-olive-700 font-bold shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden save-button">
                     <span
                         class="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
                     <span class="relative flex items-center gap-2">
@@ -265,7 +265,7 @@
                             class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <div class="mb-4 flex items-center gap-3">
                                 <div
-                                    class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                    class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-olive-600 flex items-center justify-center shadow-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -296,7 +296,7 @@
                             <div
                                 class="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-700 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
                                 <button type="submit" :disabled="uploading"
-                                    class="group relative w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-lg px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-base font-semibold text-white hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden">
+                                    class="group relative w-full inline-flex justify-center items-center rounded-xl border border-transparent shadow-lg px-6 py-3 bg-gradient-to-r from-blue-600 to-olive-600 text-base font-semibold text-white hover:from-blue-700 hover:to-olive-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden">
                                     <span
                                         class="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
                                     <span x-show="!uploading" class="relative">Upload</span>
@@ -345,7 +345,7 @@
                 role="dialog" aria-modal="true">
                 <!-- header -->
                 <div
-                    class="flex items-center justify-between p-6 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
+                    class="flex items-center justify-between p-6 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-olive-50 dark:from-gray-800 dark:to-gray-800">
                     <div class="flex-1 pr-4">
                         <div class="relative">
                             <input type="text" x-model="query" @input.debounce.500ms="search()"
@@ -398,7 +398,7 @@
                                 <div
                                     class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                                     <button type="button" @click="select(image)"
-                                        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95">
+                                        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-olive-600 text-white text-sm font-bold rounded-lg hover:from-blue-700 hover:to-olive-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95">
                                         Select
                                     </button>
                                 </div>

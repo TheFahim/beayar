@@ -187,12 +187,12 @@
                                 </div>
 
                                 <!-- Bill Type Badge -->
-                                <div class="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-lg p-3 border border-purple-200 dark:border-purple-700">
-                                    <span class="block text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wide mb-1">Bill Type</span>
-                                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                <div class="bg-gradient-to-r from-olive-50 to-olive-100 dark:from-olive-900/20 dark:to-olive-900/30 rounded-lg p-3 border border-olive-200 dark:border-olive-700">
+                                    <span class="block text-xs font-semibold text-olive-700 dark:text-olive-400 uppercase tracking-wide mb-1">Bill Type</span>
+                                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md bg-olive-100 text-olive-800 dark:bg-olive-900/30 dark:text-olive-300">
                                         {{ ucfirst($billType) }} Bill
                                     </span>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400 mt-1" x-text="getBillTypeDescription()"></p>
+                                    <p class="text-xs text-olive-600 dark:text-olive-400 mt-1" x-text="getBillTypeDescription()"></p>
                                 </div>
 
                                 <!-- Customer Info - Compact -->
@@ -362,30 +362,30 @@
                                         </div>
                                     </div>
 
-                                    <div x-show="parentBill" class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
-                                        <h4 class="text-sm font-bold text-purple-800 dark:text-purple-300 mb-3">Parent Bill Details</h4>
+                                    <div x-show="parentBill" class="bg-olive-50 dark:bg-olive-900/20 rounded-lg p-4 border border-olive-200 dark:border-olive-700">
+                                        <h4 class="text-sm font-bold text-olive-800 dark:text-olive-300 mb-3">Parent Bill Details</h4>
                                         <div class="grid md:grid-cols-2 gap-4">
                                             <div>
-                                                <span class="block text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wide mb-1">Parent Invoice</span>
-                                                <span class="block text-sm font-bold text-purple-900 dark:text-purple-300" x-text="parentBill ? parentBill.invoice_no : ''"></span>
+                                                <span class="block text-xs font-semibold text-olive-700 dark:text-olive-400 uppercase tracking-wide mb-1">Parent Invoice</span>
+                                                <span class="block text-sm font-bold text-olive-900 dark:text-olive-300" x-text="parentBill ? parentBill.invoice_no : ''"></span>
                                             </div>
                                             <div>
-                                                <span class="block text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wide mb-1">Total Amount</span>
-                                                <span class="block text-sm font-bold text-purple-900 dark:text-purple-300" x-text="parentBill ? `BDT ${parentBill.total_amount}` : ''"></span>
+                                                <span class="block text-xs font-semibold text-olive-700 dark:text-olive-400 uppercase tracking-wide mb-1">Total Amount</span>
+                                                <span class="block text-sm font-bold text-olive-900 dark:text-olive-300" x-text="parentBill ? `BDT ${parentBill.total_amount}` : ''"></span>
                                             </div>
                                             <div>
-                                                <span class="block text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wide mb-1">Remaining Amount</span>
+                                                <span class="block text-xs font-semibold text-olive-700 dark:text-olive-400 uppercase tracking-wide mb-1">Remaining Amount</span>
                                                 <span class="block text-sm font-bold text-green-600 dark:text-green-400" x-text="parentBill ? `BDT ${remainingAmount}` : ''"></span>
                                             </div>
                                             <div>
-                                                <span class="block text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wide mb-1">Remaining %</span>
+                                                <span class="block text-xs font-semibold text-olive-700 dark:text-olive-400 uppercase tracking-wide mb-1">Remaining %</span>
                                                 <span class="block text-sm font-bold text-green-600 dark:text-green-400" x-text="parentBill ? `${remainingPercentage}%` : ''"></span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
-                                        <h4 class="text-sm font-bold text-purple-800 dark:text-purple-300 mb-3">Installment Details</h4>
+                                    <div class="bg-olive-50 dark:bg-olive-900/20 rounded-lg p-4 border border-olive-200 dark:border-olive-700">
+                                        <h4 class="text-sm font-bold text-olive-800 dark:text-olive-300 mb-3">Installment Details</h4>
                                         <div class="grid md:grid-cols-2 gap-4">
                                             <div>
                                                 <label for="installment_percentage" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-1.5">
@@ -465,13 +465,13 @@
                                                     'text-xs': true,
                                                     'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-300 font-semibold': billType === 'advance',
                                                     'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300 font-semibold': billType === 'regular',
-                                                    'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-700 text-purple-800 dark:text-purple-300 font-semibold': billType === 'running'
+                                                    'bg-olive-50 dark:bg-olive-900/20 border-olive-200 dark:border-olive-700 text-olive-800 dark:text-olive-300 font-semibold': billType === 'running'
                                                 }" />
                                             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                                 <span x-bind:class="{
                                                     'text-blue-600 dark:text-blue-400': billType === 'advance',
                                                     'text-green-600 dark:text-green-400': billType === 'regular',
-                                                    'text-purple-600 dark:text-purple-400': billType === 'running'
+                                                    'text-olive-600 dark:text-olive-400': billType === 'running'
                                                 }" class="text-xs">BDT</span>
                                             </div>
                                         </div>
@@ -583,7 +583,7 @@
                                         <p x-show="billType === 'regular'" class="text-xs text-green-600 dark:text-green-400">
                                             💡 For regular bills, mention any delivery details or challan references.
                                         </p>
-                                        <p x-show="billType === 'running'" class="text-xs text-purple-600 dark:text-purple-400">
+                                        <p x-show="billType === 'running'" class="text-xs text-olive-600 dark:text-olive-400">
                                             💡 For running bills, specify the installment number and any payment schedule details.
                                         </p>
                                     </div>
@@ -646,7 +646,7 @@
 
                         <!-- Summary Card -->
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                            <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                                 <div class="flex items-center gap-2">
                                     <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -672,7 +672,7 @@
                                     </div>
 
                                     <div class="text-center" x-show="billType === 'running'">
-                                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" x-text="`${installmentPercentage}%`"></div>
+                                        <div class="text-2xl font-bold text-olive-600 dark:text-olive-400" x-text="`${installmentPercentage}%`"></div>
                                         <div class="text-xs text-gray-600 dark:text-gray-400">Installment %</div>
                                     </div>
                                 </div>

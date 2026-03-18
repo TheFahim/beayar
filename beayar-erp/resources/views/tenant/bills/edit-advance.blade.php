@@ -174,7 +174,7 @@
 
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -246,7 +246,7 @@
 
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">

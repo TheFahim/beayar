@@ -21,7 +21,7 @@
                             @php
                             $iconClasses = match($bill->bill_type) {
                                 'advance' => 'bg-amber-500',
-                                'running' => 'bg-purple-500',
+                                'running' => 'bg-olive-500',
                                 'regular' => 'bg-green-500',
                                 default => 'bg-gray-500',
                             };

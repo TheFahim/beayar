@@ -364,7 +364,7 @@
                 <div class="text-xs text-red-400 mt-1">▼ 2.4%</div>
               </div>
               <div class="rounded-xl p-3" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2);">
-                <div class="text-xs text-purple-300 mb-1">Teams</div>
+                <div class="text-xs text-olive-300 mb-1">Teams</div>
                 <div class="text-lg font-display font-bold text-white">8</div>
                 <div class="text-xs text-slate-400 mt-1">Active</div>
               </div>
@@ -585,7 +585,7 @@
       <!-- Card 4 -->
       <div class="feature-card rounded-2xl p-7">
         <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(139,92,246,0.1));">
-          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <svg class="w-6 h-6 text-olive-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
         </div>
         <h3 class="font-display font-bold text-lg text-white mb-2">Team Collaboration</h3>
         <p class="text-slate-400 text-sm leading-relaxed">Role-based access control keeps each team member focused. Sales sees quotes, accountants see invoices, owners see everything.</p>

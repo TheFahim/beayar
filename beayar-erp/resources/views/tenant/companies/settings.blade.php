@@ -6,7 +6,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <div class="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                        <div class="p-2 bg-gradient-to-r from-blue-500 to-olive-600 rounded-xl shadow-lg">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
@@ -940,7 +940,7 @@
                                     </div>
                                     <div>
                                         <h2 class="text-xl font-bold text-white">PDF Header Style</h2>
-                                        <p class="text-purple-100 text-sm mt-1">Select the header layout design for
+                                        <p class="text-olive-100 text-sm mt-1">Select the header layout design for
                                             quotation/invoice PDFs</p>
                                     </div>
                                 </div>
@@ -954,11 +954,11 @@
                                     <label class="relative cursor-pointer group">
                                         <input type="radio" name="header_style" value="style_1" {{ $headerStyle === 'style_1' ? 'checked' : '' }} class="peer sr-only">
                                         <div
-                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-olive-500 peer-checked:bg-olive-50 dark:peer-checked:bg-olive-900/20 peer-checked:ring-2 peer-checked:ring-olive-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                             <div class="flex items-center justify-between mb-3">
                                                 <span
                                                     class="text-sm font-semibold text-gray-900 dark:text-white">Standard</span>
-                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                <svg class="w-5 h-5 text-olive-500 opacity-0 peer-checked:opacity-100 transition-opacity"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -985,11 +985,11 @@
                                     <label class="relative cursor-pointer group">
                                         <input type="radio" name="header_style" value="style_2" {{ $headerStyle === 'style_2' ? 'checked' : '' }} class="peer sr-only">
                                         <div
-                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-olive-500 peer-checked:bg-olive-50 dark:peer-checked:bg-olive-900/20 peer-checked:ring-2 peer-checked:ring-olive-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                             <div class="flex items-center justify-between mb-3">
                                                 <span
                                                     class="text-sm font-semibold text-gray-900 dark:text-white">Inverted</span>
-                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                <svg class="w-5 h-5 text-olive-500 opacity-0 peer-checked:opacity-100 transition-opacity"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -1016,11 +1016,11 @@
                                     <label class="relative cursor-pointer group">
                                         <input type="radio" name="header_style" value="style_3" {{ $headerStyle === 'style_3' ? 'checked' : '' }} class="peer sr-only">
                                         <div
-                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-olive-500 peer-checked:bg-olive-50 dark:peer-checked:bg-olive-900/20 peer-checked:ring-2 peer-checked:ring-olive-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                             <div class="flex items-center justify-between mb-3">
                                                 <span
                                                     class="text-sm font-semibold text-gray-900 dark:text-white">Centered</span>
-                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                <svg class="w-5 h-5 text-olive-500 opacity-0 peer-checked:opacity-100 transition-opacity"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -1045,12 +1045,12 @@
                                     <label class="relative cursor-pointer group">
                                         <input type="radio" name="header_style" value="style_4" {{ $headerStyle === 'style_4' ? 'checked' : '' }} class="peer sr-only">
                                         <div
-                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-olive-500 peer-checked:bg-olive-50 dark:peer-checked:bg-olive-900/20 peer-checked:ring-2 peer-checked:ring-olive-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                             <div class="flex items-center justify-between mb-3">
                                                 <span
                                                     class="text-sm font-semibold text-gray-900 dark:text-white">Corporate
                                                     Bar</span>
-                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                <svg class="w-5 h-5 text-olive-500 opacity-0 peer-checked:opacity-100 transition-opacity"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -1059,7 +1059,7 @@
                                             </div>
                                             <div
                                                 class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
-                                                <div class="bg-purple-600 p-2 flex items-center gap-2">
+                                                <div class="bg-olive-600 p-2 flex items-center gap-2">
                                                     <div
                                                         class="w-6 h-6 bg-white/20 rounded flex items-center justify-center text-[8px] text-white">
                                                         Logo</div>
@@ -1075,11 +1075,11 @@
                                     <label class="relative cursor-pointer group">
                                         <input type="radio" name="header_style" value="style_5" {{ $headerStyle === 'style_5' ? 'checked' : '' }} class="peer sr-only">
                                         <div
-                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-olive-500 peer-checked:bg-olive-50 dark:peer-checked:bg-olive-900/20 peer-checked:ring-2 peer-checked:ring-olive-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                             <div class="flex items-center justify-between mb-3">
                                                 <span
                                                     class="text-sm font-semibold text-gray-900 dark:text-white">Minimal</span>
-                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                <svg class="w-5 h-5 text-olive-500 opacity-0 peer-checked:opacity-100 transition-opacity"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -1101,11 +1101,11 @@
                                     <label class="relative cursor-pointer group">
                                         <input type="radio" name="header_style" value="style_6" {{ $headerStyle === 'style_6' ? 'checked' : '' }} class="peer sr-only">
                                         <div
-                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/20 peer-checked:ring-2 peer-checked:ring-purple-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
+                                            class="p-4 border-2 rounded-xl transition-all peer-checked:border-olive-500 peer-checked:bg-olive-50 dark:peer-checked:bg-olive-900/20 peer-checked:ring-2 peer-checked:ring-olive-500/20 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-lg h-full">
                                             <div class="flex items-center justify-between mb-3">
                                                 <span
                                                     class="text-sm font-semibold text-gray-900 dark:text-white">Professional</span>
-                                                <svg class="w-5 h-5 text-purple-500 opacity-0 peer-checked:opacity-100 transition-opacity"
+                                                <svg class="w-5 h-5 text-olive-500 opacity-0 peer-checked:opacity-100 transition-opacity"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -1255,7 +1255,7 @@
                                     <div class="group">
                                         <label for="signature_image"
                                             class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor"
+                                            <svg class="w-4 h-4 mr-2 text-olive-500" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036a3 3 0 01-2.036-5.036L3.232 13.768a2.5 2.5 0 013.536-3.536l3.536-3.536z">
@@ -1318,14 +1318,14 @@
 
                                             <!-- Upload Area -->
                                             <div x-show="!hasImage"
-                                                class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-200 cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/20 dark:to-gray-800/30"
+                                                class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center hover:border-olive-400 dark:hover:border-olive-500 transition-all duration-200 cursor-pointer bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/20 dark:to-gray-800/30"
                                                 @click="$refs.signatureInput.click()" @dragover="handleDragOver($event)"
                                                 @dragleave="handleDragLeave()" @drop="handleDrop($event)"
-                                                :class="isDragging ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : ''">
+                                                :class="isDragging ? 'border-olive-500 bg-olive-50 dark:bg-olive-900/20' : ''">
 
                                                 <div class="flex flex-col items-center space-y-4">
-                                                    <div class="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-                                                        <svg class="w-8 h-8 text-purple-600 dark:text-purple-400"
+                                                    <div class="p-4 bg-olive-100 dark:bg-olive-900/30 rounded-full">
+                                                        <svg class="w-8 h-8 text-olive-600 dark:text-olive-400"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
@@ -1373,8 +1373,8 @@
                                                     <div class="flex items-start justify-between mb-4">
                                                         <div class="flex items-center space-x-3">
                                                             <div
-                                                                class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                                                                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400"
+                                                                class="p-2 bg-olive-100 dark:bg-olive-900/30 rounded-lg">
+                                                                <svg class="w-5 h-5 text-olive-600 dark:text-olive-400"
                                                                     fill="none" stroke="currentColor"
                                                                     viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -1406,7 +1406,7 @@
                                                             <img :src="imageUrl" alt="Signature Preview"
                                                                 class="max-w-full h-auto max-h-32 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 bg-white p-2">
                                                             <div
-                                                                class="absolute -top-2 -right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                                                class="absolute -top-2 -right-2 bg-olive-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                                                                 Preview
                                                             </div>
                                                         </div>
@@ -1414,7 +1414,7 @@
 
                                                     <div class="mt-4 flex items-center justify-center space-x-3">
                                                         <button type="button" @click="$refs.signatureInput.click()"
-                                                            class="px-4 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-200">
+                                                            class="px-4 py-2 text-sm font-medium text-olive-600 dark:text-olive-400 bg-olive-50 dark:bg-olive-900/20 border border-olive-200 dark:border-olive-700 rounded-lg hover:bg-olive-100 dark:hover:bg-olive-900/30 transition-all duration-200">
                                                             <svg class="w-4 h-4 mr-2 inline" fill="none"
                                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"

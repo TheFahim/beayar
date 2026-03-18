@@ -16,7 +16,7 @@
             </div>
             <div
                 class="flex flex-col items-center justify-center h-28 rounded-lg bg-white dark:bg-gray-800 shadow p-4 border border-gray-100 dark:border-gray-700">
-                <dt class="mb-2 text-3xl font-extrabold text-purple-600 dark:text-purple-400">
+                <dt class="mb-2 text-3xl font-extrabold text-olive-600 dark:text-olive-400">
                     {{ $stats['new_tenants'] }}</dt>
                 <dd class="text-sm text-gray-500 dark:text-gray-400">New This Month</dd>
             </div>
@@ -42,7 +42,7 @@
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
                                     @if($plan->slug === 'free') bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300
                                     @elseif($plan->slug === 'pro') bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300
-                                    @elseif($plan->slug === 'pro-plus') bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300
+                                    @elseif($plan->slug === 'pro-plus') bg-olive-100 text-olive-700 dark:bg-olive-900 dark:text-olive-300
                                     @else bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300
                                     @endif">
                                     {{ $plan->subscriptions_count }}

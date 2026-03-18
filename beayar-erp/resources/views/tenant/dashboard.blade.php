@@ -60,8 +60,8 @@
             </div> --}}
 
             <!-- Teams -->
-            <div class="rounded-xl p-3 bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800">
-                <div class="text-xs text-purple-700 dark:text-purple-300 mb-1">Teams</div>
+            <div class="rounded-xl p-3 bg-olive-50/50 dark:bg-olive-950/20 border border-olive-200 dark:border-olive-800">
+                <div class="text-xs text-olive-700 dark:text-olive-300 mb-1">Teams</div>
                 <div class="text-lg font-display font-bold text-gray-900 dark:text-white">{{ Number::format($activeTeams) }}</div>
                 <div class="text-xs text-slate-600 dark:text-slate-400 mt-1">Active</div>
             </div>

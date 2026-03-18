@@ -277,7 +277,7 @@
                     <!-- Bill Summary Section -->
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -344,7 +344,7 @@
                                         <div class="text-xs text-gray-600 dark:text-gray-400">Tax Amount</div>
                                     </div>
                                     <div>
-                                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="grand-total-display">0.00</div>
+                                        <div class="text-2xl font-bold text-olive-600 dark:text-olive-400" id="grand-total-display">0.00</div>
                                         <div class="text-xs text-gray-600 dark:text-gray-400">Grand Total</div>
                                     </div>
                                 </div>

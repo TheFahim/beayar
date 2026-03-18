@@ -14,7 +14,7 @@
             role="dialog" aria-modal="true">
 
             <div
-                class="flex items-center justify-between p-6 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
+                class="flex items-center justify-between p-6 border-b-2 border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-olive-50 dark:from-gray-800 dark:to-gray-800">
                 <div class="flex-1 pr-4">
                     <div class="relative">
                         <input type="text" x-model="query" @input.debounce.500ms="search()"
@@ -61,7 +61,7 @@
                             <div
                                 class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                                 <button type="button" @click="select(image)"
-                                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-lg hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95">
+                                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-olive-600 text-white text-sm font-bold rounded-lg hover:from-blue-700 hover:to-olive-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95">
                                     Select
                                 </button>
                             </div>

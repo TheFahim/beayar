@@ -318,16 +318,16 @@
                             </div>
 
                             <div
-                                class="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-lg p-3 border border-purple-200 dark:border-purple-700">
+                                class="bg-gradient-to-r from-olive-50 to-olive-100 dark:from-olive-900/20 dark:to-olive-900/30 rounded-lg p-3 border border-olive-200 dark:border-olive-700">
                                 <span
-                                    class="block text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-wide mb-1">Bill
+                                    class="block text-xs font-semibold text-olive-700 dark:text-olive-400 uppercase tracking-wide mb-1">Bill
                                     Type
                                 </span>
                                 <span
-                                    class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                    class="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md bg-olive-100 text-olive-800 dark:bg-olive-900/30 dark:text-olive-300">
                                     Advance Bill
                                 </span>
-                                <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">Initial payment before
+                                <p class="text-xs text-olive-600 dark:text-olive-400 mt-1">Initial payment before
                                     delivery</p>
                             </div>
 
@@ -559,7 +559,7 @@
                     <!-- Basic Bill Information -->
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -662,7 +662,7 @@
                     <!-- Summary Card -->
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">

@@ -104,7 +104,7 @@
                             <div class="flex flex-wrap gap-1">
                                 @foreach($plan->features->take(5) as $feat)
                                     <span
-                                        class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">{{ $feat->name }}</span>
+                                        class="bg-olive-100 text-olive-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-olive-900 dark:text-olive-300">{{ $feat->name }}</span>
                                 @endforeach
                                 @if($plan->features->count() > 5)
                                     <span class="text-xs text-gray-500">+{{ $plan->features->count() - 5 }} more</span>
@@ -266,11 +266,11 @@
                                             @foreach($coreFeatures as $feature)
                                                 <label
                                                     class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
-                                                    :class="isFeatureSelected({{ $feature->id }}) ? 'bg-purple-50 border-purple-300 dark:bg-purple-900/30 dark:border-purple-600' : ''">
+                                                    :class="isFeatureSelected({{ $feature->id }}) ? 'bg-olive-50 border-olive-300 dark:bg-olive-900/30 dark:border-olive-600' : ''">
                                                     <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
                                                         :checked="isFeatureSelected({{ $feature->id }})"
                                                         @change="toggleFeature({{ $feature->id }})"
-                                                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                        class="rounded border-gray-300 text-olive-600 focus:ring-olive-500 dark:border-gray-600 dark:bg-gray-700">
                                                     <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
                                                 </label>
                                             @endforeach
@@ -286,11 +286,11 @@
                                                 @foreach($modFeatures as $feature)
                                                     <label
                                                         class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
-                                                        :class="isFeatureSelected({{ $feature->id }}) ? 'bg-purple-50 border-purple-300 dark:bg-purple-900/30 dark:border-purple-600' : ''">
+                                                        :class="isFeatureSelected({{ $feature->id }}) ? 'bg-olive-50 border-olive-300 dark:bg-olive-900/30 dark:border-olive-600' : ''">
                                                         <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
                                                             :checked="isFeatureSelected({{ $feature->id }})"
                                                             @change="toggleFeature({{ $feature->id }})"
-                                                            class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                            class="rounded border-gray-300 text-olive-600 focus:ring-olive-500 dark:border-gray-600 dark:bg-gray-700">
                                                         <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
                                                     </label>
                                                 @endforeach
@@ -430,7 +430,7 @@
                                                 <label
                                                     class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
                                                     <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
-                                                        class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                        class="rounded border-gray-300 text-olive-600 focus:ring-olive-500 dark:border-gray-600 dark:bg-gray-700">
                                                     <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
                                                 </label>
                                             @endforeach
@@ -447,7 +447,7 @@
                                                     <label
                                                         class="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
                                                         <input type="checkbox" name="feature_ids[]" value="{{ $feature->id }}"
-                                                            class="rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-700">
+                                                            class="rounded border-gray-300 text-olive-600 focus:ring-olive-500 dark:border-gray-600 dark:bg-gray-700">
                                                         <span class="text-gray-900 dark:text-white">{{ $feature->name }}</span>
                                                     </label>
                                                 @endforeach

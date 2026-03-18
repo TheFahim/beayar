@@ -28,7 +28,7 @@
                     <span class="text-sm">Back to Quotations</span>
                 </a>
                 <button type="submit" form="runningBillForm"
-                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg shadow hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gradient-to-r from-olive-600 to-olive-700 hover:from-olive-700 hover:to-olive-800 text-white font-medium rounded-lg shadow hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-olive-500 focus:ring-offset-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -192,7 +192,7 @@
                 <div class="lg:col-span-4">
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden h-full">
-                        <div class="bg-gradient-to-r from-purple-500 to-indigo-500 p-3">
+                        <div class="bg-gradient-to-r from-olive-500 to-indigo-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -252,7 +252,7 @@
                 <div class="lg:col-span-8 space-y-4">
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -325,7 +325,7 @@
 
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -394,7 +394,7 @@
 
                     <div
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-3">
+                        <div class="bg-gradient-to-r from-indigo-500 to-olive-500 p-3">
                             <div class="flex items-center gap-2">
                                 <div
                                     class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
