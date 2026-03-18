@@ -154,533 +154,436 @@
                         x-show="activeTab === 'regional'">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
-                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 rounded-t-2xl">
-                                <div class="flex items-center space-x-3">
-                                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129">
-                                            </path>
-                                        </svg>
-                                    </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <!-- Regional Preferences Column -->
                                     <div>
-                                        <h2 class="text-xl font-bold text-white">Regional Preferences</h2>
-                                        <p class="text-blue-100 text-sm mt-1">Set default date format and currency for
-                                            your company</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-6 space-y-6">
-                                @php
-                                    $defaultCurrencies = ['BDT', 'USD', 'EUR', 'INR', 'RMB'];
-                                    $quotationCurrencies = old('quotation_currencies', $settings['quotation_currencies'] ?? $defaultCurrencies);
-                                    if (!is_array($quotationCurrencies)) {
-                                        $quotationCurrencies = $defaultCurrencies;
-                                    }
-                                    $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
-                                    $selectedCurrency = old('currency', $settings['currency']);
-                                    if ($selectedCurrency && !in_array($selectedCurrency, $quotationCurrencies, true)) {
-                                        $quotationCurrencies[] = $selectedCurrency;
-                                    }
-                                    if (!in_array('BDT', $quotationCurrencies, true)) {
-                                        $quotationCurrencies[] = 'BDT';
-                                    }
-                                @endphp
-
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <!-- Date Format -->
-                                    <div class="group">
-                                        <label for="date_format"
-                                            class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                </path>
-                                            </svg>
-                                            Date Format <span class="text-red-500 ml-1">*</span>
-                                        </label>
-                                        <select name="date_format" id="date_format"
-                                            class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 hover:border-gray-300">
-                                            @foreach($dateFormats as $format => $label)
-                                                <option value="{{ $format }}" {{ old('date_format', $settings['date_format']) === $format ? 'selected' : '' }}>
-                                                    {{ $label }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('date_format')
-                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Currency -->
-                                    <div class="group">
-                                        <label for="currency"
-                                            class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                                </path>
-                                            </svg>
-                                            Currency <span class="text-red-500 ml-1">*</span>
-                                        </label>
-                                        <select name="currency" id="currency"
-                                            class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 hover:border-gray-300"
-                                            onchange="updateCurrencySymbol(this)">
-                                            @foreach($quotationCurrencies as $code)
-                                                @php
-                                                    $symbol = $currencies[$code] ?? '';
-                                                    $name = $currencyNames[$code] ?? '';
-                                                    $displayText = $code;
-                                                    if ($symbol && $symbol !== $code) {
-                                                        $displayText = "{$code} ({$symbol})";
-                                                    } elseif ($name) {
-                                                        $displayText = "{$code} ({$name})";
-                                                    }
-                                                @endphp
-                                                <option value="{{ $code }}" data-symbol="{{ $symbol }}" {{ $selectedCurrency === $code ? 'selected' : '' }}>
-                                                    {{ $displayText }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('currency')
-                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Exchange Rate Currency -->
-                                    <div class="group" x-data="{
-                                search: '',
-                                open: false,
-                                selected: '{{ old('exchange_rate_currency', $settings['exchange_rate_currency'] ?? 'BDT') }}',
-                                allCurrencies: {{ json_encode($allCurrencies ?? $currencies) }},
-                                currencyNames: {{ json_encode($currencyNames) }},
-                                highlightedIndex: -1,
-
-                                get selectedDisplay() {
-                                    const symbol = this.allCurrencies[this.selected] || '';
-                                    const name = this.currencyNames[this.selected] || '';
-                                    if (symbol && symbol !== this.selected) {
-                                        return `${this.selected} (${symbol})`;
-                                    } else if (name) {
-                                        return `${this.selected} (${name})`;
-                                    }
-                                    return this.selected;
-                                },
-
-                                get filteredCurrencies() {
-                                    if (this.search === '') {
-                                        return this.allCurrencies;
-                                    }
-                                    const query = this.search.toLowerCase();
-                                    const result = {};
-                                    for (const [code, symbol] of Object.entries(this.allCurrencies)) {
-                                        const name = this.currencyNames[code] || '';
-                                        if (code.toLowerCase().includes(query) ||
-                                            (symbol && symbol.toLowerCase().includes(query)) ||
-                                            (name && name.toLowerCase().includes(query))) {
-                                            result[code] = symbol;
-                                        }
-                                    }
-                                    return result;
-                                },
-
-                                get filteredCurrencyList() {
-                                    return Object.entries(this.filteredCurrencies);
-                                },
-
-                                select(code) {
-                                    this.selected = code;
-                                    this.search = '';
-                                    this.open = false;
-                                    this.highlightedIndex = -1;
-                                },
-
-                                highlightPrevious() {
-                                    const list = this.filteredCurrencyList;
-                                    if (list.length === 0) return;
-                                    this.highlightedIndex = this.highlightedIndex <= 0 ? list.length - 1 : this.highlightedIndex - 1;
-                                    this.scrollToHighlighted();
-                                },
-
-                                highlightNext() {
-                                    const list = this.filteredCurrencyList;
-                                    if (list.length === 0) return;
-                                    this.highlightedIndex = this.highlightedIndex >= list.length - 1 ? 0 : this.highlightedIndex + 1;
-                                    this.scrollToHighlighted();
-                                },
-
-                                selectHighlighted() {
-                                    const list = this.filteredCurrencyList;
-                                    if (this.highlightedIndex >= 0 && this.highlightedIndex < list.length) {
-                                        this.select(list[this.highlightedIndex][0]);
-                                    }
-                                },
-
-                                scrollToHighlighted() {
-                                    this.$nextTick(() => {
-                                        const highlighted = this.$refs.dropdown?.querySelector('.highlighted');
-                                        if (highlighted) {
-                                            highlighted.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                                        }
-                                    });
-                                }
-                            }">
-                                        <label
-                                            class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
-                                            <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                            </svg>
-                                            Exchange Rate Currency <span class="text-red-500 ml-1">*</span>
-                                        </label>
-
-                                        <div class="relative" @click.away="open = false">
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                                    </svg>
-                                                </div>
-                                                <input type="text" x-model="search"
-                                                    @focus="open = true; highlightedIndex = -1"
-                                                    @keydown.escape="open = false"
-                                                    @keydown.arrow-down.prevent="highlightNext()"
-                                                    @keydown.arrow-up.prevent="highlightPrevious()"
-                                                    @keydown.enter.prevent="selectHighlighted()"
-                                                    class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 hover:border-gray-300"
-                                                    :placeholder="selectedDisplay || 'Search currency (e.g. USD, Dollar)...'">
-                                                <input type="hidden" name="exchange_rate_currency" :value="selected">
-                                            </div>
-
-                                            <div x-show="open && Object.keys(filteredCurrencies).length > 0"
-                                                x-ref="dropdown"
-                                                class="fixed z-50 w-full bg-white dark:bg-gray-800 shadow-2xl max-h-60 rounded-xl py-2 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100 dark:border-gray-700"
-                                                style="display: none;"
-                                                x-init="$watch('open', () => {
-                                                    if (open) {
-                                                        const inputRect = $el.previousElementSibling.getBoundingClientRect();
-                                                        $el.style.top = (inputRect.top - 280) + 'px';
-                                                        $el.style.left = inputRect.left + 'px';
-                                                        $el.style.width = inputRect.width + 'px';
-                                                    }
-                                                })">
-                                                <template x-for="(symbol, code, index) in filteredCurrencies"
-                                                    :key="code">
-                                                    <div class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                                                        :class="{ 'highlighted bg-blue-50 dark:bg-blue-900/20': index === highlightedIndex, 'bg-blue-100 dark:bg-blue-900/30': code === selected }"
-                                                        @click="select(code)" @mouseenter="highlightedIndex = index">
-                                                        <div class="flex items-center justify-between">
-                                                            <div class="flex items-center space-x-3">
-                                                                <span class="block font-medium" x-text="code"></span>
-                                                                <span x-show="currencyNames[code]"
-                                                                    x-text="currencyNames[code]"
-                                                                    class="text-sm text-gray-500 dark:text-gray-400"></span>
-                                                                <span x-show="symbol && !currencyNames[code]"
-                                                                    x-text="symbol"
-                                                                    class="text-sm text-gray-500 dark:text-gray-400"></span>
-                                                            </div>
-                                                            <span x-show="code === selected"
-                                                                class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                                                <svg class="h-5 w-5 text-blue-600" fill="none"
-                                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                </svg>
-                                                            </span>
-                                                            <span
-                                                                x-show="index === highlightedIndex && code !== selected"
-                                                                class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                                                <svg class="h-5 w-5 text-blue-600" fill="none"
-                                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                </svg>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </template>
-                                            </div>
-                                            <div x-show="open && search !== '' && Object.keys(filteredCurrencies).length === 0"
-                                                class="fixed z-50 w-full bg-white dark:bg-gray-800 shadow-2xl rounded-xl py-4 px-4 text-sm text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700"
-                                                style="display: none;"
-                                                x-init="$watch('open', () => {
-                                                    if (open && search !== '' && Object.keys(filteredCurrencies).length === 0) {
-                                                        const inputRect = $el.previousElementSibling.getBoundingClientRect();
-                                                        $el.style.top = (inputRect.top - 80) + 'px';
-                                                        $el.style.left = inputRect.left + 'px';
-                                                        $el.style.width = inputRect.width + 'px';
-                                                    }
-                                                })">
-                                                <div class="flex items-center space-x-2">
-                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                                        </path>
-                                                    </svg>
-                                                    <span>No matching currencies found.</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                                            <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                                </path>
-                                            </svg>
-                                            Search for currencies by code, name, or symbol (e.g. USD, Dollar, $).
-                                        </p>
-                                        @error('exchange_rate_currency')
-                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Quotation Currencies -->
-                                <div class="md:col-span-2" x-data="{
-                            search: '',
-                            open: false,
-                            selected: {{ json_encode($quotationCurrencies) }},
-                            allCurrencies: {{ json_encode($currencies) }},
-                            currencyNames: {{ json_encode($currencyNames) }},
-                            highlightedIndex: -1,
-
-                            init() {
-                                this.$nextTick(() => syncCurrencySelectOptions());
-                            },
-
-                            get filteredCurrencies() {
-                                if (this.search === '') {
-                                    const result = {};
-                                    for (const [code, symbol] of Object.entries(this.allCurrencies)) {
-                                        if (!this.selected.includes(code)) {
-                                            result[code] = symbol;
-                                        }
-                                    }
-                                    return result;
-                                }
-                                const query = this.search.toLowerCase();
-                                const result = {};
-                                for (const [code, symbol] of Object.entries(this.allCurrencies)) {
-                                    if (!this.selected.includes(code)) {
-                                        const name = this.currencyNames[code] || '';
-                                        if (code.toLowerCase().includes(query) ||
-                                            (symbol && symbol.toLowerCase().includes(query)) ||
-                                            (name && name.toLowerCase().includes(query))) {
-                                            result[code] = symbol;
-                                        }
-                                    }
-                                }
-                                return result;
-                            },
-
-                            get filteredCurrencyList() {
-                                return Object.entries(this.filteredCurrencies);
-                            },
-
-                            add(code) {
-                                if (!this.selected.includes(code)) {
-                                    this.selected.push(code);
-                                    this.search = '';
-                                    this.open = false;
-                                    this.highlightedIndex = -1;
-                                    this.$nextTick(() => syncCurrencySelectOptions());
-                                }
-                            },
-
-                            remove(code) {
-                                if (code !== 'BDT') {
-                                    this.selected = this.selected.filter(c => c !== code);
-                                    this.$nextTick(() => syncCurrencySelectOptions());
-                                }
-                            },
-
-                            highlightPrevious() {
-                                const list = this.filteredCurrencyList;
-                                if (list.length === 0) return;
-                                this.highlightedIndex = this.highlightedIndex <= 0 ? list.length - 1 : this.highlightedIndex - 1;
-                                this.scrollToHighlighted();
-                            },
-
-                            highlightNext() {
-                                const list = this.filteredCurrencyList;
-                                if (list.length === 0) return;
-                                this.highlightedIndex = this.highlightedIndex >= list.length - 1 ? 0 : this.highlightedIndex + 1;
-                                this.scrollToHighlighted();
-                            },
-
-                            selectHighlighted() {
-                                const list = this.filteredCurrencyList;
-                                if (this.highlightedIndex >= 0 && this.highlightedIndex < list.length) {
-                                    this.add(list[this.highlightedIndex][0]);
-                                }
-                            },
-
-                            scrollToHighlighted() {
-                                this.$nextTick(() => {
-                                    const highlighted = this.$refs.dropdown?.querySelector('.highlighted');
-                                    if (highlighted) {
-                                        highlighted.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                                    }
-                                });
-                            }
-                        }">
-                                    <label
-                                        class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                                        <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                            </path>
-                                        </svg>
-                                        Quotation Currencies <span class="text-red-500 ml-1">*</span>
-                                    </label>
-
-                                    <!-- Selected Tags -->
-                                    <div
-                                        class="flex flex-wrap gap-2 mb-4 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
-                                        <template x-for="code in selected" :key="code">
-                                            <div
-                                                class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 hover:shadow-md">
-                                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-200"
-                                                    x-text="code"></span>
-                                                <input type="hidden" name="quotation_currencies[]" :value="code">
-                                                <button type="button"
-                                                    class="h-6 w-6 rounded-md flex items-center justify-center transition-all duration-200"
-                                                    :class="code === 'BDT' ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'"
-                                                    :disabled="code === 'BDT'" @click="remove(code)">
-                                                    ×
-                                                </button>
-                                            </div>
-                                        </template>
-                                    </div>
-
-                                    <!-- Search Input -->
-                                    <div class="relative" @click.away="open = false">
-                                        <div class="relative">
-                                            <div
-                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                                </svg>
-                                            </div>
-                                            <input type="text" x-model="search"
-                                                @focus="open = true; highlightedIndex = -1"
-                                                @keydown.escape="open = false"
-                                                @keydown.arrow-down.prevent="highlightNext()"
-                                                @keydown.arrow-up.prevent="highlightPrevious()"
-                                                @keydown.enter.prevent="selectHighlighted()"
-                                                class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 hover:border-gray-300"
-                                                placeholder="Search to add currency (e.g. SAR, Saudi, Riyal)...">
+                                        <div class="mb-6">
+                                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Regional Preferences</h2>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Set default date format and currency for your company</p>
                                         </div>
 
-                                        <div x-show="open && Object.keys(filteredCurrencies).length > 0"
-                                            x-ref="dropdown"
-                                            class="absolute z-20 mt-2 w-full bg-white dark:bg-gray-800 shadow-2xl max-h-60 rounded-xl py-2 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100 dark:border-gray-700"
-                                            style="display: none;">
-                                            <template x-for="(symbol, code, index) in filteredCurrencies" :key="code">
-                                                <div class="cursor-pointer select-none relative py-3 pl-4 pr-9 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                                                    :class="{ 'highlighted bg-blue-50 dark:bg-blue-900/20': index === highlightedIndex }"
-                                                    @click="add(code)" @mouseenter="highlightedIndex = index">
-                                                    <div class="flex items-center justify-between">
-                                                        <div class="flex items-center space-x-3">
-                                                            <span class="block font-medium" x-text="code"></span>
-                                                            <span x-show="currencyNames[code]"
-                                                                x-text="currencyNames[code]"
-                                                                class="text-sm text-gray-500 dark:text-gray-400"></span>
-                                                            <span x-show="symbol && !currencyNames[code]"
-                                                                x-text="symbol"
-                                                                class="text-sm text-gray-500 dark:text-gray-400"></span>
-                                                        </div>
-                                                        <span x-show="index === highlightedIndex"
-                                                            class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                                            <svg class="h-5 w-5 text-blue-600" fill="none"
-                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                        @php
+                                            $defaultCurrencies = ['BDT', 'USD', 'EUR', 'INR', 'RMB'];
+                                            $quotationCurrencies = old('quotation_currencies', $settings['quotation_currencies'] ?? $defaultCurrencies);
+                                            if (!is_array($quotationCurrencies)) {
+                                                $quotationCurrencies = $defaultCurrencies;
+                                            }
+                                            $quotationCurrencies = array_values(array_unique(array_filter($quotationCurrencies)));
+                                            $selectedCurrency = old('currency', $settings['currency']);
+                                            if ($selectedCurrency && !in_array($selectedCurrency, $quotationCurrencies, true)) {
+                                                $quotationCurrencies[] = $selectedCurrency;
+                                            }
+                                            if (!in_array('BDT', $quotationCurrencies, true)) {
+                                                $quotationCurrencies[] = 'BDT';
+                                            }
+                                        @endphp
+
+                                        <div class="space-y-4">
+                                            <!-- Date Format -->
+                                            <div>
+                                                <label for="date_format"
+                                                    class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                                                    Date Format
+                                                </label>
+                                                <select name="date_format" id="date_format"
+                                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200">
+                                                    @foreach($dateFormats as $format => $label)
+                                                        <option value="{{ $format }}" {{ old('date_format', $settings['date_format']) === $format ? 'selected' : '' }}>
+                                                            {{ $label }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('date_format')
+                                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                                        {{ $message }}
+                                                    </p>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Currency -->
+                                            <div>
+                                                <label for="currency"
+                                                    class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                                                    Currency
+                                                </label>
+                                                <select name="currency" id="currency"
+                                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                                                    onchange="updateCurrencySymbol(this)">
+                                                    @foreach($quotationCurrencies as $code)
+                                                        @php
+                                                            $symbol = $currencies[$code] ?? '';
+                                                            $name = $currencyNames[$code] ?? '';
+                                                            $displayText = $code;
+                                                            if ($symbol && $symbol !== $code) {
+                                                                $displayText = "{$code} ({$symbol})";
+                                                            } elseif ($name) {
+                                                                $displayText = "{$code} ({$name})";
+                                                            }
+                                                        @endphp
+                                                        <option value="{{ $code }}" data-symbol="{{ $symbol }}" {{ $selectedCurrency === $code ? 'selected' : '' }}>
+                                                            {{ $displayText }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('currency')
+                                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                                        {{ $message }}
+                                                    </p>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Exchange Rate Currency -->
+                                            <div x-data="{
+                                        search: '',
+                                        open: false,
+                                        selected: '{{ old('exchange_rate_currency', $settings['exchange_rate_currency'] ?? 'BDT') }}',
+                                        allCurrencies: {{ json_encode($allCurrencies ?? $currencies) }},
+                                        currencyNames: {{ json_encode($currencyNames) }},
+                                        highlightedIndex: -1,
+
+                                        get selectedDisplay() {
+                                            const symbol = this.allCurrencies[this.selected] || '';
+                                            const name = this.currencyNames[this.selected] || '';
+                                            if (symbol && symbol !== this.selected) {
+                                                return `${this.selected} (${symbol})`;
+                                            } else if (name) {
+                                                return `${this.selected} (${name})`;
+                                            }
+                                            return this.selected;
+                                        },
+
+                                        get filteredCurrencies() {
+                                            if (this.search === '') {
+                                                return this.allCurrencies;
+                                            }
+                                            const query = this.search.toLowerCase();
+                                            const result = {};
+                                            for (const [code, symbol] of Object.entries(this.allCurrencies)) {
+                                                const name = this.currencyNames[code] || '';
+                                                if (code.toLowerCase().includes(query) ||
+                                                    (symbol && symbol.toLowerCase().includes(query)) ||
+                                                    (name && name.toLowerCase().includes(query))) {
+                                                    result[code] = symbol;
+                                                }
+                                            }
+                                            return result;
+                                        },
+
+                                        get filteredCurrencyList() {
+                                            return Object.entries(this.filteredCurrencies);
+                                        },
+
+                                        select(code) {
+                                            this.selected = code;
+                                            this.search = '';
+                                            this.open = false;
+                                            this.highlightedIndex = -1;
+                                        },
+
+                                        highlightPrevious() {
+                                            const list = this.filteredCurrencyList;
+                                            if (list.length === 0) return;
+                                            this.highlightedIndex = this.highlightedIndex <= 0 ? list.length - 1 : this.highlightedIndex - 1;
+                                            this.scrollToHighlighted();
+                                        },
+
+                                        highlightNext() {
+                                            const list = this.filteredCurrencyList;
+                                            if (list.length === 0) return;
+                                            this.highlightedIndex = this.highlightedIndex >= list.length - 1 ? 0 : this.highlightedIndex + 1;
+                                            this.scrollToHighlighted();
+                                        },
+
+                                        selectHighlighted() {
+                                            const list = this.filteredCurrencyList;
+                                            if (this.highlightedIndex >= 0 && this.highlightedIndex < list.length) {
+                                                this.select(list[this.highlightedIndex][0]);
+                                            }
+                                        },
+
+                                        scrollToHighlighted() {
+                                            this.$nextTick(() => {
+                                                const highlighted = this.$refs.dropdown?.querySelector('.highlighted');
+                                                if (highlighted) {
+                                                    highlighted.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                                                }
+                                            });
+                                        }
+                                    }">
+                                                <label
+                                                    class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                                                    Exchange Rate Currency
+                                                </label>
+
+                                                <div class="relative" @click.away="open = false">
+                                                    <div class="relative">
+                                                        <div
+                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                    stroke-width="2"
+                                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                                             </svg>
-                                                        </span>
+                                                        </div>
+                                                        <input type="text" x-model="search"
+                                                            @focus="open = true; highlightedIndex = -1"
+                                                            @keydown.escape="open = false"
+                                                            @keydown.arrow-down.prevent="highlightNext()"
+                                                            @keydown.arrow-up.prevent="highlightPrevious()"
+                                                            @keydown.enter.prevent="selectHighlighted()"
+                                                            class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                                                            :placeholder="selectedDisplay || 'Search currency...'">
+                                                        <input type="hidden" name="exchange_rate_currency" :value="selected">
+                                                    </div>
+
+                                                    <div x-show="open && Object.keys(filteredCurrencies).length > 0"
+                                                        x-ref="dropdown"
+                                                        class="absolute z-50 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-lg py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100 dark:border-gray-700 mt-1"
+                                                        style="display: none;"
+                                                        x-init="$watch('open', () => {
+                                                            if (open) {
+                                                                const inputRect = $el.previousElementSibling.getBoundingClientRect();
+                                                                $el.style.top = (inputRect.bottom + window.scrollY) + 'px';
+                                                                $el.style.left = inputRect.left + 'px';
+                                                                $el.style.width = inputRect.width + 'px';
+                                                            }
+                                                        })">
+                                                        <template x-for="(symbol, code, index) in filteredCurrencies"
+                                                            :key="code">
+                                                            <div class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                                                                :class="{ 'highlighted bg-blue-50 dark:bg-blue-900/20': index === highlightedIndex, 'bg-blue-100 dark:bg-blue-900/30': code === selected }"
+                                                                @click="select(code)" @mouseenter="highlightedIndex = index">
+                                                                <div class="flex items-center justify-between">
+                                                                    <div class="flex items-center space-x-3">
+                                                                        <span class="block font-medium text-sm" x-text="code"></span>
+                                                                        <span x-show="currencyNames[code]"
+                                                                            x-text="currencyNames[code]"
+                                                                            class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                                                        <span x-show="symbol && !currencyNames[code]"
+                                                                            x-text="symbol"
+                                                                            class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                                                    </div>
+                                                                    <span x-show="code === selected"
+                                                                        class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                                        <svg class="h-4 w-4 text-blue-600" fill="none"
+                                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                        </svg>
+                                                                    </span>
+                                                                    <span
+                                                                        x-show="index === highlightedIndex && code !== selected"
+                                                                        class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                                        <svg class="h-4 w-4 text-blue-600" fill="none"
+                                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                        </svg>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </template>
                                                     </div>
                                                 </div>
-                                            </template>
-                                        </div>
-                                        <div x-show="open && search !== '' && Object.keys(filteredCurrencies).length === 0"
-                                            class="absolute z-20 mt-2 w-full bg-white dark:bg-gray-800 shadow-2xl rounded-xl py-4 px-4 text-sm text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700"
-                                            style="display: none;">
-                                            <div class="flex items-center space-x-2">
-                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                                    </path>
-                                                </svg>
-                                                <span>No matching currencies found.</span>
+                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                    Search to exchange fixed currency of {{ old('exchange_rate_currency', $settings['exchange_rate_currency'] ?? 'BDT') }} ({{ $allCurrencies[old('exchange_rate_currency', $settings['exchange_rate_currency'] ?? 'BDT')] ?? '' }}).
+                                                </p>
+                                                @error('exchange_rate_currency')
+                                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                                        {{ $message }}
+                                                    </p>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                                        <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        Search for currencies by code, name, or symbol (e.g. SAR, Saudi, Riyal).
-                                    </p>
-                                    @error('quotation_currencies')
-                                        <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
-                                    @error('quotation_currencies.*')
-                                        <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
+
+                                    <!-- Quotation Currencies Column -->
+                                    <div>
+                                        <div class="mb-6">
+                                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Quotation Currencies</h2>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Set default date format and currency for your company</p>
+                                        </div>
+
+                                        <div x-data="{
+                                    search: '',
+                                    open: false,
+                                    selected: {{ json_encode($quotationCurrencies) }},
+                                    allCurrencies: {{ json_encode($currencies) }},
+                                    currencyNames: {{ json_encode($currencyNames) }},
+                                    highlightedIndex: -1,
+
+                                    init() {
+                                        this.$nextTick(() => syncCurrencySelectOptions());
+                                    },
+
+                                    get filteredCurrencies() {
+                                        if (this.search === '') {
+                                            const result = {};
+                                            for (const [code, symbol] of Object.entries(this.allCurrencies)) {
+                                                if (!this.selected.includes(code)) {
+                                                    result[code] = symbol;
+                                                }
+                                            }
+                                            return result;
+                                        }
+                                        const query = this.search.toLowerCase();
+                                        const result = {};
+                                        for (const [code, symbol] of Object.entries(this.allCurrencies)) {
+                                            if (!this.selected.includes(code)) {
+                                                const name = this.currencyNames[code] || '';
+                                                if (code.toLowerCase().includes(query) ||
+                                                    (symbol && symbol.toLowerCase().includes(query)) ||
+                                                    (name && name.toLowerCase().includes(query))) {
+                                                    result[code] = symbol;
+                                                }
+                                            }
+                                        }
+                                        return result;
+                                    },
+
+                                    get filteredCurrencyList() {
+                                        return Object.entries(this.filteredCurrencies);
+                                    },
+
+                                    add(code) {
+                                        if (!this.selected.includes(code)) {
+                                            this.selected.push(code);
+                                            this.search = '';
+                                            this.open = false;
+                                            this.highlightedIndex = -1;
+                                            this.$nextTick(() => syncCurrencySelectOptions());
+                                        }
+                                    },
+
+                                    remove(code) {
+                                        if (code !== 'BDT') {
+                                            this.selected = this.selected.filter(c => c !== code);
+                                            this.$nextTick(() => syncCurrencySelectOptions());
+                                        }
+                                    },
+
+                                    highlightPrevious() {
+                                        const list = this.filteredCurrencyList;
+                                        if (list.length === 0) return;
+                                        this.highlightedIndex = this.highlightedIndex <= 0 ? list.length - 1 : this.highlightedIndex - 1;
+                                        this.scrollToHighlighted();
+                                    },
+
+                                    highlightNext() {
+                                        const list = this.filteredCurrencyList;
+                                        if (list.length === 0) return;
+                                        this.highlightedIndex = this.highlightedIndex >= list.length - 1 ? 0 : this.highlightedIndex + 1;
+                                        this.scrollToHighlighted();
+                                    },
+
+                                    selectHighlighted() {
+                                        const list = this.filteredCurrencyList;
+                                        if (this.highlightedIndex >= 0 && this.highlightedIndex < list.length) {
+                                            this.add(list[this.highlightedIndex][0]);
+                                        }
+                                    },
+
+                                    scrollToHighlighted() {
+                                        this.$nextTick(() => {
+                                            const highlighted = this.$refs.dropdown?.querySelector('.highlighted');
+                                            if (highlighted) {
+                                                highlighted.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                                            }
+                                        });
+                                    }
+                                }">
+                                            <!-- Selected Tags -->
+                                            <div class="mb-4">
+                                                <div class="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-200 dark:border-gray-600">
+                                                    <template x-for="code in selected" :key="code">
+                                                        <div
+                                                            class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md px-3 py-1 text-sm">
+                                                            <span class="font-medium text-gray-700 dark:text-gray-200"
+                                                                x-text="code"></span>
+                                                            <input type="hidden" name="quotation_currencies[]" :value="code">
+                                                            <button type="button"
+                                                                class="h-5 w-5 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+                                                                :class="code === 'BDT' ? 'text-gray-300 cursor-not-allowed' : ''"
+                                                                :disabled="code === 'BDT'" @click="remove(code)">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+
+                                            <!-- Search Input -->
+                                            <div class="relative" @click.away="open = false">
+                                                <div class="relative">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <input type="text" x-model="search"
+                                                        @focus="open = true; highlightedIndex = -1"
+                                                        @keydown.escape="open = false"
+                                                        @keydown.arrow-down.prevent="highlightNext()"
+                                                        @keydown.arrow-up.prevent="highlightPrevious()"
+                                                        @keydown.enter.prevent="selectHighlighted()"
+                                                        class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                                                        placeholder="Search to add currency (e.g. SAR, Saudi, Riyal)...">
+                                                </div>
+
+                                                <div x-show="open && Object.keys(filteredCurrencies).length > 0"
+                                                    x-ref="dropdown"
+                                                    class="absolute z-50 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-lg py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-gray-100 dark:border-gray-700 mt-1"
+                                                    style="display: none;">
+                                                    <template x-for="(symbol, code, index) in filteredCurrencies" :key="code">
+                                                        <div class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                                                            :class="{ 'highlighted bg-blue-50 dark:bg-blue-900/20': index === highlightedIndex }"
+                                                            @click="add(code)" @mouseenter="highlightedIndex = index">
+                                                            <div class="flex items-center justify-between">
+                                                                <div class="flex items-center space-x-3">
+                                                                    <span class="block font-medium text-sm" x-text="code"></span>
+                                                                    <span x-show="currencyNames[code]"
+                                                                        x-text="currencyNames[code]"
+                                                                        class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                                                    <span x-show="symbol && !currencyNames[code]"
+                                                                        x-text="symbol"
+                                                                        class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                                                </div>
+                                                                <span x-show="index === highlightedIndex"
+                                                                    class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                                    <svg class="h-4 w-4 text-blue-600" fill="none"
+                                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                                            stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                    </svg>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                Search to add currency (e.g. SAR, Saudi, Riyal)...
+                                            </p>
+                                            @error('quotation_currencies')
+                                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                                    {{ $message }}
+                                                </p>
+                                            @enderror
+                                            @error('quotation_currencies.*')
+                                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                                    {{ $message }}
+                                                </p>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
