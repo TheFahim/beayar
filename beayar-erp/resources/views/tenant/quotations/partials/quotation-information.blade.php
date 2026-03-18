@@ -15,7 +15,7 @@
                     perPage="20"
                     displayTemplate="{customer_no} - {name} ({customer_company.name})"
                     :searchFields="['name', 'customer_no', 'phone', 'email', 'customer_company.name', 'attention']"
-                    placeholder="Search customers by name, number, phone, email, or company..."
+                    placeholder="name, number or company..."
                     noResultsText="No customers found."
                     createEvent="open-create-customer-modal"
                     createLabel="+ Add New Customer"
