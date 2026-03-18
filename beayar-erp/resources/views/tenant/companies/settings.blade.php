@@ -152,8 +152,23 @@
                     <!-- Regional Preferences Section -->
                     <div id="regional-panel" class="tab-panel" role="tabpanel" aria-labelledby="regional-tab" x-cloak
                         x-show="activeTab === 'regional'">
+                        <!-- Regional Preferences Banner -->
+                        <div class="bg-gradient-to-r from-green-500 to-teal-600 rounded-t-2xl p-6 mb-0 shadow-lg">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-white">Regional Preferences</h3>
+                                    <p class="text-sm text-green-100 mt-1">Customize regional settings and currency preferences for this company</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+                            class="bg-white dark:bg-gray-800 rounded-b-2xl shadow-xl border border-gray-100 dark:border-gray-700 border-t-0">
                             <div class="p-6">
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                     <!-- Regional Preferences Column -->
@@ -319,7 +334,7 @@
                                                 <div class="relative" @click.away="open = false">
                                                     <div class="relative">
                                                         <div
-                                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                             <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor"
                                                                 viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -333,7 +348,7 @@
                                                             @keydown.arrow-down.prevent="highlightNext()"
                                                             @keydown.arrow-up.prevent="highlightPrevious()"
                                                             @keydown.enter.prevent="selectHighlighted()"
-                                                            class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                                                            class="w-full pl-3 pr-9 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
                                                             :placeholder="selectedDisplay || 'Search currency...'">
                                                         <input type="hidden" name="exchange_rate_currency" :value="selected">
                                                     </div>
@@ -520,7 +535,7 @@
                                             <div class="relative" @click.away="open = false">
                                                 <div class="relative">
                                                     <div
-                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                                         <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -534,7 +549,7 @@
                                                         @keydown.arrow-down.prevent="highlightNext()"
                                                         @keydown.arrow-up.prevent="highlightPrevious()"
                                                         @keydown.enter.prevent="selectHighlighted()"
-                                                        class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+                                                        class="w-full pl-3 pr-9 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
                                                         placeholder="Search to add currency (e.g. SAR, Saudi, Riyal)...">
                                                 </div>
 
