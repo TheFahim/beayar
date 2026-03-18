@@ -3,12 +3,12 @@
         <!-- Left Column: Terms & Conditions -->
         <div class="lg:col-span-7 order-2 lg:order-1 h-full flex flex-col">
             <label class="block mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Terms & Conditions
+                {{ $companySettings['terms_section_name'] ?? 'Terms & Conditions' }}
             </label>
             <textarea id="text-area" name="quotation_revision[terms_conditions]"
                 x-model="quotation_revision.terms_conditions"
                 class="flex-1 w-full p-4 text-sm text-gray-900 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:placeholder-gray-400 dark:text-white transition-all duration-200 resize-none shadow-sm"
-                placeholder="Enter terms and conditions..." rows="8"></textarea>
+                placeholder="Enter terms and conditions..." rows="8">{{ $companySettings['default_terms_conditions'] ?? "* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT" }}</textarea>
         </div>
 
         <!-- Right Column: Totals Summary -->

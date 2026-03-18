@@ -88,6 +88,8 @@ class CompanySettingsRequest extends FormRequest
             'authorization_label' => ['nullable', 'string', 'max:50'],
             'signature_image' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
             'company_seal_image' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
+            'terms_section_name' => ['nullable', 'string', 'max:100'],
+            'default_terms_conditions' => ['nullable', 'string', 'max:2000'],
         ];
     }
 

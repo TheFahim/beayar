@@ -125,6 +125,18 @@
                             </svg>
                             Authorization
                         </button>
+
+                        <button type="button" @click="activeTab = 'terms'"
+                            :class="activeTab === 'terms' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'"
+                            class="settings-tab flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200"
+                            role="tab" :aria-selected="activeTab === 'terms'" aria-controls="terms-panel">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                            Terms & Conditions
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -1751,6 +1763,126 @@
                         </div>
                     </div>
 
+                    <!-- Terms & Conditions Section -->
+                    <div id="terms-panel" class="tab-panel" role="tabpanel" aria-labelledby="terms-tab" x-cloak
+                        x-show="activeTab === 'terms'">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-xl font-bold text-white">Terms & Conditions</h2>
+                                        <p class="text-emerald-100 text-sm mt-1">Set default terms and conditions for quotations</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-6 space-y-6">
+                                <!-- Terms Section Name -->
+                                <div class="group">
+                                    <label for="terms_section_name"
+                                        class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                            </path>
+                                        </svg>
+                                        Section Name
+                                    </label>
+                                    <input type="text" name="terms_section_name" id="terms_section_name"
+                                        value="{{ old('terms_section_name', $settings['terms_section_name'] ?? 'Terms & Instructions') }}"
+                                        class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 hover:border-gray-300"
+                                        placeholder="Terms & Instructions">
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                            </path>
+                                        </svg>
+                                        This will be displayed as the section title in quotations
+                                    </p>
+                                    @error('terms_section_name')
+                                        <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Default Terms & Conditions -->
+                                <div class="group">
+                                    <label for="default_terms_conditions"
+                                        class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        Default Terms & Conditions
+                                    </label>
+                                    <textarea name="default_terms_conditions" id="default_terms_conditions" rows="8"
+                                        class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 hover:border-gray-300 resize-none"
+                                        placeholder="Enter default terms and conditions...">{{ old('default_terms_conditions', $settings['default_terms_conditions'] ?? "* 50% Advance with Work order, rest after delivery
+* Delivery time: Supply 15-20 days After Getting PO
+* The Price included 10% VAT & 5% AIT") }}</textarea>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                            </path>
+                                        </svg>
+                                        These terms will be automatically populated when creating new quotations
+                                    </p>
+                                    @error('default_terms_conditions')
+                                        <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Preview Section -->
+                                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
+                                    <h3 class="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-3 flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                            </path>
+                                        </svg>
+                                        Preview
+                                    </h3>
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-emerald-100 dark:border-emerald-700">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2" id="preview-section-name">Terms & Instructions</h4>
+                                        <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line" id="preview-terms">* 50% Advance with Work order, rest after delivery
+* Delivery time: Supply 15-20 days After Getting PO
+* The Price included 10% VAT & 5% AIT</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Form Footer -->
                     <div
                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6">
@@ -2009,6 +2141,31 @@
             document.querySelectorAll('[data-tag]').forEach((button) => {
                 button.addEventListener('click', () => insertTag(button.dataset.tag));
             });
+
+            // Terms & Conditions Preview
+            const termsSectionName = document.getElementById('terms_section_name');
+            const defaultTermsConditions = document.getElementById('default_terms_conditions');
+            const previewSectionName = document.getElementById('preview-section-name');
+            const previewTerms = document.getElementById('preview-terms');
+
+            function updateTermsPreview() {
+                if (previewSectionName && termsSectionName) {
+                    previewSectionName.textContent = termsSectionName.value || 'Terms & Instructions';
+                }
+                if (previewTerms && defaultTermsConditions) {
+                    previewTerms.textContent = defaultTermsConditions.value || '* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT';
+                }
+            }
+
+            if (termsSectionName) {
+                termsSectionName.addEventListener('input', updateTermsPreview);
+            }
+            if (defaultTermsConditions) {
+                defaultTermsConditions.addEventListener('input', updateTermsPreview);
+            }
+
+            // Initialize preview
+            updateTermsPreview();
 
             const vatList = document.getElementById('vat-percentages-list');
             const addVatButton = document.getElementById('add-vat-percentage');

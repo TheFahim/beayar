@@ -77,7 +77,7 @@
                 'discount' => 0,
                 'shipping' => 0,
                 'saved_as' => 'draft',
-                'terms_conditions' => '',
+                'terms_conditions' => $companySettings['default_terms_conditions'] ?? "* 50% Advance with Work order, rest after delivery\n* Delivery time: Supply 15-20 days After Getting PO\n* The Price included 10% VAT & 5% AIT",
             ])
         ) !!},
         oldQuotationProducts: {!! json_encode(

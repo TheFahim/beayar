@@ -1,4 +1,4 @@
-<x-ui.card heading="Products">
+<x-ui.card>
     <div class="p-2">
         <div class="flex items-center justify-between mb-4">
             <div>

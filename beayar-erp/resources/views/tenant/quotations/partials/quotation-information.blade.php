@@ -2,28 +2,34 @@
     <div class="mx-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
         <div class="mx-2 lg:col-span-1">
-            <div class="flex justify-between items-center mb-2">
-                <label class="block text-sm font-medium text-gray-900 dark:text-white">Customer
-                    <span class="bg-red-100 text-red-800 text-xs font-medium px-1 py-0.5 rounded dark:bg-red-900 dark:text-red-300">required</span>
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-900 dark:text-white">
+                    Customer
+                    <span class="text-red-500 text-sm font-medium">*</span>
                 </label>
-                <button type="button" @click="$dispatch('open-create-customer-modal')" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center font-medium transition-colors duration-200">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Add Customer
-                </button>
             </div>
             {{-- <span class="bg-red text-red-800 text-xs font-medium px-1 py-0.5 rounded dark:bg-red-900 dark:text-red-300">{{isset($quotation) ? $quotation->customer_id : ''}}</span> --}}
-            <x-ui.form.searchable-select name="quotation[customer_id]" x-model="selectedCustomerId"
-                apiEndpoint="{{ route('tenant.customers.search') }}"
-                perPage="20"
-                displayTemplate="{customer_no} - {name} ({customer_company.name})"
-                :searchFields="['name', 'customer_no', 'phone', 'email', 'customer_company.name', 'attention']"
-                placeholder="Search customers by name, number, phone, email, or company..."
-                noResultsText="No customers found."
-                createEvent="open-create-customer-modal"
-                createLabel="+ Add New Customer"
-                newItemEvent="customer-created"
-                class="w-full"
-                @option-selected="handleCustomerSelection($event)" />
+            <div class="flex gap-2">
+                <x-ui.form.searchable-select name="quotation[customer_id]" x-model="selectedCustomerId"
+                    apiEndpoint="{{ route('tenant.customers.search') }}"
+                    perPage="20"
+                    displayTemplate="{customer_no} - {name} ({customer_company.name})"
+                    :searchFields="['name', 'customer_no', 'phone', 'email', 'customer_company.name', 'attention']"
+                    placeholder="Search customers by name, number, phone, email, or company..."
+                    noResultsText="No customers found."
+                    createEvent="open-create-customer-modal"
+                    createLabel="+ Add New Customer"
+                    newItemEvent="customer-created"
+                    class="flex-1"
+                    @option-selected="handleCustomerSelection($event)" />
+                <button type="button" @click="$dispatch('open-create-customer-modal')"
+                    class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex-shrink-0"
+                    title="Add Customer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </button>
+            </div>
             <div x-show="selectedCustomer" class="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 dark:text-white rounded text-sm">
                 <span x-text="selectedCustomer ? `Selected: ${selectedCustomer.name}${selectedCustomer.attention ? ' (Attn: ' + selectedCustomer.attention + ')' : ''}` : ''"></span>
             </div>

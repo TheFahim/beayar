@@ -28,7 +28,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Create Role
                 </a>
-                
+
                 <button @click="showAssignModal = true" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors shadow-sm">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
                     Assign Role
@@ -78,13 +78,29 @@
                             </div>
                         @endif
                     </div>
-                    
+
                     <div class="space-y-2">
                         <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Permissions</h4>
                         <div class="flex flex-wrap gap-2">
-                            @forelse($role->permissions as $permission)
+                            @php
+                                $groupedPermissions = [];
+                                foreach($role->permissions as $permission) {
+                                    $parts = explode('_', $permission->name);
+                                    if(count($parts) >= 2) {
+                                        $resource = ucfirst($parts[1]);
+                                        $action = $parts[0];
+
+                                        if(!isset($groupedPermissions[$resource])) {
+                                            $groupedPermissions[$resource] = [];
+                                        }
+                                        $groupedPermissions[$resource][] = $action;
+                                    }
+                                }
+                            @endphp
+
+                            @forelse($groupedPermissions as $resource => $actions)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
-                                    {{ $permission->name }}
+                                    {{ $resource }} - {{ implode(', ', $actions) }}
                                 </span>
                             @empty
                                 <span class="text-sm text-gray-400 italic">No permissions assigned</span>
