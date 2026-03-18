@@ -40,7 +40,7 @@ class PasswordChangeNotification extends Notification
             ->greeting('Hello ' . $notifiable->name . ',')
             ->line('You requested to change your password for your Beayar ERP account.')
             ->line('Please click the button below to verify your identity and proceed with changing your password.')
-            ->action('Verify & Change Password', route('tenant.profile.password.verify', ['token' => $this->token, 'email' => $notifiable->email]))
+            ->action('Verify & Change Password', route('tenant.profile.password.change.form', ['token' => $this->token, 'email' => $notifiable->email]))
             ->line('This verification link will expire in 60 minutes.')
             ->line('If you did not request a password change, no further action is required.')
             ->salutation('Best regards,')
